@@ -1,7 +1,7 @@
 import { useState } from "react";
-import BeforeAfterSlider from "./BeforeAfterSlider";
-import BrandWordmark from "./BrandMark";
-import ProcessShowcase from "./ProcessShowcase";
+import { motion } from "framer-motion";
+import { ArrowLeft } from "@phosphor-icons/react";
+import Interactive3DBackground from "./Interactive3DBackground";
 
 const DEFAULT_PASSWORD = "123456";
 const USERS_STORAGE_KEY = "ready2marketplace_users";
@@ -22,17 +22,7 @@ const readUsers = () => {
 
 const writeUsers = users => localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
 
-const FEATURES = [
-  { icon: "01", title: "One photo is all you need", desc: "Upload any clean product image to get started instantly." },
-  { icon: "02", title: "Scene & model control", desc: "Choose background, lighting, and an optional model reference." },
-  { icon: "03", title: "Export in one click", desc: "Download a structured JSON payload for your AI pipeline." }
-];
-
-const MARKETS = ["Amazon", "Etsy", "Shopify", "eBay", "TikTok Shop", "WooCommerce"];
-
-const CATEGORIES = ["Fashion", "Jewelry", "Footwear", "Beauty", "Accessories", "Food"];
-
-const AuthPage = ({ onAuthSuccess }) => {
+const AuthPage = ({ onAuthSuccess, onBack }) => {
   const [mode, setMode] = useState("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -80,211 +70,131 @@ const AuthPage = ({ onAuthSuccess }) => {
   };
 
   return (
-    <>
-    <div className="landing-shell">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#0a0a0a] text-zinc-100 relative overflow-hidden font-sans selection:bg-accent/20 p-4">
+      {/* Subtle grid background */}
+      <div className="absolute inset-0 opacity-[0.05] pointer-events-none z-0" style={{
+        backgroundImage: 'linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)',
+        backgroundSize: '50px 50px'
+      }} />
 
-      {/* ── Left panel ── */}
-      <div className="landing-left">
-        <div className="landing-left-inner">
+      {/* 3D Particle Simulator Background */}
+      <Interactive3DBackground />
 
-          {/* Brand */}
-          <div className="landing-brand">
-            <div className="landing-brand-mark">PS</div>
-            <BrandWordmark />
-          </div>
-
-          {/* Headline */}
-          <div className="landing-hero">
-            <p className="landing-eyebrow eyebrow">AI product studio</p>
-            <h1>One product photo becomes a <em>marketplace-ready</em> listing image</h1>
-            <p>PixStall AI composites your raw product shot onto a professional model reference to generate high-converting listing photos for Amazon, Flipkart, Etsy, and more — no studio, no shoot.</p>
-          </div>
-
-          {/* Signature before / after — the product's whole thesis in one interaction */}
-          <BeforeAfterSlider
-            beforeSrc="/examples/raw-product.png"
-            afterSrc="/examples/studio-output.png"
-            beforeLabel="Raw upload"
-            afterLabel="PixStall output"
-            beforeAlt="A raw, unedited photo of silver jewellery held in a hand"
-            afterAlt="The same jewellery generated on a model in a studio-quality photo"
-          />
-
-          {/* Category chips */}
-          <div className="landing-cats">
-            {CATEGORIES.map(c => (
-              <span key={c} className="cat-chip">{c}</span>
-            ))}
-          </div>
-
-          {/* Features */}
-          <ul className="landing-features">
-            {FEATURES.map(f => (
-              <li key={f.title}>
-                <span className="feature-icon">{f.icon}</span>
-                <div>
-                  <strong>{f.title}</strong>
-                  <span>{f.desc}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-
-          {/* Marketplace strip */}
-          <div className="landing-markets">
-            <span className="markets-label">For sellers on</span>
-            <div className="markets-row">
-              {MARKETS.map(m => (
-                <span key={m} className="marketplace-badge">{m}</span>
-              ))}
-            </div>
-          </div>
-
-        </div>
+      {/* Top Bar / Back button */}
+      <div className="absolute top-6 left-6 z-20">
+        {onBack && (
+          <button 
+            onClick={onBack}
+            className="flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-zinc-100 bg-zinc-900/80 border border-zinc-800 px-4 py-2 rounded-xl backdrop-blur-md hover:border-zinc-700 transition-all"
+          >
+            <ArrowLeft size={16} weight="bold" /> Back to Home
+          </button>
+        )}
       </div>
 
-      {/* ── Right panel: auth form ── */}
-      <div className="landing-right">
-
-        <div className="auth-logo-cap">
-          <div className="auth-logo-mark">PS</div>
-          <BrandWordmark />
+      {/* Brand Logo Header */}
+      <div className="relative z-10 flex flex-col items-center mb-8">
+        <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mb-3 shadow-[0_0_40px_rgba(132,204,22,0.3)]">
+          <span className="text-[#0a0a0a] font-bold text-2xl tracking-tighter">PS</span>
         </div>
+        <span className="text-zinc-100 text-xl font-semibold tracking-tight">PixStall AI Pro</span>
+      </div>
 
-        <div className="auth-card stagger">
-          <div className="auth-card-header">
-            <h2>{mode === "login" ? "Welcome back" : "Create your account"}</h2>
-            <p>Build listing-ready product creatives in minutes.</p>
+      {/* Auth card — Dark Mode Card for perfect text visibility */}
+      <div className="relative z-10 w-full max-w-md">
+        <div className="bg-[#121215] rounded-3xl shadow-2xl p-8 border border-zinc-800/80 backdrop-blur-xl">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-zinc-100 mb-1">
+              {mode === "login" ? "Welcome back" : "Create your account"}
+            </h2>
+            <p className="text-sm text-zinc-400">Build listing-ready product creatives in minutes.</p>
           </div>
 
-          <div className="auth-tab-row">
+          <div className="flex border-b border-zinc-800 mb-6">
             <button
               type="button"
-              className={`auth-tab ${mode === "login" ? "active" : ""}`}
+              className={`flex-1 pb-3 text-sm font-semibold transition-colors relative ${
+                mode === "login" 
+                  ? "text-zinc-100" 
+                  : "text-zinc-500 hover:text-zinc-300"
+              }`}
               onClick={() => { setMode("login"); setError(""); }}
             >
               Log in
+              {mode === "login" && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-full" />
+              )}
             </button>
             <button
               type="button"
-              className={`auth-tab ${mode === "signup" ? "active" : ""}`}
+              className={`flex-1 pb-3 text-sm font-semibold transition-colors relative ${
+                mode === "signup" 
+                  ? "text-zinc-100" 
+                  : "text-zinc-500 hover:text-zinc-300"
+              }`}
               onClick={() => { setMode("signup"); setError(""); }}
             >
               Sign up
+              {mode === "signup" && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-full" />
+              )}
             </button>
           </div>
 
-          <form className="auth-form" onSubmit={handleSubmit}>
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             {mode === "signup" && (
-              <label>
-                Full name
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Full name</label>
                 <input
                   value={name}
                   onChange={e => setName(e.target.value)}
                   placeholder="Alex Morgan"
+                  className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/90 text-zinc-100 text-sm placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all"
                 />
-              </label>
+              </div>
             )}
-            <label>
-              Email
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="you@example.com"
+                className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/90 text-zinc-100 text-sm placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all"
               />
-            </label>
-            <label>
-              Password
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="••••••"
+                className="w-full px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/90 text-zinc-100 text-sm placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all"
               />
-            </label>
+            </div>
 
-            <p className="auth-hint">Demo account · admin@pixstall.ai · 123456</p>
+            <p className="text-xs text-zinc-400 text-center py-1">
+              Demo account · <span className="text-zinc-200 font-medium">admin@pixstall.ai</span> · <span className="text-zinc-200 font-medium">123456</span>
+            </p>
 
-            {error && <p className="error">{error}</p>}
+            {error && (
+              <div className="p-3 bg-red-950/60 text-red-400 text-xs rounded-xl border border-red-800/60 font-medium flex gap-2 items-center">
+                <span>⚠️</span> {error}
+              </div>
+            )}
 
-            <button type="submit" className="generate generate-primary auth-submit-btn">
+            <button type="submit" className="w-full bg-accent text-[#0a0a0a] py-3.5 rounded-xl font-bold text-sm hover:bg-lime-400 active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(132,204,22,0.25)] mt-1">
               {mode === "login" ? "Enter studio →" : "Create account"}
             </button>
           </form>
         </div>
 
-        <p className="auth-footer-note">
+        <p className="text-center text-xs text-zinc-500 mt-6">
           No credit card required · Cancel anytime
         </p>
-
       </div>
-
     </div>
-
-    <ProcessShowcase />
-
-    {/* ── About PixStall AI — SEO section ── */}
-    <section className="landing-about" id="about" aria-label="About PixStall AI">
-      <div className="about-inner">
-
-        <header className="about-header">
-          <span className="about-eyebrow">About PixStall AI</span>
-          <h2>AI product image generator for Amazon, Flipkart &amp; every major marketplace</h2>
-          <p>
-            PixStall AI is an intelligent product image generation engine built for ecommerce sellers.
-            Upload your product photo and a model reference — our AI creates professional, conversion-ready
-            listing images in seconds. No photography studio required.
-          </p>
-        </header>
-
-        <div className="about-cards">
-          <article className="about-card">
-            <span className="about-card-icon">◆</span>
-            <h3>AI-powered product photography</h3>
-            <p>
-              Our engine understands product context — clothing, jewelry, beauty products, footwear, and
-              accessories — to generate studio-quality images that meet Amazon and Flipkart listing standards
-              automatically.
-            </p>
-          </article>
-          <article className="about-card">
-            <span className="about-card-icon">◆</span>
-            <h3>Real model integration</h3>
-            <p>
-              Select a male or female model reference image. PixStall AI composites your product onto the
-              model to create authentic, human-led marketplace visuals that drive higher click-through
-              rates on product listings.
-            </p>
-          </article>
-          <article className="about-card">
-            <span className="about-card-icon">◆</span>
-            <h3>Marketplace-ready output</h3>
-            <p>
-              Generate images in the exact aspect ratios required by Amazon India, Flipkart, Meesho, Etsy,
-              Shopify, TikTok Shop, and WooCommerce — 1:1, 9:16, 4:5, 3:4, and 16:9 formats supported
-              out of the box.
-            </p>
-          </article>
-        </div>
-
-        <div className="about-seo-text">
-          <p>
-            PixStall AI is the smart product photography solution for Indian and global ecommerce sellers
-            looking to scale their marketplace listings without expensive studio shoots. Whether you sell
-            fashion, ethnic wear, sneakers, handbags, cosmetics, or packaged food on <strong>Amazon India,
-            Flipkart, Meesho, Myntra, Nykaa, Shopify</strong>, or international platforms like <strong>Etsy,
-            eBay, and TikTok Shop</strong> — our AI product image generator creates visuals that convert.
-            PixStall AI supports all major ecommerce categories including fashion &amp; apparel,
-            accessories, beauty &amp; skincare, jewelry, footwear, and food products. Powered by
-            advanced generative AI, it replaces traditional product photography workflows and delivers
-            marketplace-compliant images in a fraction of the time and cost.
-          </p>
-        </div>
-
-      </div>
-    </section>
-    </>
   );
 };
 

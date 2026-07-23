@@ -40,13 +40,13 @@ const ProductsPage = ({ email }) => {
 
   return (
     <div className="gallery-page">
-      <header className="gallery-header stagger">
-        <p className="eyebrow">My Products</p>
-        <h2>
+      <header className="mb-10">
+        <h1 className="text-3xl font-bold text-ink mb-2 tracking-tight">Products</h1>
+        <p className="text-slate text-lg">
           {status === "loading"
             ? "Loading…"
             : `${products.length} product${products.length === 1 ? "" : "s"}`}
-        </h2>
+        </p>
       </header>
 
       {status === "error" && (

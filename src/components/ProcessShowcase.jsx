@@ -1,6 +1,10 @@
+/**
+ * Process explainer section — shows the 4-step flow from upload to export.
+ * Stripped of numbered "01/02/03" scaffolding and "eyebrow" labels.
+ * Uses a clean card grid with step titles and descriptions instead.
+ */
 const STEPS = [
   {
-    n: "01",
     title: "Upload your product photo",
     body: "Any clean shot works — jewelry, apparel, bags, beauty, food. Straight off a phone is fine.",
     img: "/examples/raw-product.png",
@@ -8,7 +12,6 @@ const STEPS = [
     caption: "Raw upload"
   },
   {
-    n: "02",
     title: "Set the context",
     body: "Pick a category, a scene, and an aspect ratio. Choose one of several preset models — or upload a photo of your own.",
     img: "/examples/model-reference.png",
@@ -17,7 +20,6 @@ const STEPS = [
     pickerMock: true
   },
   {
-    n: "03",
     title: "PixStall composites the shot",
     body: "The engine places your product on the model, matching light, angle, and perspective.",
     img: "/examples/model-reference.png",
@@ -26,7 +28,6 @@ const STEPS = [
     processing: true
   },
   {
-    n: "04",
     title: "Export, ready to list",
     body: "Download a listing photo sized for Amazon, Flipkart, Etsy, and more.",
     img: "/examples/studio-output.png",
@@ -43,80 +44,69 @@ const BENEFITS = [
   { title: "Marketplace ready", body: "Sized correctly for every platform you sell on." }
 ];
 
-/**
- * The front-page process explainer. Every frame uses the same square,
- * contained (never cropped) treatment, so a portrait product photo, a
- * landscape model photo, and a landscape output photo all sit at equal
- * visual weight — a numbered rail ties the four steps together instead
- * of arrows wedged between mismatched cards.
- */
 const ProcessShowcase = () => (
-  <section className="process-section" aria-label="How PixStall AI works">
-    <div className="process-inner">
+  <section className="max-w-7xl mx-auto px-6 mb-32" aria-label="How PixStall AI works">
+    <div className="text-center mb-16">
+      <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-zinc-100 mb-4">
+        From one product photo to a marketplace-ready listing
+      </h2>
+      <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
+        Four steps. No studio, no shoot, no photographer to schedule.
+      </p>
+    </div>
 
-      <header className="process-header">
-        <p className="eyebrow">How it works</p>
-        <h2>From one product photo to a marketplace-ready listing</h2>
-        <p>Four steps. No studio, no shoot, no photographer to schedule.</p>
-      </header>
-
-      <div className="process-rail" aria-hidden="true">
-        {STEPS.map(step => (
-          <span key={step.n} className={`process-rail-node ${step.final ? "is-final" : ""}`}>
-            {step.n}
-          </span>
-        ))}
-      </div>
-
-      <div className="process-grid">
-        {STEPS.map(step => (
-          <article className="process-card" key={step.n}>
-            <span className={`process-card-num ${step.final ? "is-final" : ""}`}>{step.n}</span>
-
-            <div className={`process-frame ${step.processing ? "is-processing" : ""} ${step.final ? "is-final" : ""}`}>
-              {step.pickerMock ? (
-                <div className="model-picker-mock">
-                  <div className="model-picker-thumb">
-                    <img src="/examples/model-option-a.png" alt="Alternative preset model photo, outdoors in a green saree" />
-                  </div>
-                  <div className="model-picker-thumb model-picker-selected">
-                    <img src={step.img} alt={step.alt} />
-                    <span className="model-picker-check" aria-hidden="true">✓</span>
-                  </div>
-                  <div className="model-picker-thumb">
-                    <img src="/examples/model-option-b.png" alt="Alternative preset model photo, studio portrait" />
-                  </div>
-                  <div className="model-picker-thumb model-picker-upload">
-                    <span aria-hidden="true">+</span>
-                    <small>Upload your own</small>
-                  </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+      {STEPS.map((step, index) => (
+        <article 
+          className="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden hover:border-accent/30 transition-colors group" 
+          key={step.title}
+        >
+          <div className={`aspect-square relative overflow-hidden bg-zinc-800/50 ${step.processing ? "animate-pulse" : ""}`}>
+            {step.pickerMock ? (
+              <div className="grid grid-cols-2 gap-1 p-3 h-full">
+                <div className="rounded-lg overflow-hidden border border-zinc-700">
+                  <img src="/examples/model-option-a.png" alt="Alternative preset model" className="w-full h-full object-cover" />
                 </div>
-              ) : (
-                <img src={step.img} alt={step.alt} />
-              )}
-
-              <span className="vf-corners" aria-hidden="true"><span /><span /><span /><span /></span>
-            </div>
-
-            <p className="process-caption">{step.caption}</p>
-            <h3>{step.title}</h3>
-            <p>{step.body}</p>
-          </article>
-        ))}
-      </div>
-
-      <div className="process-benefits">
-        {BENEFITS.map(b => (
-          <div className="process-benefit" key={b.title}>
-            <span className="process-benefit-icon">◆</span>
-            <div>
-              <strong>{b.title}</strong>
-              <span>{b.body}</span>
-            </div>
+                <div className="rounded-lg overflow-hidden border-2 border-accent relative">
+                  <img src={step.img} alt={step.alt} className="w-full h-full object-cover" />
+                  <span className="absolute top-1 right-1 w-5 h-5 bg-accent rounded-full flex items-center justify-center text-[10px] text-[#0a0a0a] font-bold">✓</span>
+                </div>
+                <div className="rounded-lg overflow-hidden border border-zinc-700">
+                  <img src="/examples/model-option-b.png" alt="Alternative preset model" className="w-full h-full object-cover" />
+                </div>
+                <div className="rounded-lg border border-dashed border-zinc-600 flex flex-col items-center justify-center text-zinc-500">
+                  <span className="text-lg">+</span>
+                  <small className="text-[10px]">Upload your own</small>
+                </div>
+              </div>
+            ) : (
+              <img src={step.img} alt={step.alt} className="w-full h-full object-contain p-4" />
+            )}
+            
+            {step.final && (
+              <div className="absolute inset-0 ring-2 ring-inset ring-accent/30 rounded-t-2xl pointer-events-none" />
+            )}
           </div>
-        ))}
-      </div>
 
+          <div className="p-5">
+            <p className="text-xs font-semibold text-accent mb-2 uppercase tracking-wider">{step.caption}</p>
+            <h3 className="text-base font-bold text-zinc-100 mb-2">{step.title}</h3>
+            <p className="text-sm text-zinc-400 leading-relaxed">{step.body}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {BENEFITS.map(b => (
+        <div className="flex items-start gap-3 bg-zinc-900/30 border border-zinc-800/50 rounded-xl p-5" key={b.title}>
+          <span className="text-accent text-sm mt-0.5 shrink-0">◆</span>
+          <div>
+            <strong className="text-zinc-200 text-sm block mb-1">{b.title}</strong>
+            <span className="text-zinc-500 text-sm">{b.body}</span>
+          </div>
+        </div>
+      ))}
     </div>
   </section>
 );

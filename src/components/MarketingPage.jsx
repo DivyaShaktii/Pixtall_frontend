@@ -1,72 +1,49 @@
-const MARKETPLACES = ["Amazon", "Etsy", "Shopify", "eBay", "TikTok Shop", "WooCommerce"];
+import React from 'react';
+import { Navbar } from './marketing/Navbar';
+import { Hero } from './marketing/Hero';
+import { BrandStrip } from './marketing/BrandStrip';
+import { HowItWorks } from './marketing/HowItWorks';
+import { Features } from './marketing/Features';
+import { Gallery } from './marketing/Gallery';
+import { Testimonials } from './marketing/Testimonials';
+import { Pricing } from './marketing/Pricing';
+import { CtaSection } from './marketing/CtaSection';
+import { Footer } from './marketing/Footer';
 
-const steps = [
-  {
-    num: "01",
-    title: "Upload your product photo",
-    body: "Drop in any clean JPG, PNG or WEBP — even a basic photo works as the starting point."
-  },
-  {
-    num: "02",
-    title: "Configure the creative",
-    body: "Pick category, scene, output size, and optionally a model reference to frame the image."
-  },
-  {
-    num: "03",
-    title: "Export the payload",
-    body: "Download a structured JSON file ready to feed into your image generation pipeline."
-  }
-];
-
-const MarketingPage = ({ onStart }) => (
-  <div className="page-body marketing-page">
-
-    {/* Hero */}
-    <section className="marketing-hero stagger">
-      <p className="eyebrow">PixStall AI</p>
-      <h1>Turn any product photo into a <em>marketplace-ready</em> creative</h1>
-      <p>
-        Upload one image, configure the scene and model, then export a ready-to-generate JSON payload — in under a minute.
-      </p>
-      <div className="hero-cta-row">
-        <button type="button" className="generate" onClick={onStart}>
-          Open Studio
-        </button>
-        <button type="button" className="ghost-btn" onClick={onStart}>
-          See how it works ↓
-        </button>
+const MarketingPage = ({ onStart }) => {
+  return (
+    <div className="min-h-full w-full bg-[#070707] font-sans text-white antialiased overflow-hidden selection:bg-[#a3e635]/20">
+      {/* Cinematic Environment Background */}
+      <div className="pointer-events-none fixed inset-0 z-0 flex items-center justify-center overflow-hidden">
+        {/* Soft volumetric lighting */}
+        <div className="absolute top-[-20%] left-1/2 w-[80vw] h-[80vw] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(163,230,53,0.06)_0%,transparent_60%)] blur-[80px]" />
+        
+        {/* Very subtle noise texture */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}
+        />
+        
+        {/* Large vignette */}
+        <div className="absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.9)]" />
       </div>
-
-      <div className="marketplace-strip">
-        <p>Built for sellers on</p>
-        <div className="marketplace-strip-logos">
-          {MARKETPLACES.map(name => (
-            <span key={name} className="marketplace-badge">{name}</span>
-          ))}
-        </div>
+      
+      <div className="relative z-10 flex flex-col items-center">
+        <Navbar onStart={onStart} />
+        <main className="w-full">
+          <Hero onStart={onStart} />
+          <BrandStrip />
+          <HowItWorks />
+          <Features />
+          <Gallery />
+          <Testimonials />
+          <Pricing onStart={onStart} />
+          <CtaSection onStart={onStart} />
+        </main>
+        <Footer />
       </div>
-    </section>
-
-    <hr className="section-divider" />
-
-    {/* Steps */}
-    <section className="steps-section stagger">
-      <header className="steps-section-header">
-        <p className="eyebrow">How it works</p>
-        <h2>Three steps from photo to export-ready payload</h2>
-      </header>
-      <div className="steps-row">
-        {steps.map(step => (
-          <article key={step.num}>
-            <div className="step-num">{step.num}</div>
-            <h3>{step.title}</h3>
-            <p>{step.body}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-
-  </div>
-);
+    </div>
+  );
+};
 
 export default MarketingPage;
