@@ -32,7 +32,7 @@ const SettingsPage = () => {
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate">
                     <EnvelopeSimple size={18} />
                   </div>
-                  <input type="email" defaultValue="demo@pixstall.ai" className="w-full bg-cloud border border-line rounded-lg py-2 pl-10 pr-4 text-ink focus:outline-none focus:border-accent transition-colors" />
+                  <input type="email" defaultValue="demo@pixtall.ai" className="w-full bg-cloud border border-line rounded-lg py-2 pl-10 pr-4 text-ink focus:outline-none focus:border-accent transition-colors" />
                 </div>
               </div>
             </div>

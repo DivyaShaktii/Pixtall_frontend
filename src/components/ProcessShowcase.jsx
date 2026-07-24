@@ -20,7 +20,7 @@ const STEPS = [
     pickerMock: true
   },
   {
-    title: "PixStall composites the shot",
+    title: "Pixtall composites the shot",
     body: "The engine places your product on the model, matching light, angle, and perspective.",
     img: "/examples/model-reference.png",
     alt: "Model reference photo mid-composite with the product",
@@ -45,7 +45,7 @@ const BENEFITS = [
 ];
 
 const ProcessShowcase = () => (
-  <section className="max-w-7xl mx-auto px-6 mb-32" aria-label="How PixStall AI works">
+  <section className="max-w-7xl mx-auto px-6 mb-32" aria-label="How Pixtall AI works">
     <div className="text-center mb-16">
       <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-zinc-100 mb-4">
         From one product photo to a marketplace-ready listing

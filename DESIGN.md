@@ -1,5 +1,5 @@
 ---
-name: PixStall AI
+name: Pixtall AI
 description: Turn any product photo into a marketplace-ready creative
 colors:
   ink: "#f5f5f5"
@@ -27,7 +27,7 @@ components:
     backgroundColor: "{colors.accent}"
 ---
 
-# Design System: PixStall AI
+# Design System: Pixtall AI
 
 ## 1. Overview
 

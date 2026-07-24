@@ -30,7 +30,7 @@ export function Footer() {
                 />
               </svg>
             </span>
-            <span className="text-lg font-medium tracking-tight">PixStall AI</span>
+            <span className="text-lg font-medium tracking-tight">Pixtall AI</span>
           </div>
           <p className="mt-4 text-sm leading-relaxed text-neutral-500">
             AI product photoshoots for fashion brands that move fast.
@@ -71,7 +71,7 @@ export function Footer() {
       </div>
 
       <div className="mx-auto mt-12 flex max-w-[1400px] w-full flex-col items-center justify-between gap-3 border-t border-white/5 pt-6 text-xs text-neutral-600 sm:flex-row">
-        <p>© {new Date().getFullYear()} PixStall AI. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Pixtall AI. All rights reserved.</p>
         <div className="flex items-center gap-6">
           <a href="#" className="hover:text-neutral-400">Terms</a>
           <a href="#" className="hover:text-neutral-400">Privacy</a>

@@ -11,7 +11,7 @@ const features = [
   {
     icon: UserFocus,
     title: 'Real model integration',
-    body: 'Select a male or female model reference image. PixStall AI composites your product onto the model to create authentic, human-led marketplace visuals that drive higher click-through rates on product listings.',
+    body: 'Select a male or female model reference image. Pixtall AI composites your product onto the model to create authentic, human-led marketplace visuals that drive higher click-through rates on product listings.',
   },
   {
     icon: Export,
@@ -26,13 +26,13 @@ export function Features() {
       <div className="mx-auto max-w-[1400px] px-5">
         <div className="max-w-3xl mb-16">
           <span className="text-xs font-medium uppercase tracking-[0.2em] text-[#a3e635]">
-            About PixStall AI
+            About Pixtall AI
           </span>
           <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-5xl leading-tight">
             AI product image generator for Amazon, Flipkart & every major marketplace
           </h2>
           <p className="mt-6 text-lg text-neutral-400 leading-relaxed">
-            PixStall AI is an intelligent product image generation engine built for ecommerce sellers. Upload your product photo and a model reference — our AI creates professional, conversion-ready listing images in seconds. No photography studio required.
+            Pixtall AI is an intelligent product image generation engine built for ecommerce sellers. Upload your product photo and a model reference — our AI creates professional, conversion-ready listing images in seconds. No photography studio required.
           </p>
         </div>
 
@@ -65,7 +65,7 @@ export function Features() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="mt-16 text-xs leading-relaxed text-neutral-500 max-w-5xl"
         >
-          PixStall AI is the smart product photography solution for Indian and global ecommerce sellers looking to scale their marketplace listings without expensive studio shoots. Whether you sell fashion, ethnic wear, sneakers, handbags, cosmetics, or packaged food on Amazon India, Flipkart, Meesho, Myntra, Nykaa, Shopify, or international platforms like Etsy, eBay, and TikTok Shop — our AI product image generator creates visuals that convert. PixStall AI supports all major ecommerce categories including fashion & apparel, accessories, beauty & skincare, jewelry, footwear, and food products. Powered by advanced generative AI, it replaces traditional product photography workflows and delivers marketplace-compliant images in a fraction of the time and cost.
+          Pixtall AI is the smart product photography solution for Indian and global ecommerce sellers looking to scale their marketplace listings without expensive studio shoots. Whether you sell fashion, ethnic wear, sneakers, handbags, cosmetics, or packaged food on Amazon India, Flipkart, Meesho, Myntra, Nykaa, Shopify, or international platforms like Etsy, eBay, and TikTok Shop — our AI product image generator creates visuals that convert. Pixtall AI supports all major ecommerce categories including fashion & apparel, accessories, beauty & skincare, jewelry, footwear, and food products. Powered by advanced generative AI, it replaces traditional product photography workflows and delivers marketplace-compliant images in a fraction of the time and cost.
         </motion.div>
       </div>
     </section>

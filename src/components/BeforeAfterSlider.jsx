@@ -9,7 +9,7 @@ const BeforeAfterSlider = ({
   beforeSrc,
   afterSrc,
   beforeLabel = "Raw upload",
-  afterLabel = "PixStall output",
+  afterLabel = "Pixtall output",
   beforeAlt = "Unedited product photo",
   afterAlt = "Generated marketplace photo"
 }) => {

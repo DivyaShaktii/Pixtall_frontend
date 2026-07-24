@@ -55,7 +55,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
     const fallback = {
       id: "default-demo-user",
       name: "Demo User",
-      email: "admin@pixstall.ai",
+      email: "admin@pixtall.ai",
       password: DEFAULT_PASSWORD
     };
     const existing =
@@ -97,7 +97,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
         <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mb-3 shadow-[0_0_40px_rgba(132,204,22,0.3)]">
           <span className="text-[#0a0a0a] font-bold text-2xl tracking-tighter">PS</span>
         </div>
-        <span className="text-zinc-100 text-xl font-semibold tracking-tight">PixStall AI Pro</span>
+        <span className="text-zinc-100 text-xl font-semibold tracking-tight">Pixtall AI Pro</span>
       </div>
 
       {/* Auth card — Dark Mode Card for perfect text visibility */}
@@ -175,7 +175,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
             </div>
 
             <p className="text-xs text-zinc-400 text-center py-1">
-              Demo account · <span className="text-zinc-200 font-medium">admin@pixstall.ai</span> · <span className="text-zinc-200 font-medium">123456</span>
+              Demo account · <span className="text-zinc-200 font-medium">admin@pixtall.ai</span> · <span className="text-zinc-200 font-medium">123456</span>
             </p>
 
             {error && (

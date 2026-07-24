@@ -6,7 +6,7 @@
  *     .then(r => r.json());
  *
  * Each "session" is one generation run: the product it was made from,
- * the settings used, and every photo produced from it (PixStall can
+ * the settings used, and every photo produced from it (Pixtall can
  * generate more than one variant per run). Keep this shape when you
  * connect a real endpoint — or map your API response into it.
  */

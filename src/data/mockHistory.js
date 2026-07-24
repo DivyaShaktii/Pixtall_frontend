@@ -6,7 +6,7 @@
  *     .then(r => r.json());
  *
  * Each row is one past generation: the product photo that was uploaded,
- * the image PixStall produced from it, and the settings used. The shape
+ * the image Pixtall produced from it, and the settings used. The shape
  * below is what <App> expects — keep these field names when you connect
  * a real endpoint (or map your API response into this shape).
  */

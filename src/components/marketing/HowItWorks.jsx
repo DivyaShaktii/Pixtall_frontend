@@ -19,7 +19,7 @@ const steps = [
   {
     number: '03',
     eyebrow: 'Compositing',
-    title: 'PixStall composites the shot',
+    title: 'Pixtall composites the shot',
     body: 'The engine places your product on the model, matching light, angle, and perspective.',
     img: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?q=80&w=600&auto=format&fit=crop&blur=100',
   },

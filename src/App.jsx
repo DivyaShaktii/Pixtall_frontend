@@ -42,7 +42,7 @@ const App = () => {
           <div className="w-8 h-8 rounded bg-accent text-paper flex items-center justify-center font-bold text-sm tracking-tighter">
             PS
           </div>
-          <span className="font-semibold text-lg tracking-tight">PixStall AI Pro</span>
+          <span className="font-semibold text-lg tracking-tight">Pixtall AI Pro</span>
         </div>
         <div className="flex items-center gap-4">
           <span className="text-sm font-medium text-slate">

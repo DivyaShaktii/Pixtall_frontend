@@ -217,7 +217,7 @@ export default function StudioView() {
               </div>
               <div>
                 <h3 className="font-bold text-base text-ink m-0 tracking-tight">
-                  {activeTool === "product-to-model" ? "Product to Model Studio" : "Virtual Try-On Studio"}
+                  {activeTool === "product-to-model" ? "Marketplace Studio" : "Personal Studio"}
                 </h3>
                 <p className="text-xs text-slate m-0">
                   {isGenerating ? "Rendering..." : "Generate and compare."}
@@ -229,7 +229,7 @@ export default function StudioView() {
                 variant="outline" 
                 onClick={() => {
                   generatedImages.forEach((img, i) => {
-                    if (img) setTimeout(() => downloadImage(img, `pixstall-${i + 1}.png`), i * 150);
+                    if (img) setTimeout(() => downloadImage(img, `pixtall-${i + 1}.png`), i * 150);
                   });
                 }}
                 className="gap-2 font-bold h-9 text-xs rounded-xl border-line hover:bg-cloud hover:text-ink text-slate"
@@ -241,77 +241,84 @@ export default function StudioView() {
           </div>
           
           {/* Canvas content */}
-          <div className="flex-1 flex flex-col p-4 lg:p-8 bg-cloud gap-4 overflow-y-auto min-h-0">
-            {/* Primary Result */}
-            <div className="w-full max-w-4xl mx-auto flex flex-col items-center flex-1 min-h-0">
-              <AnimatePresence mode="wait">
-                {generatedImages[0] ? (
-                  <motion.div 
-                    key="generated-slider"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="w-full flex-1 min-h-0 rounded-2xl overflow-hidden border border-line shadow-lg"
-                  >
-                    <BeforeAfterSlider 
-                      beforeSrc={productImageUrl || "https://picsum.photos/seed/placeholder/800/800"} 
-                      afterSrc={generatedImages[0]} 
-                      beforeLabel="Source Product" 
-                      afterLabel="Generated Output" 
-                    />
-                  </motion.div>
-                ) : (
-                  <motion.div 
-                    key="empty-state"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="w-full flex-1 min-h-[300px] rounded-2xl border-2 border-dashed border-line bg-paper flex flex-col items-center justify-center text-slate gap-4"
-                  >
-                    {isGenerating ? (
-                      <div className="flex flex-col items-center gap-3">
-                        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="text-accent">
-                          <CircleNotch size={40} weight="bold" />
-                        </motion.div>
-                        <span className="font-semibold text-ink">Mapping product to model...</span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-2">
-                        <Image size={40} weight="light" className="opacity-50" />
-                        <span className="font-medium text-sm">Upload a product and click Generate</span>
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+          <div className="flex-1 p-4 lg:p-8 bg-cloud flex flex-col min-h-0 overflow-y-auto">
+            <div className={`w-full max-w-5xl mx-auto flex-1 min-h-0 grid gap-4 ${
+              numImages === 1 ? "grid-cols-1 grid-rows-1" : 
+              numImages === 2 ? "grid-cols-2 grid-rows-1" : 
+              "grid-cols-2 grid-rows-2"
+            }`}>
+              {Array.from({ length: numImages }).map((_, i) => {
+                const imageSrc = generatedImages[i];
+                
+                const [w, h] = size ? size.split(':').map(Number) : [1, 1];
 
-              {/* Variation thumbnails */}
-              {numImages > 1 && (
-                <div className="grid grid-cols-3 gap-3 w-full mt-4 shrink-0">
-                  {[1, 2, 3].map(i => {
-                    if (i >= numImages) return null;
-                    const imageSrc = generatedImages[i];
-                    return (
-                      <div key={i} className="aspect-square rounded-xl overflow-hidden border border-line bg-paper relative">
-                        {imageSrc ? (
-                          <>
-                            <img src={imageSrc} alt={`Variation ${i+1}`} className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-ink/0 hover:bg-ink/30 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100 backdrop-blur-[2px]">
-                              <Button variant="primary" className="shadow-lg gap-2 font-medium text-xs h-8 bg-ink text-paper hover:bg-cloud-2" onClick={() => downloadImage(imageSrc, `pixstall-${i + 1}.png`)}>
-                                <DownloadSimple size={14} weight="bold" /> Save
-                              </Button>
-                            </div>
-                          </>
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-slate opacity-30">
-                            {isGenerating ? <CircleNotch size={20} className="animate-spin text-accent opacity-100" /> : <Image size={24} />}
-                          </div>
-                        )}
+                return (
+                  <div key={`slot-wrapper-${i}`} className="w-full h-full flex items-center justify-center min-h-0 min-w-0 p-2">
+                    <div className="relative flex items-center justify-center max-w-full max-h-full">
+                      {/* Invisible SVG to force perfect aspect ratio scaling */}
+                      <svg 
+                        viewBox={`0 0 ${w} ${h}`} 
+                        width={w * 1000} 
+                        height={h * 1000} 
+                        className="max-w-full max-h-full w-auto h-auto opacity-0 pointer-events-none" 
+                      />
+                      
+                      {/* Actual Content */}
+                      <div className="absolute inset-0 w-full h-full">
+                        <AnimatePresence mode="wait">
+                          {imageSrc ? (
+                            <motion.div 
+                              key={`slot-filled-${i}`}
+                              initial={{ opacity: 0, scale: 0.98 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="w-full h-full rounded-2xl overflow-hidden border border-line shadow-lg relative group"
+                            >
+                              <BeforeAfterSlider 
+                                beforeSrc={productImageUrl || "https://picsum.photos/seed/placeholder/800/800"} 
+                                afterSrc={imageSrc} 
+                                beforeLabel="Source" 
+                                afterLabel={`Result ${i + 1}`} 
+                              />
+                              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                <Button 
+                                  variant="primary" 
+                                  className="shadow-lg gap-2 font-medium text-xs h-8 bg-ink text-paper hover:bg-cloud-2" 
+                                  onClick={() => downloadImage(imageSrc, `pixtall-${i + 1}.png`)}
+                                >
+                                  <DownloadSimple size={14} weight="bold" /> Save
+                                </Button>
+                              </div>
+                            </motion.div>
+                          ) : (
+                            <motion.div 
+                              key={`slot-empty-${i}`}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="w-full h-full rounded-2xl border-2 border-dashed border-line bg-paper flex flex-col items-center justify-center text-slate gap-4"
+                            >
+                              {isGenerating ? (
+                                <div className="flex flex-col items-center gap-3">
+                                  <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="text-accent">
+                                    <CircleNotch size={32} weight="bold" />
+                                  </motion.div>
+                                  <span className="font-semibold text-sm text-ink">Rendering...</span>
+                                </div>
+                              ) : (
+                                <div className="flex flex-col items-center gap-2">
+                                  <Image size={32} weight="light" className="opacity-50" />
+                                  <span className="font-medium text-sm">Slot {["One", "Two", "Three", "Four"][i]}</span>
+                                </div>
+                              )}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
-                    );
-                  })}
-                </div>
-              )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </Card>
@@ -334,7 +341,7 @@ export default function StudioView() {
                 }`}
               >
                 <TShirt size={16} weight={activeTool === "product-to-model" ? "fill" : "regular"} />
-                Product to Model
+                Marketplace
               </button>
               <button 
                 onClick={() => setActiveTool("virtual-try-on")}
@@ -343,7 +350,7 @@ export default function StudioView() {
                 }`}
               >
                 <User size={16} weight={activeTool === "virtual-try-on" ? "fill" : "regular"} />
-                Virtual Try-On
+                Personal
               </button>
             </div>
           </div>

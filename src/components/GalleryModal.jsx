@@ -15,7 +15,7 @@ const downloadImage = (src, filename) => {
 
 const GalleryModal = ({ session, onClose }) => {
   const handleDownloadAll = () => {
-    const base = slugify(session.title) || "pixstall-photo";
+    const base = slugify(session.title) || "pixtall-photo";
     session.photos.forEach((src, index) => {
       // Small stagger so browsers don't drop rapid-fire downloads.
       setTimeout(() => downloadImage(src, `${base}-${index + 1}.png`), index * 150);
@@ -80,7 +80,7 @@ const GalleryModal = ({ session, onClose }) => {
                       type="button"
                       className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-ink text-paper flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 shadow-lg"
                       aria-label="Download this photo"
-                      onClick={() => downloadImage(src, `${slugify(session.title) || "pixstall-photo"}-${index + 1}.png`)}
+                      onClick={() => downloadImage(src, `${slugify(session.title) || "pixtall-photo"}-${index + 1}.png`)}
                     >
                       <DownloadSimple size={14} weight="bold" />
                     </button>

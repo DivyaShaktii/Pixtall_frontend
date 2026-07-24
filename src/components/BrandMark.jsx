@@ -1,6 +1,6 @@
 const BrandWordmark = ({ className = "" }) => (
   <span className={`brand-wordmark ${className}`}>
-    PixStall
+    Pixtall
     <span className="brand-ai-tag">AI</span>
   </span>
 );

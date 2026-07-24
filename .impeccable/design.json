@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-21T10:04:00Z",
+  "title": "Design System: Pixtall AI",
+  "extensions": {
+    "colorMeta": {
+      "accent": { "role": "primary", "displayName": "Vibrant Tangerine" },
+      "ink": { "role": "neutral", "displayName": "Ink" },
+      "paper": { "role": "neutral", "displayName": "Paper" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display Serif", "purpose": "Hero headlines and emphasis." },
+      "body": { "displayName": "Body Sans", "purpose": "Standard UI text." },
+      "mono": { "displayName": "Mono Label", "purpose": "Technical metadata and tags." }
+    },
+    "shadows": [
+      { "name": "shadow-xs", "value": "0 1px 2px rgba(14,14,16,0.04)", "purpose": "Subtle lift for buttons." },
+      { "name": "shadow-lg", "value": "0 24px 64px rgba(14,14,16,0.14)", "purpose": "Deep structural elevation." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Generate Button",
+      "kind": "button",
+      "refersTo": "generate-btn",
+      "description": "Standard action button.",
+      "html": "<button class=\"ds-generate\">GENERATE</button>",
+      "css": ".ds-generate { display: inline-flex; align-items: center; justify-content: center; height: 46px; padding: 0 22px; border-radius: 6px; background: #0e0e10; color: #ffffff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14.72px; box-shadow: 0 1px 2px rgba(14,14,16,0.04); border: none; cursor: pointer; transition: background 140ms ease, box-shadow 140ms ease; } .ds-generate:hover { background: #000000; box-shadow: 0 2px 8px rgba(14,14,16,0.06); }"
+    },
+    {
+      "name": "Primary Generate Button",
+      "kind": "button",
+      "refersTo": "generate-primary",
+      "description": "Primary action button.",
+      "html": "<button class=\"ds-generate ds-generate-primary\">GENERATE PRIMARY</button>",
+      "css": ".ds-generate { display: inline-flex; align-items: center; justify-content: center; height: 46px; padding: 0 22px; border-radius: 6px; color: #ffffff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14.72px; box-shadow: 0 1px 2px rgba(14,14,16,0.04); border: none; cursor: pointer; transition: background 140ms ease, box-shadow 140ms ease; } .ds-generate-primary { background: #ff4d2e; } .ds-generate-primary:hover { background: #d93c1f; box-shadow: 0 2px 8px rgba(14,14,16,0.06); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Minimalist Atelier",
+    "overview": "The design is sharp, high-contrast, and deliberately steps out of the way of the generated images. Every element is elegant, refined, and spacious, allowing the AI output to be the true hero. We explicitly avoid generic Bootstrap/Material layouts and overly technical or cluttered configurations.",
+    "keyCharacteristics": [
+      "High contrast and focused",
+      "Minimalist and elegant",
+      "Output-driven"
+    ],
+    "rules": [
+      {
+        "name": "The Safelight Rule",
+        "body": "The primary accent is the only splash of color and is used sparingly. It appears only on primary actions and live/active states.",
+        "section": "colors"
+      }
+    ],
+    "dos": [
+      "Do let the generated images be the hero of the interface.",
+      "Do use Vibrant Tangerine (#ff4d2e) sparingly for primary actions.",
+      "Do maintain high contrast and keyboard navigation capabilities."
+    ],
+    "donts": [
+      "Don't use a generic Bootstrap/Material admin dashboard layout.",
+      "Don't clutter the UI with overly technical sliders or unnecessary structural boxes."
+    ]
+  }
+}

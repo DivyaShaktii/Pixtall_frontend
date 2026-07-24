@@ -100,7 +100,7 @@ export function Hero({ onStart }) {
               className="mt-16 flex flex-col items-center"
             >
               <p className="max-w-xl text-lg text-neutral-400 leading-relaxed mb-10">
-                PixStall AI composites your raw product shot onto a professional model reference to generate high-converting listing photos for Amazon, Flipkart, Etsy, and more — no studio, no shoot.
+                Pixtall AI composites your raw product shot onto a professional model reference to generate high-converting listing photos for Amazon, Flipkart, Etsy, and more — no studio, no shoot.
               </p>
               <button className="rounded-none border border-white bg-white px-10 py-4 text-sm font-bold text-black hover:bg-neutral-200 transition-colors uppercase tracking-widest">
                 Start Creating
@@ -164,7 +164,7 @@ export function Hero({ onStart }) {
                                   {/* Logo */}
                                   <div className="flex items-center gap-2 mb-8 mt-1">
                                     <div className="w-4 h-4 bg-[#a3e635] rounded-sm flex items-center justify-center text-black font-bold text-[8px]">PS</div>
-                                    <div className="text-[10px] font-semibold tracking-wide">PixStall AI Pro</div>
+                                    <div className="text-[10px] font-semibold tracking-wide">Pixtall AI Pro</div>
                                   </div>
                                   
                                   {/* Workspace */}

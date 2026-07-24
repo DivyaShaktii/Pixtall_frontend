@@ -1,15 +1,15 @@
 ---
-name: PixStall AI Motion Language
-description: The official motion and interaction guidelines for PixStall AI
+name: Pixtall AI Motion Language
+description: The official motion and interaction guidelines for Pixtall AI
 ---
 
-# Motion Language: PixStall AI
+# Motion Language: Pixtall AI
 
 ## 1. Overview
 
 **Motion North Star: "Crisp, Physical, and Responsive"**
 
-In keeping with the "Minimalist Atelier" design system, the motion language for PixStall AI is designed to feel fast, snappy, and physically grounded. Animations should never feel floaty, sluggish, or overly dramatic. They exist purely to provide immediate feedback, clarify spatial relationships, and reward user interactions.
+In keeping with the "Minimalist Atelier" design system, the motion language for Pixtall AI is designed to feel fast, snappy, and physically grounded. Animations should never feel floaty, sluggish, or overly dramatic. They exist purely to provide immediate feedback, clarify spatial relationships, and reward user interactions.
 
 **Key Characteristics:**
 - **Snappy Easing:** Fast onset, smooth but quick deceleration.

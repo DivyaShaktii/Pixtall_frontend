@@ -30,7 +30,7 @@ export function Navbar({ onStart }) {
         aria-label="Primary"
       >
         {/* Left - Logo */}
-        <a href="#" className="flex items-center gap-3 text-white" aria-label="PixStall AI home">
+        <a href="#" className="flex items-center gap-3 text-white" aria-label="Pixtall AI home">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#a3e635] text-black shadow-[0_0_15px_rgba(163,230,53,0.3)]">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
@@ -41,7 +41,7 @@ export function Navbar({ onStart }) {
               />
             </svg>
           </span>
-          <span className="text-lg font-bold tracking-tight">PixStall AI</span>
+          <span className="text-lg font-bold tracking-tight">Pixtall AI</span>
         </a>
 
         {/* Center - Links */}
