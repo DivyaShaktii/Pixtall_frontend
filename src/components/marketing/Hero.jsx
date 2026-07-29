@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { DemoPlayback } from './Hero3D/DemoPlayback';
 import { useDemoTimeline } from './Hero3D/useDemoTimeline';
@@ -7,6 +7,19 @@ export function Hero({ onStart }) {
   const shouldReduceMotion = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
   const { demoState, cursor } = useDemoTimeline(shouldReduceMotion);
+  const containerRef = useRef(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setScale(entry.contentRect.width / 1440);
+      }
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -91,13 +104,13 @@ export function Hero({ onStart }) {
               <div className="absolute inset-[2px] bg-black rounded-[20px] overflow-hidden flex items-center justify-center">
                 
                 {/* Scale DemoPlayback and Header to fit container */}
-                <div className="w-full h-full relative" style={{ containerType: 'inline-size' }}>
+                <div ref={containerRef} className="w-full h-full relative pointer-events-none">
                   <div 
-                    className="absolute top-0 left-0 origin-top-left flex flex-col bg-black"
+                    className="absolute top-0 left-0 origin-top-left flex flex-col bg-black pointer-events-none select-none"
                     style={{
                       width: '1440px',
                       height: '940px',
-                      transform: 'scale(calc(100cqw / 1440))'
+                      transform: `scale(${scale})`
                     }}
                   >
                     {/* Fake Browser Header (Traffic Lights & URL) */}
