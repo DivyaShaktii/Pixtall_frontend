@@ -27,41 +27,63 @@ export function DemoPlayback({ demoState, cursor }) {
   return (
     <div className="flex w-[1600px] h-[900px] overflow-hidden bg-[#09090b] text-white font-sans select-none relative">
       
-      {/* ── Left Icon Rail (Floating Island) ── */}
-      <aside className="w-[80px] shrink-0 bg-[#09090b] border-r border-white/5 flex flex-col items-center py-6 h-full z-20 relative">
-        <div className="mb-10">
-          <div className="w-8 h-8 rounded-lg bg-[#84cc16] text-black flex items-center justify-center font-bold text-sm shadow-[0_0_20px_rgba(132,204,22,0.3)]">
-            P
+      {/* ── Left Sidebar (Nav) ── */}
+      <aside className="w-[260px] shrink-0 bg-[#0a0a0a] border-r border-white/5 flex flex-col p-6 h-full z-20 relative font-sans">
+        
+        {/* Workspace */}
+        <div className="flex items-center gap-3 mb-10 px-1 mt-2">
+          <div className="w-9 h-9 bg-[#84cc16]/20 rounded-lg text-[#84cc16] flex items-center justify-center text-sm font-bold">P</div>
+          <div className="flex flex-col">
+            <span className="text-[15px] font-semibold text-white tracking-wide">Personal Wor...</span>
+            <span className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold mt-0.5">Pro Plan</span>
+          </div>
+          <div className="ml-auto text-neutral-500">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="8 9 12 5 16 9"/><polyline points="16 15 12 19 8 15"/></svg>
           </div>
         </div>
 
-        <nav className="flex flex-col gap-6">
-          {[
-            { icon: <SquaresFour size={24} weight="fill" />, active: true },
-            { icon: <Image size={24} />, active: false },
-            { icon: <Users size={24} />, active: false },
-            { icon: <CreditCard size={24} />, active: false },
-          ].map((item, i) => (
-            <div
-              key={i}
-              className={`w-12 h-12 flex items-center justify-center rounded-xl transition-all cursor-pointer ${
-                item.active 
-                  ? 'text-white bg-white/10 shadow-sm border border-white/10' 
-                  : 'text-neutral-500 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              {item.active && (
-                <div className="absolute left-0 w-1 h-8 bg-[#84cc16] rounded-r-full shadow-[0_0_12px_#84cc16]" />
-              )}
-              {item.icon}
+        <div className="text-xs text-neutral-500 uppercase tracking-widest mb-4 px-2 font-semibold">Main</div>
+        
+        <nav className="flex flex-col gap-2">
+          <div className="flex items-center gap-4 bg-white/5 text-white px-3 py-3 rounded-xl cursor-pointer relative overflow-hidden">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#84cc16]" />
+            <div className="w-5 h-5 rounded-full bg-[#84cc16]/20 flex items-center justify-center shrink-0">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#84cc16]" />
             </div>
-          ))}
+            <span className="text-[15px] font-medium">Studio</span>
+          </div>
+          <div className="flex items-center gap-4 text-neutral-400 hover:text-white hover:bg-white/5 px-3 py-3 rounded-xl transition-colors cursor-pointer">
+            <SquaresFour size={20} className="shrink-0" />
+            <span className="text-[15px] font-medium">My Products</span>
+          </div>
+          <div className="flex items-center gap-4 text-neutral-400 hover:text-white hover:bg-white/5 px-3 py-3 rounded-xl transition-colors cursor-pointer">
+            <Image size={20} className="shrink-0" />
+            <span className="text-[15px] font-medium">Gallery</span>
+          </div>
+          <div className="flex items-center gap-4 text-neutral-400 hover:text-white hover:bg-white/5 px-3 py-3 rounded-xl transition-colors cursor-pointer">
+            <CreditCard size={20} className="shrink-0" />
+            <span className="text-[15px] font-medium">Billing</span>
+          </div>
+          <div className="flex items-center gap-4 text-neutral-400 hover:text-white hover:bg-white/5 px-3 py-3 rounded-xl transition-colors cursor-pointer">
+            <Gear size={20} className="shrink-0" />
+            <span className="text-[15px] font-medium">Settings</span>
+          </div>
         </nav>
 
-        <div className="mt-auto">
-          <div className="w-12 h-12 flex items-center justify-center rounded-xl text-neutral-500 hover:text-white transition-colors cursor-pointer">
-            <Gear size={24} />
+        <div className="mt-auto px-1 flex flex-col gap-4">
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-neutral-500 uppercase tracking-widest font-semibold">Credits</span>
+            <span className="text-sm font-bold text-white">6 left</span>
           </div>
+          
+          {/* Progress bar */}
+          <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-full bg-[#84cc16] w-[40%] rounded-full" />
+          </div>
+
+          <button className="w-full py-3.5 bg-[#84cc16] hover:bg-[#94dc26] text-black text-sm font-bold rounded-xl transition-colors shadow-[0_0_20px_rgba(132,204,22,0.2)]">
+            Upgrade Plan
+          </button>
         </div>
       </aside>
 
