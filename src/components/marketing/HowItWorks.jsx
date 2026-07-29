@@ -45,9 +45,37 @@ export function HowItWorks() {
     <section id="how-it-works" className="relative w-full pb-32 pt-16 sm:pt-24 z-10 bg-black">
       <div className="mx-auto w-full px-5">
         <div className="max-w-3xl mb-24 flex flex-col gap-4">
-          <h2 className="text-5xl sm:text-7xl font-bold tracking-tighter text-white">
-            How it <span className="text-[#84cc16]">works.</span>
-          </h2>
+          <motion.h2 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: { staggerChildren: 0.15 }
+              }
+            }}
+            className="text-5xl sm:text-7xl font-bold tracking-tighter flex flex-wrap gap-x-[0.3em] gap-y-2"
+            style={{ perspective: '1000px' }}
+          >
+            {[
+              { text: "How", class: "text-white" },
+              { text: "it", class: "text-white" },
+              { text: "works.", class: "text-[#84cc16]" }
+            ].map((item, i) => (
+              <motion.span
+                key={i}
+                variants={{
+                  hidden: { opacity: 0, rotateX: -90, y: 20 },
+                  visible: { opacity: 1, rotateX: 0, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+                }}
+                className={`inline-block origin-bottom ${item.class}`}
+              >
+                {item.text}
+              </motion.span>
+            ))}
+          </motion.h2>
           <p className="font-medium text-xl sm:text-2xl text-[#f5f5f5] max-w-xl">
             One photo is all you need. We handle the lighting, styling, and formatting.
           </p>
@@ -83,29 +111,27 @@ export function HowItWorks() {
               
               {/* Text Content */}
               <div className="flex flex-col flex-grow">
-                <span className="text-xs font-mono text-neutral-500 mb-2">{step.eyebrow}</span>
-                <h3 className="text-lg font-medium text-white mb-2">{step.title}</h3>
-                <p className="text-sm text-neutral-400 leading-relaxed">{step.body}</p>
+                <span className="text-sm font-mono text-neutral-500 mb-3">{step.eyebrow}</span>
+                <h3 className="text-xl font-semibold text-white mb-3">{step.title}</h3>
+                <p className="text-base text-neutral-400 leading-relaxed">{step.body}</p>
               </div>
             </motion.div>
           ))}
         </div>
 
         {/* Feature Strip */}
+        {/* Feature Strip */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 rounded-2xl border border-white/10 bg-white/[0.01] p-8"
+          className="mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 rounded-2xl border-t border-[#a3e635]/30 bg-gradient-to-b from-[#a3e635]/5 to-transparent p-12"
         >
           {highlights.map((h, i) => (
-            <div key={i} className="flex flex-col">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#a3e635]" />
-                <h4 className="text-sm font-medium text-white">{h.title}</h4>
-              </div>
-              <p className="text-xs text-neutral-500 leading-relaxed w-full">{h.body}</p>
+            <div key={i} className="flex flex-col border-l border-white/10 pl-6">
+              <h4 className="text-xl font-bold text-[#a3e635] mb-4">{h.title}</h4>
+              <p className="text-base text-white/90 leading-relaxed w-full font-medium">{h.body}</p>
             </div>
           ))}
         </motion.div>

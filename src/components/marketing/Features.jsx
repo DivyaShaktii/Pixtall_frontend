@@ -24,6 +24,7 @@ const features = [
 export function Features() {
   return (
     <section id="features" className="relative w-full py-32 z-10 border-t border-white/5 bg-[#070707]/50">
+
       <div className="mx-auto w-full px-5">
         <div className="max-w-3xl mb-16 flex flex-col items-start gap-6">
           <motion.h3 
@@ -80,6 +81,7 @@ export function Features() {
           Pixtall AI is the smart product photography solution for Indian and global ecommerce sellers looking to scale their marketplace listings without expensive studio shoots. Whether you sell fashion, ethnic wear, sneakers, handbags, cosmetics, or packaged food on Amazon India, Flipkart, Meesho, Myntra, Nykaa, Shopify, or international platforms like Etsy, eBay, and TikTok Shop — our AI product image generator creates visuals that convert. Pixtall AI supports all major ecommerce categories including fashion & apparel, accessories, beauty & skincare, jewelry, footwear, and food products. Powered by advanced generative AI, it replaces traditional product photography workflows and delivers marketplace-compliant images in a fraction of the time and cost.
         </motion.div>
       </div>
+
     </section>
   )
 }

@@ -31,7 +31,7 @@ export function Hero({ onStart }) {
   }, []);
 
   return (
-    <section id="hero" className="relative w-full overflow-hidden pb-40 pt-32 z-10 border-b border-white/10 bg-black">
+    <section id="hero" className="relative w-full overflow-hidden pb-16 pt-32 z-10 border-b border-white/10 bg-black">
       <div className="mx-auto max-w-[1200px] px-5 text-center">
         <motion.h1
           initial="hidden"
@@ -44,32 +44,27 @@ export function Hero({ onStart }) {
             }
           }}
           className="text-[12vw] sm:text-[8vw] font-medium tracking-tighter leading-[0.85] uppercase"
+          style={{ perspective: '1000px' }}
         >
-          <motion.span 
-            variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }} 
-            className="inline-block text-white mr-[2vw] sm:mr-[1.5vw]"
-          >
-            One
-          </motion.span>
-          <motion.span 
-            variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }} 
-            className="inline-block text-white"
-          >
-            Photo.
-          </motion.span>
-          <br />
-          <motion.span 
-            variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }} 
-            className="inline-block text-neutral-600 mr-[2vw] sm:mr-[1.5vw]"
-          >
-            Marketplace
-          </motion.span>
-          <motion.span 
-            variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }} 
-            className="inline-block text-neutral-600"
-          >
-            Ready.
-          </motion.span>
+          {[
+            { text: "One", class: "text-white mr-[2vw] sm:mr-[1.5vw]" },
+            { text: "Photo.", class: "text-white" },
+            { br: true },
+            { text: "Marketplace", class: "text-neutral-600 mr-[2vw] sm:mr-[1.5vw]" },
+            { text: "Ready.", class: "text-neutral-600" }
+          ].map((item, i) => item.br ? <br key={i} /> : (
+            <motion.span
+              key={i}
+              variants={{
+                hidden: { opacity: 0, rotateX: -90, y: 20 },
+                visible: { opacity: 1, rotateX: 0, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+              }}
+              style={{ transformOrigin: 'top center' }}
+              className={`inline-block ${item.class}`}
+            >
+              {item.text}
+            </motion.span>
+          ))}
         </motion.h1>
 
         <motion.div
