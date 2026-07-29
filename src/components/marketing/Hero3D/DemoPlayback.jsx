@@ -75,7 +75,7 @@ export function DemoPlayback({ demoState, cursor }) {
             <div className="h-px bg-white/10 flex-1 ml-4" />
           </div>
 
-          <div className="flex-1 min-h-0 bg-[#09090b] rounded-2xl">
+          <div className="flex-1 min-h-0 bg-[#09090b] rounded-2xl p-16 lg:p-24 flex flex-col">
             <StudioCanvasGrid
               numImages={4}
               generatedImages={currentGenerated}
