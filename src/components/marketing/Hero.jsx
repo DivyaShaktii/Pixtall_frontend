@@ -96,15 +96,15 @@ export function Hero({ onStart }) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.0, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full aspect-[1440/940] z-20"
+          className="relative w-full z-20"
         >
-          <div className="w-full h-full relative rounded-[24px] bg-[#1a1b1e] p-[2px] shadow-[0_40px_80px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-[#2a2b2e]">
-            <div className="w-full h-full relative bg-[#090a0a] rounded-[22px] p-[6px] border border-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] overflow-hidden">
+          <div className="w-full relative rounded-[24px] bg-[#1a1b1e] p-[2px] shadow-[0_40px_80px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-[#2a2b2e]">
+            <div className="w-full relative bg-[#090a0a] rounded-[22px] p-[6px] border border-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] overflow-hidden">
               {/* Screen content (The actual UI) */}
-              <div className="absolute inset-[2px] bg-black rounded-[20px] overflow-hidden flex items-center justify-center">
+              <div className="relative bg-black rounded-[20px] overflow-hidden flex items-center justify-center">
                 
                 {/* Scale DemoPlayback and Header to fit container */}
-                <div ref={containerRef} className="w-full h-full relative pointer-events-none">
+                <div ref={containerRef} className="w-full relative pointer-events-none" style={{ aspectRatio: '1440/940' }}>
                   <div 
                     className="absolute top-0 left-0 origin-top-left flex flex-col bg-black pointer-events-none select-none"
                     style={{
