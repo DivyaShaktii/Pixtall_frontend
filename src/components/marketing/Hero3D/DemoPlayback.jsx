@@ -75,15 +75,19 @@ export function DemoPlayback({ demoState, cursor }) {
             <div className="h-px bg-white/10 flex-1 ml-4" />
           </div>
 
-          <div className="flex-1 min-h-0 bg-[#09090b] rounded-2xl p-4 lg:p-8 flex flex-col">
-            <StudioCanvasGrid
-              numImages={4}
-              generatedImages={currentGenerated}
-              size={demoState?.size || "4:5"}
-              productImageUrl={sourceImage}
-              isGenerating={isGenerating}
-              isDemo={true}
-            />
+          <div className="flex-1 min-h-0 bg-[#09090b] rounded-2xl p-4 lg:p-8 flex items-center justify-center">
+            <div className="w-full h-full flex items-center justify-center max-w-[900px]">
+              <div className="h-full w-full aspect-[4/5] max-w-full flex flex-col">
+                <StudioCanvasGrid
+                  numImages={4}
+                  generatedImages={currentGenerated}
+                  size={demoState?.size || "4:5"}
+                  productImageUrl={sourceImage}
+                  isGenerating={isGenerating}
+                  isDemo={true}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
