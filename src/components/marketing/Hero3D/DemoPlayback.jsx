@@ -25,7 +25,7 @@ export function DemoPlayback({ demoState, cursor }) {
   const sourceImage = showSource ? "/hero-demo/hero-demo-source.jpg" : null;
 
   return (
-    <div className="flex w-[1440px] h-[900px] overflow-hidden bg-[#09090b] text-white font-sans select-none relative">
+    <div className="flex w-[1600px] h-[900px] overflow-hidden bg-[#09090b] text-white font-sans select-none relative">
       
       {/* ── Left Icon Rail (Floating Island) ── */}
       <aside className="w-[80px] shrink-0 bg-[#09090b] border-r border-white/5 flex flex-col items-center py-6 h-full z-20 relative">

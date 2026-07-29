@@ -14,7 +14,7 @@ export function Hero({ onStart }) {
     if (!containerRef.current) return;
     const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
-        setScale(entry.contentRect.width / 1440);
+        setScale(entry.contentRect.width / 1600);
       }
     });
     observer.observe(containerRef.current);
@@ -91,24 +91,24 @@ export function Hero({ onStart }) {
       <div className="h-10 sm:h-24" />
 
       {/* ── 3. Flat Browser Tab Display ── */}
-      <div className="relative w-full max-w-[1100px] px-4 sm:px-8 mx-auto flex-1 mb-8 z-20 flex justify-center">
+      <div className="relative w-full max-w-[1500px] px-4 sm:px-8 mx-auto flex-1 mb-8 z-20 flex justify-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.0, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full z-20"
+          className="relative w-full aspect-[1440/940] z-20"
         >
-          <div className="w-full relative rounded-[24px] bg-[#1a1b1e] p-[2px] shadow-[0_40px_80px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-[#2a2b2e]">
-            <div className="w-full relative bg-[#090a0a] rounded-[22px] p-[6px] border border-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] overflow-hidden">
+          <div className="w-full h-full relative rounded-[24px] bg-[#1a1b1e] p-[2px] shadow-[0_40px_80px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-[#2a2b2e]">
+            <div className="w-full h-full relative bg-[#090a0a] rounded-[22px] p-[6px] border border-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] overflow-hidden">
               {/* Screen content (The actual UI) */}
-              <div className="relative bg-black rounded-[20px] overflow-hidden flex items-center justify-center">
+              <div className="absolute inset-[2px] bg-black rounded-[20px] overflow-hidden flex items-center justify-center">
                 
                 {/* Scale DemoPlayback and Header to fit container */}
-                <div ref={containerRef} className="w-full relative pointer-events-none" style={{ aspectRatio: '1440/940' }}>
+                <div ref={containerRef} className="w-full relative pointer-events-none" style={{ aspectRatio: '1600/940' }}>
                   <div 
                     className="absolute top-0 left-0 origin-top-left flex flex-col bg-black pointer-events-none select-none"
                     style={{
-                      width: '1440px',
+                      width: '1600px',
                       height: '940px',
                       transform: `scale(${scale})`
                     }}
@@ -126,8 +126,8 @@ export function Hero({ onStart }) {
                       <div className="w-[42px]" /> {/* Spacer to balance traffic lights */}
                     </div>
 
-                    {/* DemoPlayback - Fixed to 1440x900 */}
-                    <div className="w-[1440px] h-[900px] shrink-0 relative">
+                    {/* DemoPlayback - Fixed to 1600x900 */}
+                    <div className="w-[1600px] h-[900px] shrink-0 relative">
                       <DemoPlayback demoState={demoState} cursor={cursor} />
                     </div>
                   </div>
