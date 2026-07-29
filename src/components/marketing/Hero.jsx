@@ -77,87 +77,54 @@ export function Hero({ onStart }) {
       {/* ── 2. Generous Vertical Spacing ── */}
       <div className="h-10 sm:h-24" />
 
-      {/* ── 3. CSS 3D Laptop Display (No GLB) ── */}
-      <div className="relative w-full max-w-[1400px] px-4 mx-auto flex-1 mb-40 z-20 flex justify-center perspective-[2000px]">
+      {/* ── 3. Flat Browser Tab Display ── */}
+      <div className="relative w-full max-w-[1500px] px-4 sm:px-8 mx-auto flex-1 mb-40 z-20 flex justify-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.0, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full aspect-[1440/940] z-20 perspective-[2000px]"
+          className="relative w-full aspect-[1440/940] z-20"
         >
-          <div className="w-full h-full relative" style={{ transformStyle: 'preserve-3d' }}>
-            {/* The Laptop Body rotated in 3D */}
-            <motion.div
-              animate={{ rotateX: [15, 5, 15] }}
-              transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-              className="w-full h-full relative"
-              style={{ transformStyle: 'preserve-3d', transformOrigin: 'bottom' }}
-            >
-              {/* Top Lid (Screen) */}
-              <div className="absolute inset-0 rounded-[24px] bg-[#1a1b1e] p-[2px] shadow-[0_0_80px_rgba(198,242,78,0.1),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-[#2a2b2e]">
-                <div className="w-full h-full relative bg-[#090a0a] rounded-[22px] p-[6px] border border-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] overflow-hidden">
-                  {/* Screen content (The actual UI) */}
-                  <div className="absolute inset-[2px] bg-black rounded-[22px] overflow-hidden flex items-center justify-center">
-                    
-                    {/* Scale DemoPlayback and Header to fit container */}
-                    <div className="w-full h-full relative" style={{ containerType: 'inline-size' }}>
-                      <div 
-                        className="absolute top-0 left-0 origin-top-left flex flex-col bg-black"
-                        style={{
-                          width: '1440px',
-                          height: '940px',
-                          transform: 'scale(calc(100cqw / 1440))'
-                        }}
-                      >
-                        {/* Fake Browser Header (Traffic Lights & URL) */}
-                        <div className="w-full h-[40px] border-b border-white/5 bg-[#121214] flex items-center px-4 justify-between shrink-0">
-                          <div className="flex gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
-                          </div>
-                          <div className="text-[10px] text-neutral-500 font-medium px-4 py-0.5 bg-white/5 rounded-md border border-white/5">
-                            pixtall.ai/studio
-                          </div>
-                          <div className="w-[42px]" /> {/* Spacer to balance traffic lights */}
-                        </div>
-
-                        {/* DemoPlayback - Fixed to 1440x900 */}
-                        <div className="w-[1440px] h-[900px] shrink-0 relative">
-                          <DemoPlayback demoState={demoState} cursor={cursor} />
-                        </div>
+          <div className="w-full h-full relative rounded-[24px] bg-[#1a1b1e] p-[2px] shadow-[0_40px_80px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-[#2a2b2e]">
+            <div className="w-full h-full relative bg-[#090a0a] rounded-[22px] p-[6px] border border-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] overflow-hidden">
+              {/* Screen content (The actual UI) */}
+              <div className="absolute inset-[2px] bg-black rounded-[20px] overflow-hidden flex items-center justify-center">
+                
+                {/* Scale DemoPlayback and Header to fit container */}
+                <div className="w-full h-full relative" style={{ containerType: 'inline-size' }}>
+                  <div 
+                    className="absolute top-0 left-0 origin-top-left flex flex-col bg-black"
+                    style={{
+                      width: '1440px',
+                      height: '940px',
+                      transform: 'scale(calc(100cqw / 1440))'
+                    }}
+                  >
+                    {/* Fake Browser Header (Traffic Lights & URL) */}
+                    <div className="w-full h-[40px] border-b border-white/5 bg-[#121214] flex items-center px-4 justify-between shrink-0">
+                      <div className="flex gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
                       </div>
+                      <div className="text-[10px] text-neutral-500 font-medium px-4 py-0.5 bg-white/5 rounded-md border border-white/5">
+                        pixtall.ai/studio
+                      </div>
+                      <div className="w-[42px]" /> {/* Spacer to balance traffic lights */}
                     </div>
-                  </div>
-                  
-                  {/* Glare and reflections for extreme realism */}
-                  <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,rgba(255,255,255,0.05),transparent_40%,transparent_60%,rgba(255,255,255,0.02))]" />
-                  <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.15)] rounded-[24px]" />
 
-                  {/* Camera notch */}
-                  <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[12%] h-4 bg-[#090a0a] rounded-b-[8px] flex items-center justify-center border-b border-x border-white/5 z-[60]">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#111] border border-white/10" />
+                    {/* DemoPlayback - Fixed to 1440x900 */}
+                    <div className="w-[1440px] h-[900px] shrink-0 relative">
+                      <DemoPlayback demoState={demoState} cursor={cursor} />
+                    </div>
                   </div>
                 </div>
               </div>
-
-              {/* Razor thin Hinge */}
-              <div
-                className="absolute inset-x-[12%] bottom-[-1.5%] h-[4%] rounded-full bg-[#0a0b0c] shadow-[0_10px_20px_rgba(0,0,0,0.9)]"
-                style={{ transform: 'translateZ(-2px) rotateX(-20deg)' }}
-              />
-
-              {/* Razor thin lower body deck */}
-              <div
-                className="absolute inset-x-[1%] bottom-[-6%] h-[7%] rounded-[4px] border-t border-white/10 bg-[#17181a] shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden"
-                style={{ transform: 'translateZ(14px) rotateX(15deg)', transformOrigin: 'top' }}
-              >
-                {/* Front lip highlight */}
-                <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                {/* Thumb scoop */}
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[12%] h-[20%] bg-[#0f1012] rounded-t-lg border-t border-white/5" />
-              </div>
-            </motion.div>
+              
+              {/* Glare and reflections for extreme realism */}
+              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,rgba(255,255,255,0.05),transparent_40%,transparent_60%,rgba(255,255,255,0.02))]" />
+              <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.15)] rounded-[24px]" />
+            </div>
           </div>
         </motion.div>
       </div>
