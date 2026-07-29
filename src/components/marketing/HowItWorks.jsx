@@ -42,7 +42,7 @@ const highlights = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="relative w-full pb-32 pt-[30vh] sm:pt-[40vh] z-10 bg-black">
+    <section id="how-it-works" className="relative w-full pb-32 pt-16 sm:pt-24 z-10 bg-black">
       <div className="mx-auto w-full px-5">
         <div className="max-w-3xl mb-24 flex flex-col gap-4">
           <h2 className="text-5xl sm:text-7xl font-bold tracking-tighter text-white">

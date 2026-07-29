@@ -5,7 +5,6 @@ import { BrandStrip } from './marketing/BrandStrip';
 import { HowItWorks } from './marketing/HowItWorks';
 import { Features } from './marketing/Features';
 import { Gallery } from './marketing/Gallery';
-import { Testimonials } from './marketing/Testimonials';
 import { Pricing } from './marketing/Pricing';
 import { CtaSection } from './marketing/CtaSection';
 import { Footer } from './marketing/Footer';
@@ -35,7 +34,6 @@ const MarketingPage = ({ onStart }) => {
           <HowItWorks />
           <Features />
           <Gallery />
-          <Testimonials />
           <Pricing onStart={onStart} />
           <CtaSection onStart={onStart} />
         </main>

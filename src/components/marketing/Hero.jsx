@@ -78,7 +78,7 @@ export function Hero({ onStart }) {
       <div className="h-10 sm:h-24" />
 
       {/* ── 3. Flat Browser Tab Display ── */}
-      <div className="relative w-full max-w-[1500px] px-4 sm:px-8 mx-auto flex-1 mb-40 z-20 flex justify-center">
+      <div className="relative w-full max-w-[1500px] px-4 sm:px-8 mx-auto flex-1 mb-8 z-20 flex justify-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
