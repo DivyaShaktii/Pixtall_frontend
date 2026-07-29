@@ -18,27 +18,8 @@ export function Hero({ onStart }) {
   }, []);
 
   return (
-    <section id="hero" className="relative z-50 w-full min-h-[120vh] bg-[#0A0A0A] text-white flex flex-col items-center">
-      {/* ── Background Aesthetics: Faint Radial Ambient Glow behind Laptop ── */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-[50%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[500px] bg-[#C6F24E]/5 rounded-full blur-[160px]" />
-      </div>
-
-      {/* ── 1. Top Header Content ── */}
-      <div className="relative z-10 w-full max-w-6xl pt-28 sm:pt-36 px-6 text-center flex flex-col items-center">
-        
-        {/* Eyebrow Tag */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-neutral-300 backdrop-blur mb-6 hover:border-[#C6F24E]/40"
-        >
-          <span className="h-2 w-2 rounded-full bg-[#C6F24E] animate-pulse" />
-          Introducing AI Product Photoshoots
-        </motion.div>
-
-        {/* Huge Bold Uppercase Headline */}
+    <section id="hero" className="relative w-full overflow-hidden pb-40 pt-32 z-10 border-b border-white/10 bg-black">
+      <div className="mx-auto max-w-[1200px] px-5 text-center">
         <motion.h1
           initial="hidden"
           animate="visible"
@@ -49,69 +30,52 @@ export function Hero({ onStart }) {
               transition: { staggerChildren: 0.15, delayChildren: 0.1 }
             }
           }}
-          className="font-extrabold uppercase tracking-tighter text-[clamp(48px,7vw,112px)] leading-[0.9] text-white flex flex-wrap justify-center gap-x-4 sm:gap-x-6 gap-y-0"
+          className="text-[12vw] sm:text-[8vw] font-medium tracking-tighter leading-[0.85] uppercase"
         >
           <motion.span 
             variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }} 
-            className="inline-block text-white"
+            className="inline-block text-white mr-[2vw] sm:mr-[1.5vw]"
           >
-            RAW
-          </motion.span>
-          <motion.span 
-            variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }} 
-            className="inline-block text-[#C6F24E]"
-          >
-            IMAGE.
-          </motion.span>
-          <div className="w-full h-0 basis-full" />
-          <motion.span 
-            variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }} 
-            className="inline-block text-neutral-500"
-          >
-            STUDIO
+            One
           </motion.span>
           <motion.span 
             variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }} 
             className="inline-block text-white"
           >
-            PERFECT.
+            Photo.
+          </motion.span>
+          <br />
+          <motion.span 
+            variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }} 
+            className="inline-block text-neutral-600 mr-[2vw] sm:mr-[1.5vw]"
+          >
+            Marketplace
+          </motion.span>
+          <motion.span 
+            variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }} 
+            className="inline-block text-neutral-600"
+          >
+            Ready.
           </motion.span>
         </motion.h1>
 
-        {/* 1-2 Line Subheadline */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mt-6 text-base sm:text-xl text-neutral-400 max-w-2xl leading-relaxed font-normal"
-        >
-          Transform raw product shots into studio-quality marketplace listings in seconds. No photography studio required.
-        </motion.p>
-
-        {/* Side-by-Side Pill CTA Buttons */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.35 }}
-          className="mt-8 flex flex-col sm:flex-row items-center gap-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="mt-16 flex flex-col items-center"
         >
-          <button
-            onClick={onStart}
-            className="rounded-full bg-[#C6F24E] hover:bg-[#b5e33d] px-8 py-3.5 text-sm font-bold text-black transition-all shadow-[0_0_24px_rgba(198,242,78,0.25)] hover:shadow-[0_0_32px_rgba(198,242,78,0.4)] uppercase tracking-wider"
-          >
-            Start Creating Free
+          <p className="max-w-xl text-lg text-neutral-400 leading-relaxed mb-10">
+            Pixtall AI composites your raw product shot onto a professional model reference to generate high-converting listing photos for Amazon, Flipkart, Etsy, and more — no studio, no shoot.
+          </p>
+          <button className="rounded-none border border-white bg-transparent px-10 py-4 text-sm font-bold text-white hover:bg-white/10 transition-colors uppercase tracking-widest">
+            Start Creating
           </button>
-          <a
-            href="#how-it-works"
-            className="rounded-full border border-white/20 hover:border-white/40 bg-white/5 px-8 py-3.5 text-sm font-semibold text-white transition-all backdrop-blur uppercase tracking-wider"
-          >
-            See How It Works
-          </a>
         </motion.div>
       </div>
 
       {/* ── 2. Generous Vertical Spacing ── */}
-      <div className="h-10 sm:h-16" />
+      <div className="h-10 sm:h-24" />
 
       {/* ── 3. CSS 3D Laptop Display (No GLB) ── */}
       <div className="relative w-full max-w-[1100px] px-4 mx-auto flex-1 mb-40 z-20 flex justify-center perspective-[2000px]">
