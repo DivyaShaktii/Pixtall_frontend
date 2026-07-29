@@ -11,7 +11,8 @@ const ModelReferenceModal = ({
   onClose, 
   modelConfig, 
   selectedModelImage, 
-  onModelImageChange 
+  onModelImageChange,
+  usePortal = true 
 }) => {
   const motionVariants = useMotionVariants();
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -75,7 +76,7 @@ const ModelReferenceModal = ({
 
   const modalContent = (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center font-sans">
+      <div className={`${usePortal ? 'fixed' : 'absolute'} inset-0 z-[100] flex items-center justify-center font-sans`}>
         <motion.div 
           variants={motionVariants.modalOverlay}
           initial="initial"
@@ -205,7 +206,7 @@ const ModelReferenceModal = ({
     </AnimatePresence>
   );
 
-  return createPortal(modalContent, document.body);
+  return usePortal ? createPortal(modalContent, document.body) : modalContent;
 };
 
 export default ModelReferenceModal;

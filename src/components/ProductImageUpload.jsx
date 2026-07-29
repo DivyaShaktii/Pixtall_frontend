@@ -3,17 +3,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import { UploadSimple, Image as ImageIcon, CheckCircle } from "@phosphor-icons/react";
 import { transitions } from "../lib/motion";
 
-const ProductImageUpload = ({ file, onFileChange, vertical }) => {
+const ProductImageUpload = ({ file, onFileChange, vertical, isDemo }) => {
   const [preview, setPreview] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (!file) { setPreview(""); return; }
+    if (isDemo) {
+      setPreview("/hero-demo/hero-demo-source.jpg");
+      return;
+    }
     const url = URL.createObjectURL(file);
     setPreview(url);
     return () => URL.revokeObjectURL(url);
-  }, [file]);
+  }, [file, isDemo]);
 
   const handleDragOver = (e) => {
     e.preventDefault();

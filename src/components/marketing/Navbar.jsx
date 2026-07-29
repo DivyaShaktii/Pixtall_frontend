@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { CaretDown, List, X } from '@phosphor-icons/react';
 
 const navLinks = [
-  { label: 'Features' },
-  { label: 'Pricing' },
-  { label: 'Enterprise' },
-  { label: 'Gallery' },
-  { label: 'Resources', hasDropdown: true },
+  { label: 'Features', href: '/#features' },
+  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Enterprise', href: '/#enterprise' },
+  { label: 'Gallery', href: '/#gallery' },
+  { label: 'Terms', href: '/terms' },
 ];
 
 export function Navbar({ onStart }) {
@@ -26,7 +26,7 @@ export function Navbar({ onStart }) {
       }`}
     >
       <nav
-        className="mx-auto flex max-w-[1600px] items-center justify-between px-5 sm:px-8"
+        className="mx-auto flex w-full items-center justify-between px-5 sm:px-8"
         aria-label="Primary"
       >
         {/* Left - Logo */}
@@ -49,7 +49,7 @@ export function Navbar({ onStart }) {
           {navLinks.map((link) => (
             <li key={link.label}>
               <a
-                href={`#${link.label.toLowerCase()}`}
+                href={link.href}
                 className="flex items-center gap-1 text-sm text-neutral-300 transition-colors hover:text-white"
               >
                 {link.label}
@@ -96,7 +96,7 @@ export function Navbar({ onStart }) {
             {navLinks.map((link) => (
               <li key={link.label}>
                 <a
-                  href={`#${link.label.toLowerCase()}`}
+                  href={link.href}
                   className="flex items-center justify-between rounded-md px-3 py-2.5 text-sm text-neutral-300 hover:bg-white/5 hover:text-white"
                 >
                   {link.label}

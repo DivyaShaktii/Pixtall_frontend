@@ -1,5 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import ModelSelector from "../components/ModelSelector";
+import { StudioCanvasGrid } from "../components/studio/StudioCanvasGrid";
+import { StudioSidebar } from "../components/studio/StudioSidebar";
 import ProductImageUpload from "../components/ProductImageUpload";
 import BeforeAfterSlider from "../components/BeforeAfterSlider";
 import { generationConfig } from "../config/generationConfig";
@@ -13,7 +15,7 @@ import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import HoverSelect from "../components/ui/HoverSelect";
 import SegmentedControl from "../components/ui/SegmentedControl";
-import { Image, Sparkle, DownloadSimple, CircleNotch, TShirt, User } from "@phosphor-icons/react";
+import { Image, Sparkle, DownloadSimple, CircleNotch, TShirt, User, CheckCircle, X } from "@phosphor-icons/react";
 import { downloadImage } from "../utils/downloadImage";
 
 const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
@@ -47,6 +49,34 @@ export default function StudioView() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  
+  // Refactor State
+  const [showToast, setShowToast] = useState(false);
+  const [hoveredSize, setHoveredSize] = useState(null);
+  const abortControllerRef = useRef(null);
+
+  // Harden: Global Keyboard Shortcut
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        e.preventDefault();
+        if (!isGenerating && !validateForm()) {
+          handleGenerate();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isGenerating, productImageFile, productCategory, productSubcategory, scene, size, model, modelImagePath]);
+
+  // Polish: Toast timeout
+  useEffect(() => {
+    if (successMessage) {
+      setShowToast(true);
+      const timer = setTimeout(() => setShowToast(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
 
   const handleModelTypeChange = (value) => {
     setModel(value);
@@ -90,6 +120,7 @@ export default function StudioView() {
   const handleGenerate = async () => {
     setError("");
     setSuccessMessage("");
+    setShowToast(false);
 
     const validationError = validateForm();
     if (validationError) {
@@ -99,6 +130,9 @@ export default function StudioView() {
 
     setIsGenerating(true);
     setGeneratedImages([null, null, null, null]);
+    
+    // Setup abort controller
+    abortControllerRef.current = new AbortController();
 
     try {
       const productImageBase64 = await fileToBase64(productImageFile);
@@ -114,6 +148,7 @@ export default function StudioView() {
       const response = await fetch(GENERATE_IMAGE_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: abortControllerRef.current.signal,
         body: JSON.stringify({
           productImage: productImageBase64,
           productCategory,
@@ -185,10 +220,21 @@ export default function StudioView() {
       
       setSuccessMessage(`Successfully generated ${newlyGeneratedCount} image(s).`);
     } catch (err) {
-      console.error(err);
-      setError(err.message || "An error occurred during generation.");
+      if (err.name === 'AbortError') {
+        console.log("Generation cancelled by user.");
+      } else {
+        console.error(err);
+        setError(err.message || "An error occurred during generation.");
+      }
     } finally {
       setIsGenerating(false);
+      abortControllerRef.current = null;
+    }
+  };
+
+  const handleCancel = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
   };
 
@@ -202,15 +248,38 @@ export default function StudioView() {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="flex flex-col lg:flex-row h-[calc(100vh-64px)] w-full font-sans bg-transparent relative"
+      className="flex flex-col lg:flex-row h-[calc(100vh-64px)] w-full font-sans relative bg-black overflow-hidden"
     >
+      {/* Cinematic Studio Background */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        {/* Primary lime glow — top center */}
+        <div className="absolute top-0 left-1/2 w-[90vw] h-[70vh] -translate-x-1/2 -translate-y-[15%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(163,230,53,0.12)_0%,rgba(100,200,50,0.04)_40%,transparent_70%)] blur-[60px]" />
+        {/* Secondary warm glow — bottom right */}
+        <div className="absolute bottom-0 right-0 w-[50vw] h-[50vh] translate-x-[10%] translate-y-[10%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(180,230,80,0.06)_0%,transparent_65%)] blur-[80px]" />
+        {/* Tertiary cool accent — left edge */}
+        <div className="absolute top-1/2 left-0 w-[30vw] h-[40vh] -translate-x-[20%] -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(130,200,60,0.04)_0%,transparent_60%)] blur-[60px]" />
+        {/* Subtle grid texture */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `linear-gradient(rgba(163,230,53,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(163,230,53,0.1) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px'
+          }}
+        />
+        {/* Film grain noise */}
+        <div 
+          className="absolute inset-0 opacity-[0.015]"
+          style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}
+        />
+      </div>
+
       {/* ═══════════════════════════════════════════════
           LEFT: Canvas Panel (flex-1, full height)
           ═══════════════════════════════════════════════ */}
-      <div className="flex-1 flex flex-col p-4 lg:p-6 min-h-0 overflow-hidden">
-        <Card className="flex-1 w-full overflow-hidden flex flex-col bg-paper border border-line shadow-sm rounded-2xl min-h-0">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative z-10">
+        <div className="flex-1 w-full overflow-hidden flex flex-col bg-transparent min-h-0">
           {/* Canvas header */}
-          <div className="flex items-center justify-between p-4 border-b border-line bg-paper shrink-0">
+          <div className="flex items-center justify-between p-4 border-b border-line bg-paper/40 backdrop-blur-md shrink-0">
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-accent/20 text-accent">
                 <Sparkle weight="fill" size={18} />
@@ -241,239 +310,50 @@ export default function StudioView() {
           </div>
           
           {/* Canvas content */}
-          <div className="flex-1 p-4 lg:p-8 bg-cloud flex flex-col min-h-0 overflow-y-auto">
-            <div className={`w-full max-w-5xl mx-auto flex-1 min-h-0 grid gap-4 ${
-              numImages === 1 ? "grid-cols-1 grid-rows-1" : 
-              numImages === 2 ? "grid-cols-2 grid-rows-1" : 
-              "grid-cols-2 grid-rows-2"
-            }`}>
-              {Array.from({ length: numImages }).map((_, i) => {
-                const imageSrc = generatedImages[i];
-                
-                const [w, h] = size ? size.split(':').map(Number) : [1, 1];
-
-                return (
-                  <div key={`slot-wrapper-${i}`} className="w-full h-full flex items-center justify-center min-h-0 min-w-0 p-2">
-                    <div className="relative flex items-center justify-center max-w-full max-h-full">
-                      {/* Invisible SVG to force perfect aspect ratio scaling */}
-                      <svg 
-                        viewBox={`0 0 ${w} ${h}`} 
-                        width={w * 1000} 
-                        height={h * 1000} 
-                        className="max-w-full max-h-full w-auto h-auto opacity-0 pointer-events-none" 
-                      />
-                      
-                      {/* Actual Content */}
-                      <div className="absolute inset-0 w-full h-full">
-                        <AnimatePresence mode="wait">
-                          {imageSrc ? (
-                            <motion.div 
-                              key={`slot-filled-${i}`}
-                              initial={{ opacity: 0, scale: 0.98 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0 }}
-                              className="w-full h-full rounded-2xl overflow-hidden border border-line shadow-lg relative group"
-                            >
-                              <BeforeAfterSlider 
-                                beforeSrc={productImageUrl || "https://picsum.photos/seed/placeholder/800/800"} 
-                                afterSrc={imageSrc} 
-                                beforeLabel="Source" 
-                                afterLabel={`Result ${i + 1}`} 
-                              />
-                              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                                <Button 
-                                  variant="primary" 
-                                  className="shadow-lg gap-2 font-medium text-xs h-8 bg-ink text-paper hover:bg-cloud-2" 
-                                  onClick={() => downloadImage(imageSrc, `pixtall-${i + 1}.png`)}
-                                >
-                                  <DownloadSimple size={14} weight="bold" /> Save
-                                </Button>
-                              </div>
-                            </motion.div>
-                          ) : (
-                            <motion.div 
-                              key={`slot-empty-${i}`}
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              exit={{ opacity: 0 }}
-                              className="w-full h-full rounded-2xl border-2 border-dashed border-line bg-paper flex flex-col items-center justify-center text-slate gap-4"
-                            >
-                              {isGenerating ? (
-                                <div className="flex flex-col items-center gap-3">
-                                  <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="text-accent">
-                                    <CircleNotch size={32} weight="bold" />
-                                  </motion.div>
-                                  <span className="font-semibold text-sm text-ink">Rendering...</span>
-                                </div>
-                              ) : (
-                                <div className="flex flex-col items-center gap-2">
-                                  <Image size={32} weight="light" className="opacity-50" />
-                                  <span className="font-medium text-sm">Slot {["One", "Two", "Three", "Four"][i]}</span>
-                                </div>
-                              )}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          <div className="flex-1 p-4 lg:p-8 bg-transparent flex flex-col min-h-0 overflow-y-auto">
+            <StudioCanvasGrid 
+              numImages={numImages}
+              generatedImages={generatedImages}
+              size={size}
+              hoveredSize={hoveredSize}
+              productImageUrl={productImageUrl}
+              isGenerating={isGenerating}
+              isDemo={false}
+            />
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* ═══════════════════════════════════════════════
           RIGHT: Control Panel (full height, scrollable)
           All controls merged into one continuous panel.
           ═══════════════════════════════════════════════ */}
-      <div className="w-full lg:w-[360px] shrink-0 p-4 lg:p-6 lg:pl-0 overflow-y-auto">
-        <Card className="rounded-2xl border border-line shadow-lg bg-paper flex flex-col h-full">
-          
-          {/* Tool Switcher — now inside the panel */}
-          <div className="p-4 border-b border-line shrink-0">
-            <div className="flex items-center gap-2 bg-cloud border border-line rounded-xl p-1">
-              <button 
-                onClick={() => setActiveTool("product-to-model")}
-                className={`flex items-center gap-2 flex-1 justify-center px-3 py-2 rounded-lg font-medium text-sm transition-all ${
-                  activeTool === "product-to-model" ? "bg-accent text-paper shadow-sm" : "text-slate hover:text-ink hover:bg-paper"
-                }`}
-              >
-                <TShirt size={16} weight={activeTool === "product-to-model" ? "fill" : "regular"} />
-                Marketplace
-              </button>
-              <button 
-                onClick={() => setActiveTool("virtual-try-on")}
-                className={`flex items-center gap-2 flex-1 justify-center px-3 py-2 rounded-lg font-medium text-sm transition-all ${
-                  activeTool === "virtual-try-on" ? "bg-accent text-paper shadow-sm" : "text-slate hover:text-ink hover:bg-paper"
-                }`}
-              >
-                <User size={16} weight={activeTool === "virtual-try-on" ? "fill" : "regular"} />
-                Personal
-              </button>
-            </div>
-          </div>
-
-          {/* Scrollable control content */}
-          <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-5">
-            
-            {/* Source Material Upload */}
-            <div>
-              <label className="text-slate text-[11px] uppercase tracking-[0.05em] font-semibold px-1 mb-2 block">Source Material</label>
-              <ProductImageUpload file={productImageFile} onFileChange={setProductImageFile} vertical />
-            </div>
-
-            {/* Model Reference */}
-            <div className="flex flex-col gap-2">
-              <label className="text-slate text-[11px] uppercase tracking-[0.05em] font-semibold px-1">Model Reference</label>
-              <SegmentedControl 
-                value={model} 
-                onChange={handleModelTypeChange}
-                className="w-full"
-                options={[
-                  { label: "Male", value: "male" },
-                  { label: "Female", value: "female" },
-                  { label: "None", value: "none" }
-                ]}
-              />
-              {model !== "none" && (
-                <button 
-                  onClick={() => setIsModelModalOpen(true)}
-                  className="w-full h-[60px] rounded-xl bg-cloud border border-line flex items-center justify-center text-slate hover:text-ink hover:bg-line/50 transition-colors overflow-hidden group"
-                >
-                  {modelImagePath ? (
-                    <div className="flex items-center gap-3 w-full px-4">
-                      <img src={modelImagePath} alt="Selected" className="w-10 h-10 rounded-lg object-cover shadow-sm" />
-                      <span className="text-sm font-medium text-ink">Change Model</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <User size={16} /> Select Model
-                    </div>
-                  )}
-                </button>
-              )}
-            </div>
-
-            {/* Divider */}
-            <div className="h-px bg-line" />
-
-            {/* Category */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-slate text-[11px] uppercase tracking-[0.05em] font-semibold px-1">Category</label>
-              <HoverSelect value={productCategory} onChange={handleCategoryChange} options={generationConfig.productCategories} placeholder="Category" />
-            </div>
-
-            {/* Details */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-slate text-[11px] uppercase tracking-[0.05em] font-semibold px-1">Details</label>
-              <HoverSelect value={productSubcategory} onChange={setProductSubcategory} options={selectedCategorySubcategories} placeholder="Details" disabled={!productCategory} />
-            </div>
-
-            {/* Scene */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-slate text-[11px] uppercase tracking-[0.05em] font-semibold px-1">Scene</label>
-              <HoverSelect value={scene} onChange={setScene} options={generationConfig.scenes} placeholder="Scene" />
-            </div>
-
-            {/* Size + Count side by side */}
-            <div className="flex gap-3">
-              <div className="flex flex-col gap-1.5 flex-1">
-                <label className="text-slate text-[11px] uppercase tracking-[0.05em] font-semibold px-1">Size</label>
-                <HoverSelect value={size} onChange={setSize} options={generationConfig.sizes} placeholder="Size" />
-              </div>
-              <div className="flex flex-col gap-1.5 shrink-0">
-                <label className="text-slate text-[11px] uppercase tracking-[0.05em] font-semibold px-1">Count</label>
-                <div className="flex items-center gap-1 bg-cloud rounded-xl p-1 border border-line">
-                  {[1, 2, 3, 4].map(n => (
-                    <button
-                      key={n}
-                      onClick={() => setNumImages(n)}
-                      className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-semibold transition-all duration-200 border border-transparent ${
-                        numImages === n ? "bg-accent text-paper shadow-sm" : "text-slate hover:bg-cloud-2 hover:text-ink"
-                      }`}
-                    >
-                      {n}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Error / Success */}
-            {error && (
-              <div className="p-3 bg-danger-soft text-danger text-xs rounded-xl border border-danger-line font-medium flex gap-2 items-start shadow-sm">
-                <span className="shrink-0 pt-0.5">⚠️</span>
-                {error}
-              </div>
-            )}
-            {successMessage && (
-              <div className="p-3 bg-success-soft text-success text-xs rounded-xl border border-success-line font-medium flex gap-2 items-start shadow-sm">
-                <span className="shrink-0 pt-0.5">✅</span>
-                {successMessage}
-              </div>
-            )}
-          </div>
-
-          {/* Generate button — anchored at bottom of panel */}
-          <div className="p-4 border-t border-line shrink-0">
-            <Button 
-              variant="primary" 
-              className="w-full rounded-xl h-12 border-0 font-bold text-base transition-all duration-300 gap-2 bg-accent text-paper hover:bg-accent-ink hover:scale-[1.01] active:scale-[0.98]"
-              onClick={handleGenerate} 
-              disabled={isGenerating}
-            >
-              {isGenerating ? (
-                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
-                  <CircleNotch size={18} weight="bold" />
-                </motion.div>
-              ) : <Sparkle size={18} weight="fill" />}
-              {isGenerating ? "Rendering..." : "Generate"}
-            </Button>
-          </div>
-        </Card>
-      </div>
+      <StudioSidebar 
+        activeTool={activeTool}
+        setActiveTool={setActiveTool}
+        productImageFile={productImageFile}
+        setProductImageFile={setProductImageFile}
+        model={model}
+        handleModelTypeChange={handleModelTypeChange}
+        modelImagePath={modelImagePath}
+        setIsModelModalOpen={setIsModelModalOpen}
+        productCategory={productCategory}
+        handleCategoryChange={handleCategoryChange}
+        productSubcategory={productSubcategory}
+        setProductSubcategory={setProductSubcategory}
+        scene={scene}
+        setScene={setScene}
+        size={size}
+        setSize={setSize}
+        setHoveredSize={setHoveredSize}
+        numImages={numImages}
+        setNumImages={setNumImages}
+        error={error}
+        isGenerating={isGenerating}
+        handleCancel={handleCancel}
+        handleGenerate={handleGenerate}
+        isDemo={false}
+      />
 
       {/* Model Selector Modal */}
       <ModelSelector 
@@ -483,6 +363,24 @@ export default function StudioView() {
         selectedModelImage={modelImagePath}
         onModelImageChange={setModelImagePath}
       />
+
+      {/* Floating Toast for Success */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className="fixed bottom-6 right-6 z-50 p-4 bg-paper text-ink rounded-2xl border border-line shadow-2xl flex items-center gap-3"
+          >
+            <div className="text-success"><CheckCircle size={24} weight="fill" /></div>
+            <span className="font-medium text-sm pr-4">{successMessage}</span>
+            <button onClick={() => setShowToast(false)} className="text-slate hover:text-ink p-1">
+              <X size={16} weight="bold" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

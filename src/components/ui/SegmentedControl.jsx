@@ -21,7 +21,7 @@ const SegmentedControl = ({ options, value, onChange, className = "" }) => {
             {isActive && (
               <motion.div
                 layoutId={`segmented-active-${uniqueId}`}
-                className="absolute inset-0 bg-paper rounded-md shadow-sm border border-line"
+                className="absolute inset-0 bg-paper rounded-md shadow-sm border border-[#a3e635]/50 ring-1 ring-[#a3e635]"
                 transition={transitions.springLayout}
               />
             )}

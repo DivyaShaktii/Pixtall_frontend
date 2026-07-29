@@ -17,7 +17,7 @@ const testimonials = [
 export function Testimonials() {
   return (
     <section id="testimonials" className="relative w-full py-32 z-10">
-      <div className="mx-auto max-w-[1400px] px-5">
+      <div className="mx-auto w-full px-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {testimonials.map((t, i) => (
             <motion.div

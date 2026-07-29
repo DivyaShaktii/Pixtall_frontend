@@ -7,14 +7,14 @@ const STEPS = [
   {
     title: "Upload your product photo",
     body: "Any clean shot works — jewelry, apparel, bags, beauty, food. Straight off a phone is fine.",
-    img: "/examples/raw-product.png",
+    img: "/gallery/step1.jpg",
     alt: "Raw, unedited photo of silver jewellery held in a hand",
     caption: "Raw upload"
   },
   {
     title: "Set the context",
     body: "Pick a category, a scene, and an aspect ratio. Choose one of several preset models — or upload a photo of your own.",
-    img: "/examples/model-reference.png",
+    img: "/gallery/step2.jpg",
     alt: "Selected model reference photo, one of several preset options",
     caption: "Jewelry · outdoor · 4:5",
     pickerMock: true
@@ -22,7 +22,7 @@ const STEPS = [
   {
     title: "Pixtall composites the shot",
     body: "The engine places your product on the model, matching light, angle, and perspective.",
-    img: "/examples/model-reference.png",
+    img: "/gallery/step3.png",
     alt: "Model reference photo mid-composite with the product",
     caption: "Composing…",
     processing: true
@@ -30,7 +30,7 @@ const STEPS = [
   {
     title: "Export, ready to list",
     body: "Download a listing photo sized for Amazon, Flipkart, Etsy, and more.",
-    img: "/examples/studio-output.png",
+    img: "/gallery/step4.png",
     alt: "Final marketplace-ready product photo on a model",
     caption: "Marketplace ready",
     final: true

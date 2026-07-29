@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { RevealText } from './RevealText';
 
 const steps = [
   {
@@ -7,28 +8,28 @@ const steps = [
     eyebrow: 'Raw upload',
     title: 'Upload your product photo',
     body: 'Any clean shot works — jewelry, apparel, bags, beauty, food. Straight off a phone is fine.',
-    img: 'https://images.unsplash.com/photo-1596940590284-486bc05202a0?q=80&w=600&auto=format&fit=crop',
+    img: '/gallery/step1.jpg',
   },
   {
     number: '02',
     eyebrow: 'Jewelry · outdoor · 4:5',
     title: 'Set the context',
     body: 'Pick a category, a scene, and an aspect ratio. Choose one of several preset models — or upload a photo of your own.',
-    img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
+    img: '/gallery/step2.jpg',
   },
   {
     number: '03',
     eyebrow: 'Compositing',
     title: 'Pixtall composites the shot',
     body: 'The engine places your product on the model, matching light, angle, and perspective.',
-    img: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?q=80&w=600&auto=format&fit=crop&blur=100',
+    img: '/gallery/step3.png',
   },
   {
     number: '04',
     eyebrow: 'Marketplace-ready',
     title: 'Export, ready to list',
     body: 'Download a listing photo sized for Amazon, Flipkart, Etsy, and more.',
-    img: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?q=80&w=600&auto=format&fit=crop',
+    img: '/gallery/step4.png',
   }
 ];
 
@@ -41,17 +42,14 @@ const highlights = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="relative w-full py-32 z-10 bg-black">
-      <div className="mx-auto max-w-[1400px] px-5">
-        <div className="max-w-2xl mb-24">
-          <span className="text-xs font-medium uppercase tracking-[0.2em] text-[#a3e635]">
-            How it works
-          </span>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-5xl leading-tight">
-            From one product photo to a marketplace-ready listing
+    <section id="how-it-works" className="relative w-full pb-32 pt-[30vh] sm:pt-[40vh] z-10 bg-black">
+      <div className="mx-auto w-full px-5">
+        <div className="max-w-3xl mb-24 flex flex-col gap-4">
+          <h2 className="text-5xl sm:text-7xl font-bold tracking-tighter text-white">
+            How it <span className="text-[#84cc16]">works.</span>
           </h2>
-          <p className="mt-6 text-lg text-neutral-400">
-            Four steps. No studio, no shoot, no photographer to schedule.
+          <p className="font-medium text-xl sm:text-2xl text-[#f5f5f5] max-w-xl">
+            One photo is all you need. We handle the lighting, styling, and formatting.
           </p>
         </div>
 
@@ -107,7 +105,7 @@ export function HowItWorks() {
                 <div className="w-1.5 h-1.5 rounded-full bg-[#a3e635]" />
                 <h4 className="text-sm font-medium text-white">{h.title}</h4>
               </div>
-              <p className="text-xs text-neutral-500 leading-relaxed max-w-[200px]">{h.body}</p>
+              <p className="text-xs text-neutral-500 leading-relaxed w-full">{h.body}</p>
             </div>
           ))}
         </motion.div>

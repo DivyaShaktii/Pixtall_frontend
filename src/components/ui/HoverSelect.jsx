@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { CaretDown } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useFloating, offset, flip, shift, autoUpdate } from '@floating-ui/react';
+import { useFloating, offset, flip, shift, autoUpdate, size } from '@floating-ui/react';
 import { useMotionVariants } from "../../lib/motion";
 
 export default function HoverSelect({ 
@@ -20,8 +20,20 @@ export default function HoverSelect({
   const { refs, floatingStyles, elements } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
-    placement: 'top-start',
-    middleware: [offset(8), flip(), shift({ padding: 8 })],
+    placement: 'bottom-start',
+    middleware: [
+      offset(8), 
+      flip({ padding: 8 }), 
+      shift({ padding: 8 }),
+      size({
+        apply({ availableWidth, availableHeight, elements }) {
+          Object.assign(elements.floating.style, {
+            maxHeight: `${Math.max(100, availableHeight)}px`,
+          });
+        },
+        padding: 8,
+      })
+    ],
     whileElementsMounted: autoUpdate,
   });
 

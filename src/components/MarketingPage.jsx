@@ -32,7 +32,6 @@ const MarketingPage = ({ onStart }) => {
         <Navbar onStart={onStart} />
         <main className="w-full">
           <Hero onStart={onStart} />
-          <BrandStrip />
           <HowItWorks />
           <Features />
           <Gallery />

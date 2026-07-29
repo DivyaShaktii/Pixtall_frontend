@@ -191,7 +191,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
         </div>
 
         <p className="text-center text-xs text-zinc-500 mt-6">
-          No credit card required · Cancel anytime
+          By continuing, you agree to our <a href="/terms" className="text-zinc-400 hover:text-zinc-300 underline underline-offset-2">Terms of Service</a>.
         </p>
       </div>
     </div>

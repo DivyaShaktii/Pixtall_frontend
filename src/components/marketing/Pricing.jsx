@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle } from '@phosphor-icons/react';
+import { RevealText } from './RevealText';
 
 const tiers = [
   {
@@ -32,14 +33,19 @@ const tiers = [
 export function Pricing({ onStart }) {
   return (
     <section id="pricing" className="relative w-full py-32 z-10">
-      <div className="mx-auto max-w-[1200px] px-5">
+      <div className="mx-auto w-full px-5">
         <div className="mx-auto max-w-2xl text-center mb-16">
-          <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            Simple, transparent pricing.
-          </h2>
-          <p className="mt-4 text-neutral-400">
-            Scale your visual content without the overhead of physical photoshoots.
-          </p>
+          <RevealText
+            as="h2"
+            text="Simple, transparent pricing."
+            className="text-3xl font-semibold tracking-tight text-white sm:text-4xl"
+          />
+          <RevealText
+            as="p"
+            delay={0.2}
+            text="Scale your visual content without the overhead of physical photoshoots."
+            className="mt-4 text-neutral-400"
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">

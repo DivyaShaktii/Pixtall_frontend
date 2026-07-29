@@ -13,45 +13,54 @@
 export const mockGallerySessions = [
   {
     id: "session-1",
-    title: "Silver Peacock Earrings",
-    tag: "Mix",
-    date: "10.07.2026",
+    title: "Premium Handbag",
+    tag: "Studio",
+    date: "28.07.2026",
     model: "Female",
-    category: "Jewelry",
+    category: "Accessories",
     aspect: "4:5",
     quality: "4K",
     photos: [
-      "/examples/studio-output.png",
-      "/examples/model-option-a.png",
-      "/examples/model-option-b.png",
-      "/examples/model-reference.png"
+      "/gallery/stallpix-generated-1.png",
+      "/gallery/stallpix-generated-1 (1).png",
+      "/gallery/stallpix-generated-1 (2).png",
+      "/gallery/stallpix-generated-1 (3).png",
+      "/gallery/stallpix-generated-1 (4).png",
+      "/gallery/stallpix-generated-1 (5).png",
+      "/gallery/stallpix-generated-1 (6).png",
+      "/gallery/stallpix-generated-1 (7).png",
+      "/gallery/stallpix-generated-1 (8).png"
     ]
   },
   {
     id: "session-2",
-    title: "Silver Peacock Earrings",
-    tag: "Studio",
-    date: "09.07.2026",
-    model: "Female",
-    category: "Jewelry",
-    aspect: "1:1",
+    title: "Luxury Jacket",
+    tag: "Outdoor",
+    date: "27.07.2026",
+    model: "Male",
+    category: "Outerwear",
+    aspect: "4:5",
     quality: "4K",
     photos: [
-      "/examples/studio-output.png",
-      "/examples/model-option-b.png"
+      "/gallery/stallpix-generated-2.png",
+      "/gallery/stallpix-generated-2 (1).png",
+      "/gallery/stallpix-generated-2 (2).png",
+      "/gallery/stallpix-generated-2 (3).png"
     ]
   },
   {
     id: "session-3",
-    title: "Silver Peacock Earrings",
-    tag: "Outdoor",
-    date: "05.07.2026",
+    title: "Ecom Shoots",
+    tag: "Studio",
+    date: "26.07.2026",
     model: "Female",
-    category: "Jewelry",
-    aspect: "9:16",
+    category: "General",
+    aspect: "1:1",
     quality: "4K",
     photos: [
-      "/examples/model-option-a.png"
+      "/gallery/ecom_1.png",
+      "/gallery/ecom_2.png",
+      "/gallery/ecom_3.png"
     ]
   }
 ];

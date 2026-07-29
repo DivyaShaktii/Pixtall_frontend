@@ -9,8 +9,14 @@ import MarketingPage from "./components/MarketingPage";
 import SettingsPage from "./views/SettingsPage";
 import BillingPage from "./views/BillingPage";
 import AmbientBackground from "./components/AmbientBackground";
+import TermsPage from "./views/legal/TermsPage";
 
 const App = () => {
+  const path = window.location.pathname;
+  if (path === '/terms' || path === '/legal/terms') {
+    return <TermsPage onStart={() => { window.location.href = '/'; }} />;
+  }
+
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const sessionRaw = localStorage.getItem(SESSION_STORAGE_KEY);
@@ -66,26 +72,26 @@ const App = () => {
           creditsTotal={10}
         />
 
-        <main className="flex-1 relative overflow-y-auto overflow-x-hidden scroll-smooth">
-          <AmbientBackground variant="light" />
+        <main className={`flex-1 relative overflow-x-hidden scroll-smooth ${activeNav === "studio" ? "overflow-hidden bg-black" : "overflow-y-auto"}`}>
+          {activeNav !== "studio" && <AmbientBackground variant="light" />}
           {activeNav === "studio" && <StudioView />}
           {activeNav === "gallery" && (
-            <div className="p-8 max-w-6xl mx-auto w-full">
+            <div className="p-4 lg:p-8 w-full h-full">
               <GalleryPage email={currentUser.email} />
             </div>
           )}
           {activeNav === "products" && (
-            <div className="p-8 max-w-6xl mx-auto w-full">
+            <div className="p-4 lg:p-8 w-full h-full">
               <ProductsPage email={currentUser.email} />
             </div>
           )}
           {activeNav === "settings" && (
-            <div className="p-8 max-w-6xl mx-auto w-full">
+            <div className="p-4 lg:p-8 w-full h-full">
               <SettingsPage />
             </div>
           )}
           {activeNav === "billing" && (
-            <div className="p-8 max-w-6xl mx-auto w-full">
+            <div className="p-4 lg:p-8 w-full h-full">
               <BillingPage />
             </div>
           )}

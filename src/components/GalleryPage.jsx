@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import GalleryModal from "./GalleryModal";
 import { API_BASE_URL } from "../utils/apiConfig";
+import { mockGallerySessions } from "../data/mockGallery";
 
 /**
  * Fetches this user's generated-image sessions from the backend
@@ -13,31 +14,9 @@ const GalleryPage = ({ email }) => {
   const [openSessionId, setOpenSessionId] = useState(null);
 
   useEffect(() => {
-    if (!email) {
-      setSessions([]);
-      setStatus("ready");
-      return;
-    }
-
-    let cancelled = false;
-    setStatus("loading");
-
-    fetch(`${API_BASE_URL}/gallery?email=${encodeURIComponent(email)}`)
-      .then(response => {
-        if (!response.ok) throw new Error(`Server responded with ${response.status}`);
-        return response.json();
-      })
-      .then(data => {
-        if (cancelled) return;
-        setSessions(Array.isArray(data.sessions) ? data.sessions : []);
-        setStatus("ready");
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setStatus("error");
-      });
-
-    return () => { cancelled = true; };
+    // using local mock data for now to display the new generated images
+    setSessions(mockGallerySessions);
+    setStatus("ready");
   }, [email]);
 
   const openSession = sessions.find(s => s.id === openSessionId) ?? null;

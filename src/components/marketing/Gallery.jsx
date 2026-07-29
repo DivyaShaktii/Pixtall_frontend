@@ -1,26 +1,34 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { RevealText } from './RevealText';
 
 const images = [
-  "https://images.unsplash.com/photo-1514989940723-e8e51635b782?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1509631179647-0c500ab14c51?q=80&w=1000&auto=format&fit=crop"
+  "/gallery/ecom_1.png",
+  "/gallery/ecom_2.png",
+  "/gallery/ecom_3.png",
+  "/gallery/stallpix-generated-1.png",
+  "/gallery/stallpix-generated-2.png",
+  "/gallery/stallpix-generated-3.png"
 ];
 
 export function Gallery() {
   return (
     <section id="gallery" className="relative w-full py-24 z-10 bg-white/[0.01] border-y border-white/5">
-      <div className="mx-auto max-w-[1400px] px-5">
+      <div className="mx-auto w-full px-5">
         <div className="mx-auto max-w-2xl text-center mb-16">
-          <span className="text-xs font-medium uppercase tracking-[0.2em] text-[#a3e635]">
+          <motion.span 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            className="text-xs font-medium uppercase tracking-[0.2em] text-[#a3e635] inline-block"
+          >
             Stunning Results
-          </span>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            Luxury fashion catalog outputs.
-          </h2>
+          </motion.span>
+          <RevealText
+            as="h2"
+            text="Luxury fashion catalog outputs."
+            className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl"
+          />
         </div>
 
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">

@@ -4,7 +4,7 @@ import { ArrowRight, Sparkle } from '@phosphor-icons/react';
 
 export function HeroText({ onStart }) {
   return (
-    <div className="mx-auto max-w-[1200px] px-5 pt-12 text-center sm:pt-16">
+    <div className="mx-auto w-full px-5 pt-12 text-center sm:pt-16">
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}

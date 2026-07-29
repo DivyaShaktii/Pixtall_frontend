@@ -1,6 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Aperture, UserFocus, Export } from '@phosphor-icons/react'
+import { RevealText } from './RevealText'
 
 const features = [
   {
@@ -23,17 +24,28 @@ const features = [
 export function Features() {
   return (
     <section id="features" className="relative w-full py-32 z-10 border-t border-white/5 bg-[#070707]/50">
-      <div className="mx-auto max-w-[1400px] px-5">
-        <div className="max-w-3xl mb-16">
-          <span className="text-xs font-medium uppercase tracking-[0.2em] text-[#a3e635]">
+      <div className="mx-auto w-full px-5">
+        <div className="max-w-3xl mb-16 flex flex-col items-start gap-6">
+          <motion.h3 
+            initial={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
+            whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            viewport={{ once: true }}
+            className="tracking-[0.1em] text-4xl sm:text-6xl font-black text-[#a3e635] uppercase mb-2"
+          >
             About Pixtall AI
-          </span>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-5xl leading-tight">
-            AI product image generator for Amazon, Flipkart & every major marketplace
-          </h2>
-          <p className="mt-6 text-lg text-neutral-400 leading-relaxed">
-            Pixtall AI is an intelligent product image generation engine built for ecommerce sellers. Upload your product photo and a model reference — our AI creates professional, conversion-ready listing images in seconds. No photography studio required.
-          </p>
+          </motion.h3>
+          <RevealText
+            as="h2"
+            text="AI product image generator for Amazon, Flipkart & every major marketplace"
+            className="text-4xl font-semibold tracking-tight text-white sm:text-5xl leading-tight"
+          />
+          <RevealText
+            as="p"
+            delay={0.2}
+            text="Pixtall AI is an intelligent product image generation engine built for ecommerce sellers. Upload your product photo and a model reference — our AI creates professional, conversion-ready listing images in seconds. No photography studio required."
+            className="text-xl text-neutral-400 leading-relaxed"
+          />
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -51,8 +63,8 @@ export function Features() {
                 <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-[#a3e635]/10 text-[#a3e635]">
                   <Icon className="h-6 w-6" weight="duotone" aria-hidden="true" />
                 </div>
-                <h3 className="text-xl font-medium text-white">{feature.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-neutral-400 flex-grow">{feature.body}</p>
+                <h3 className="text-2xl font-medium text-white">{feature.title}</h3>
+                <p className="mt-4 text-xl leading-relaxed text-neutral-400 flex-grow">{feature.body}</p>
               </motion.div>
             )
           })}
@@ -63,7 +75,7 @@ export function Features() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-16 text-xs leading-relaxed text-neutral-500 max-w-5xl"
+          className="mt-16 text-lg leading-relaxed text-neutral-500 max-w-5xl"
         >
           Pixtall AI is the smart product photography solution for Indian and global ecommerce sellers looking to scale their marketplace listings without expensive studio shoots. Whether you sell fashion, ethnic wear, sneakers, handbags, cosmetics, or packaged food on Amazon India, Flipkart, Meesho, Myntra, Nykaa, Shopify, or international platforms like Etsy, eBay, and TikTok Shop — our AI product image generator creates visuals that convert. Pixtall AI supports all major ecommerce categories including fashion & apparel, accessories, beauty & skincare, jewelry, footwear, and food products. Powered by advanced generative AI, it replaces traditional product photography workflows and delivers marketplace-compliant images in a fraction of the time and cost.
         </motion.div>

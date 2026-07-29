@@ -17,7 +17,7 @@ const socials = [
 export function Footer() {
   return (
     <footer id="footer" className="w-full border-t border-white/5 px-5 py-14">
-      <div className="mx-auto flex max-w-[1200px] flex-col gap-12 md:flex-row md:justify-between">
+      <div className="mx-auto flex w-full flex-col gap-12 md:flex-row md:justify-between">
         <div className="max-w-xs">
           <div className="flex items-center gap-2 text-white">
             <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#a3e635] text-black">
@@ -70,10 +70,10 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto mt-12 flex max-w-[1400px] w-full flex-col items-center justify-between gap-3 border-t border-white/5 pt-6 text-xs text-neutral-600 sm:flex-row">
+      <div className="mx-auto mt-12 flex w-full w-full flex-col items-center justify-between gap-3 border-t border-white/5 pt-6 text-xs text-neutral-600 sm:flex-row">
         <p>© {new Date().getFullYear()} Pixtall AI. All rights reserved.</p>
         <div className="flex items-center gap-6">
-          <a href="#" className="hover:text-neutral-400">Terms</a>
+          <a href="/terms" className="hover:text-[#a3e635] transition-colors">Terms</a>
           <a href="#" className="hover:text-neutral-400">Privacy</a>
         </div>
       </div>
