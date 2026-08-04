@@ -6,7 +6,7 @@ import { useDemoTimeline } from './Hero3D/useDemoTimeline';
 export function Hero({ onStart }) {
   const shouldReduceMotion = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
-  const { demoState, cursor } = useDemoTimeline(shouldReduceMotion);
+  const { demoState, cursor, ripples } = useDemoTimeline(shouldReduceMotion);
   const containerRef = useRef(null);
   const [scale, setScale] = useState(1);
 
@@ -123,7 +123,7 @@ export function Hero({ onStart }) {
 
                     {/* DemoPlayback - Fixed to 1600x900 */}
                     <div className="w-[1600px] h-[900px] shrink-0 relative">
-                      <DemoPlayback demoState={demoState} cursor={cursor} />
+                      <DemoPlayback demoState={demoState} cursor={cursor} ripples={ripples} />
                     </div>
                   </div>
                 </div>

@@ -1,7 +1,10 @@
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { StudioCanvasGrid } from '../../studio/StudioCanvasGrid';
 import { StudioSidebar } from '../../studio/StudioSidebar';
 import { Image, SquaresFour, Users, Gear, CreditCard } from '@phosphor-icons/react';
+import ModelReferenceModal from '../../ModelSelector';
+import { generationConfig } from '../../../config/generationConfig';
 
 const generatedImages = [
   "/hero-demo/hero-demo-result-1.png",
@@ -10,11 +13,13 @@ const generatedImages = [
   "/hero-demo/hero-demo-result-4.png"
 ];
 
-export function DemoPlayback({ demoState, cursor }) {
+export function DemoPlayback({ demoState, cursor, ripples }) {
   const step = demoState?.step || 'upload_start';
   const isGenerating = step === 'generate';
   const hasResult = step === 'result';
   const showSource = !['upload_start'].includes(step);
+  const isModelModalOpen = step === 'show_model_modal';
+  const maleModelConfig = generationConfig.models.find(m => m.value === 'male');
 
   let demoStateMapped = step;
   if (step.startsWith('configure_settings_')) demoStateMapped = 'configure_settings';
@@ -147,14 +152,29 @@ export function DemoPlayback({ demoState, cursor }) {
           <path d="M5.5 2.5L20 12L12 14L9 22L5.5 2.5Z" fill="white" stroke="black" strokeWidth="1.5" strokeLinejoin="round"/>
         </svg>
         
-        {/* Click Ripple */}
-        {cursor?.click && (
-          <div 
-            className="absolute rounded-full border-2 border-[#84cc16] bg-[#84cc16]/40 animate-ping"
-            style={{ width: '36px', height: '36px', left: '-4px', top: '-4px' }}
-          />
-        )}
+        <AnimatePresence>
+          {ripples?.map(id => (
+            <motion.div
+              key={id}
+              initial={{ scale: 0, opacity: 1 }}
+              animate={{ scale: 2.5, opacity: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="absolute rounded-full border-2 border-[#84cc16] bg-[#84cc16]/30 pointer-events-none"
+              style={{ width: '40px', height: '40px', left: '-6px', top: '-6px' }}
+            />
+          ))}
+        </AnimatePresence>
       </div>
+
+      <ModelReferenceModal
+        isOpen={isModelModalOpen}
+        onClose={() => {}}
+        modelConfig={maleModelConfig}
+        selectedModelImage={maleModelConfig?.images[0]}
+        onModelImageChange={() => {}}
+        usePortal={false}
+      />
     </div>
   );
 }
