@@ -54,10 +54,29 @@ export function StudioCanvasGrid({
                   {imageSrc ? (
                     <motion.div 
                       key={`slot-filled-${i}`}
-                      initial={{ opacity: 0, scale: 0.98 }}
-                      animate={{ opacity: 1, scale: 1 }}
+                      initial={{ 
+                        opacity: 0, 
+                        y: (i === 0 || i === 2) ? -120 : 120, 
+                        scale: 0.9,
+                        rotateX: (i === 0 || i === 2) ? -12 : 12,
+                        filter: "blur(12px)"
+                      }}
+                      animate={{ 
+                        opacity: 1, 
+                        y: 0, 
+                        scale: 1,
+                        rotateX: 0,
+                        filter: "blur(0px)"
+                      }}
                       exit={{ opacity: 0 }}
-                      className="w-full h-full rounded-2xl overflow-hidden border border-line shadow-lg relative group"
+                      transition={{ 
+                        type: "spring", 
+                        stiffness: 110, 
+                        damping: 18, 
+                        mass: 0.8,
+                        delay: i * 0.12 
+                      }}
+                      className="w-full h-full rounded-2xl overflow-hidden border border-line shadow-lg relative group will-change-transform"
                     >
                       {isDemo ? (
                         <img src={imageSrc} className="w-full h-full object-cover" alt={`Result ${i + 1}`} />

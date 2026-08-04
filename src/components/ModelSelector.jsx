@@ -91,7 +91,7 @@ const ModelReferenceModal = ({
           initial="initial"
           animate="animate"
           exit="exit"
-          className="relative w-full max-w-2xl max-h-[85vh] bg-white border border-line/60 rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] flex flex-col overflow-hidden"
+          className="relative w-full max-w-2xl max-h-[85vh] bg-[#09090b] border border-white/5 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
@@ -102,7 +102,7 @@ const ModelReferenceModal = ({
             </div>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center text-slate hover:text-ink hover:bg-black/10 transition-colors"
+              className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate hover:text-white hover:bg-white/10 transition-colors"
             >
               <X size={16} weight="bold" />
             </button>
@@ -120,7 +120,7 @@ const ModelReferenceModal = ({
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 className={`relative flex items-center justify-between p-4 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
-                  isDragging ? "border-[#0f172a] bg-cloud" : "border-line hover:border-ink bg-paper"
+                  isDragging ? "border-[#84cc16] bg-cloud" : "border-line hover:border-ink bg-paper"
                 }`}
               >
                 <div className="flex items-center gap-4">
@@ -157,7 +157,7 @@ const ModelReferenceModal = ({
                       type="button"
                       onClick={() => handleSelect(imagePath)}
                       className={`relative aspect-[3/4] rounded-lg overflow-hidden group border-2 transition-all duration-200 ${
-                        isSelected ? "border-[#0f172a] shadow-[0_0_0_1px_rgba(15,23,42,0.1)]" : "border-transparent hover:border-line"
+                        isSelected ? "border-[#84cc16] shadow-[0_0_12px_rgba(132,204,22,0.2)]" : "border-transparent hover:border-line"
                       }`}
                     >
                       <img src={imagePath} alt="" className="w-full h-full object-cover bg-cloud" loading="lazy" />
@@ -170,7 +170,7 @@ const ModelReferenceModal = ({
                             variants={motionVariants.modalContent}
                             initial="initial"
                             animate="animate"
-                            className="w-8 h-8 rounded-full bg-ink text-white flex items-center justify-center shadow-md"
+                            className="w-8 h-8 rounded-full bg-[#84cc16] text-black flex items-center justify-center shadow-md"
                           >
                             <CheckCircle size={20} weight="fill" />
                           </motion.div>
@@ -184,13 +184,15 @@ const ModelReferenceModal = ({
               </div>
 
               {remaining > 0 && (
+
                 <button
                   type="button"
                   onClick={() => setVisibleCount(c => c + PAGE_SIZE)}
-                  className="w-full py-3 mt-4 rounded-xl border border-line text-xs font-semibold text-slate hover:text-ink hover:bg-cloud transition-colors"
+                  className="w-full py-3 mt-4 rounded-xl border border-white/10 bg-[#18181b] text-xs font-semibold text-white hover:bg-[#27272a] transition-colors"
                 >
                   Load more · {remaining} remaining
                 </button>
+
               )}
             </div>
 
