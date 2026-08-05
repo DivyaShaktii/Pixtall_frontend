@@ -27,6 +27,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState(DEFAULT_PASSWORD);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = event => {
@@ -36,6 +37,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
     const normalizedEmail = email.trim().toLowerCase();
     if (!normalizedEmail) { setError("Email is required."); return; }
     if (!password) { setError("Password is required."); return; }
+    if (!acceptedTerms) { setError("You must accept the Terms of Service and Privacy Policy."); return; }
 
     const users = readUsers();
 
@@ -184,15 +186,24 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
               </div>
             )}
 
+            <div className="flex items-start gap-3 mt-2 mb-1 px-1">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="w-4 h-4 mt-0.5 rounded bg-zinc-900/90 border-zinc-700 accent-accent cursor-pointer shrink-0"
+              />
+              <label htmlFor="terms" className="text-xs text-zinc-400 leading-relaxed cursor-pointer select-none">
+                I accept the <a href="/terms" className="text-zinc-300 hover:text-white underline underline-offset-2">Terms of Service</a> and <a href="/terms" className="text-zinc-300 hover:text-white underline underline-offset-2">Privacy Policy</a>.
+              </label>
+            </div>
+
             <button type="submit" className="w-full bg-accent text-[#0a0a0a] py-3.5 rounded-xl font-bold text-sm hover:bg-lime-400 active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(132,204,22,0.25)] mt-1">
               {mode === "login" ? "Enter studio →" : "Create account"}
             </button>
           </form>
         </div>
-
-        <p className="text-center text-xs text-zinc-500 mt-6">
-          By continuing, you agree to our <a href="/terms" className="text-zinc-400 hover:text-zinc-300 underline underline-offset-2">Terms of Service</a>.
-        </p>
       </div>
     </div>
   );

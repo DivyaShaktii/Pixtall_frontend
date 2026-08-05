@@ -1,99 +1,47 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { CheckCircle } from '@phosphor-icons/react';
 import { RevealText } from './RevealText';
-
-const tiers = [
-  {
-    name: "Starter",
-    price: "$49",
-    description: "Perfect for independent brands and designers.",
-    features: [
-      "100 AI photo generations",
-      "Standard models library",
-      "720p outputs",
-      "Email support"
-    ]
-  },
-  {
-    name: "Studio",
-    price: "$199",
-    description: "For scaling fashion houses and agencies.",
-    highlight: true,
-    features: [
-      "Unlimited generations",
-      "Premium exclusive models",
-      "4K high-res outputs",
-      "Priority rendering queue",
-      "API access"
-    ]
-  }
-];
+import { plans } from '../../data/pricingData';
+import { PricingCard } from './PricingCard';
+import { PricingTable } from './PricingTable';
 
 export function Pricing({ onStart }) {
   return (
     <section id="pricing" className="relative w-full py-32 z-10">
-      <div className="mx-auto w-full px-5">
-        <div className="mx-auto max-w-2xl text-center mb-16">
+      <div className="mx-auto w-full px-5 max-w-[1500px]">
+        <div className="mx-auto max-w-2xl text-center mb-20">
           <RevealText
             as="h2"
-            text="Simple, transparent pricing."
+            text="Flexible Pricing for Every Creator"
             className="text-3xl font-semibold tracking-tight text-white sm:text-4xl"
           />
           <RevealText
             as="p"
             delay={0.2}
-            text="Scale your visual content without the overhead of physical photoshoots."
-            className="mt-4 text-neutral-400"
+            text="Whether you're generating a few product images or managing thousands every month, Pixtall scales with your business. Only pay for what you need."
+            className="mt-4 text-neutral-400 leading-relaxed"
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {tiers.map((tier, i) => (
-            <motion.div
-              key={tier.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className={`relative p-8 rounded-3xl border ${
-                tier.highlight ? 'border-[#a3e635]/30 bg-[#a3e635]/5' : 'border-white/10 bg-white/[0.01]'
-              } flex flex-col`}
+        {/* Pricing Cards Grid */}
+        <div 
+          className="flex flex-nowrap overflow-x-auto pb-8 snap-x snap-mandatory items-stretch gap-10 xl:justify-center xl:overflow-x-visible"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          <style>{`
+            .flex-nowrap::-webkit-scrollbar { display: none; }
+          `}</style>
+          {plans.map((plan, i) => (
+            <div 
+              key={plan.id}
+              className="flex-none w-[85vw] md:w-[350px] xl:flex-1 xl:w-auto xl:max-w-[320px] snap-center flex flex-col"
             >
-              {tier.highlight && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-3 py-1 rounded-full bg-[#a3e635] text-xs font-bold text-black uppercase tracking-wider">
-                  Most Popular
-                </div>
-              )}
-              <h3 className="text-xl font-medium text-white">{tier.name}</h3>
-              <div className="mt-4 mb-2 flex items-baseline gap-2">
-                <span className="text-4xl font-bold text-white">{tier.price}</span>
-                <span className="text-sm text-neutral-500">/mo</span>
-              </div>
-              <p className="text-sm text-neutral-400 mb-8 pb-8 border-b border-white/10">
-                {tier.description}
-              </p>
-              <ul className="space-y-4 mb-8 flex-1">
-                {tier.features.map(f => (
-                  <li key={f} className="flex items-start gap-3 text-sm text-neutral-300">
-                    <CheckCircle className="h-5 w-5 text-[#a3e635] shrink-0" weight="fill" />
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <button 
-                onClick={onStart}
-                className={`w-full py-3 rounded-lg text-sm font-medium transition-colors ${
-                  tier.highlight 
-                    ? 'bg-[#a3e635] text-black hover:bg-[#b6ef5c]' 
-                    : 'bg-white/5 text-white border border-white/10 hover:bg-white/10'
-                }`}
-              >
-                Get Started
-              </button>
-            </motion.div>
+              <PricingCard plan={plan} index={i} onStart={onStart} />
+            </div>
           ))}
         </div>
+
+        {/* Comparison Table */}
+        <PricingTable />
       </div>
     </section>
   );
