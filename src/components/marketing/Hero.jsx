@@ -31,9 +31,22 @@ export function Hero({ onStart }) {
   }, []);
 
   return (
-    <section id="hero" className="relative w-full overflow-hidden pb-16 pt-32 z-10 border-b border-white/10 bg-black">
-      <div className="mx-auto max-w-[1200px] px-5 text-center">
-        <motion.h1
+    <section id="hero" className="relative w-full overflow-hidden pb-16 z-10 border-b border-white/10 bg-black">
+      {/* Hero Content Wrapper */}
+      <div className="relative w-full mt-[76px] pt-[52px] pb-16">
+        {/* Background Video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover z-0 opacity-100 brightness-125 contrast-110"
+        >
+          <source src="/upload_animation.mp4" type="video/mp4" />
+        </video>
+
+        <div className="relative mx-auto max-w-[1200px] px-5 text-center z-10">
+          <motion.h1
           initial="hidden"
           animate="visible"
           variants={{
@@ -43,7 +56,7 @@ export function Hero({ onStart }) {
               transition: { staggerChildren: 0.15, delayChildren: 0.1 }
             }
           }}
-          className="text-[12vw] sm:text-[8vw] font-medium tracking-tighter leading-[0.85] uppercase"
+          className="text-[12vw] sm:text-[8vw] font-medium tracking-tighter leading-[0.85] uppercase blur-[2px]"
           style={{ perspective: '1000px' }}
         >
           {[
@@ -67,19 +80,8 @@ export function Hero({ onStart }) {
           ))}
         </motion.h1>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="mt-16 flex flex-col items-center"
-        >
-          <p className="max-w-xl text-lg text-neutral-400 leading-relaxed mb-10">
-            Pixtall AI composites your raw product shot onto a professional model reference to generate high-converting listing photos for Amazon, Flipkart, Etsy, and more — no studio, no shoot.
-          </p>
-          <button className="rounded-none border border-white bg-transparent px-10 py-4 text-sm font-bold text-white hover:bg-white/10 transition-colors uppercase tracking-widest">
-            Start Creating
-          </button>
-        </motion.div>
+        <div className="h-[250px] w-full" />
+      </div>
       </div>
 
       {/* ── 2. Generous Vertical Spacing ── */}
