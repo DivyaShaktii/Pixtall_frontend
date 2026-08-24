@@ -33,6 +33,9 @@ export function StudioSidebar({
   numImages = 4,
   setNumImages,
   
+  imageQuality = "standard",
+  setImageQuality,
+  
   error = "",
   isGenerating = false,
   handleCancel,
@@ -121,6 +124,31 @@ export function StudioSidebar({
         <div className="flex flex-col gap-5">
           <label className="text-white text-[11px] uppercase tracking-wider font-semibold">Output Settings</label>
           
+          {/* Quality Switcher */}
+          <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl">
+            <button 
+              onClick={() => setImageQuality?.("standard")}
+              className={`flex-1 justify-center py-2 rounded-lg font-medium text-[13px] transition-all border ${
+                imageQuality === "standard" 
+                  ? "border-[#84cc16]/50 bg-[#84cc16]/10 text-white shadow-[0_0_15px_rgba(132,204,22,0.2)]" 
+                  : "border-transparent text-neutral-500 hover:text-white"
+              }`}
+            >
+              Standard
+            </button>
+            <button 
+              onClick={() => setImageQuality?.("premium")}
+              className={`flex-1 justify-center py-2 rounded-lg font-medium text-[13px] transition-all flex items-center gap-2 border ${
+                imageQuality === "premium" 
+                  ? "border-[#84cc16]/50 bg-[#84cc16]/10 text-white shadow-[0_0_15px_rgba(132,204,22,0.2)]" 
+                  : "border-transparent text-neutral-500 hover:text-[#84cc16]"
+              }`}
+            >
+              <Sparkle size={14} weight={imageQuality === "premium" ? "fill" : "regular"} className={imageQuality === "premium" ? "text-[#84cc16]" : ""} />
+              Premium
+            </button>
+          </div>
+
           <div className="flex flex-col gap-4">
             {/* Category & Details Group */}
             <div className="flex flex-col gap-3 p-3 bg-white/[0.02] border border-white/5 rounded-xl">

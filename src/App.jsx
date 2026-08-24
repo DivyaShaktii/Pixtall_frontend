@@ -74,7 +74,7 @@ const App = () => {
 
         <main className={`flex-1 relative overflow-x-hidden scroll-smooth ${activeNav === "studio" ? "overflow-hidden bg-black" : "overflow-y-auto"}`}>
           {activeNav !== "studio" && <AmbientBackground variant="light" />}
-          {activeNav === "studio" && <StudioView />}
+          {activeNav === "studio" && <StudioView email={currentUser.email} />}
           {activeNav === "gallery" && (
             <div className="p-4 lg:p-8 w-full h-full">
               <GalleryPage email={currentUser.email} />

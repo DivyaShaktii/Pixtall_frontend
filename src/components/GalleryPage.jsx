@@ -14,9 +14,31 @@ const GalleryPage = ({ email }) => {
   const [openSessionId, setOpenSessionId] = useState(null);
 
   useEffect(() => {
-    // using local mock data for now to display the new generated images
-    setSessions(mockGallerySessions);
-    setStatus("ready");
+    if (!email) {
+      setSessions([]);
+      setStatus("ready");
+      return;
+    }
+
+    let cancelled = false;
+    setStatus("loading");
+
+    fetch(`${API_BASE_URL}/gallery?email=${encodeURIComponent(email)}`)
+      .then(response => {
+        if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+        return response.json();
+      })
+      .then(data => {
+        if (cancelled) return;
+        setSessions(Array.isArray(data.sessions) ? data.sessions : []);
+        setStatus("ready");
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setStatus("error");
+      });
+
+    return () => { cancelled = true; };
   }, [email]);
 
   const openSession = sessions.find(s => s.id === openSessionId) ?? null;

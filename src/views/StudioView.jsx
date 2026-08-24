@@ -27,7 +27,7 @@ const isAllowedModelPath = path =>
     path.startsWith("data:image/")
   );
 
-export default function StudioView() {
+export default function StudioView({ email }) {
   const motionVariants = useMotionVariants();
   
   // Tools
@@ -43,6 +43,7 @@ export default function StudioView() {
   const [modelImagePath, setModelImagePath] = useState("");
   const [isModelModalOpen, setIsModelModalOpen] = useState(false);
   const [numImages, setNumImages] = useState(4);
+  const [imageQuality, setImageQuality] = useState("standard");
   
   // Generation State
   const [generatedImages, setGeneratedImages] = useState([null, null, null, null]);
@@ -150,15 +151,17 @@ export default function StudioView() {
         headers: { "Content-Type": "application/json" },
         signal: abortControllerRef.current.signal,
         body: JSON.stringify({
-          productImage: productImageBase64,
+          email,
+          productImageBase64,
           productCategory,
           productSubcategory,
           scene,
           size,
           model,
-          modelImage: modelImageBase64,
+          modelImageBase64,
           intendUse: "marketplace",
-          numImages
+          numImages,
+          quality: imageQuality
         })
       });
 
@@ -348,6 +351,8 @@ export default function StudioView() {
         setHoveredSize={setHoveredSize}
         numImages={numImages}
         setNumImages={setNumImages}
+        imageQuality={imageQuality}
+        setImageQuality={setImageQuality}
         error={error}
         isGenerating={isGenerating}
         handleCancel={handleCancel}
