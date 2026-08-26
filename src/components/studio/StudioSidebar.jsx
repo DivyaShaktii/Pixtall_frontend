@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { CircleNotch, Sparkle, TShirt, User } from '@phosphor-icons/react';
+import { CircleNotch, DownloadSimple, Sparkle, TShirt, User } from '@phosphor-icons/react';
 import { Button } from '../ui/Button';
 import ProductImageUpload from '../ProductImageUpload';
 import SegmentedControl from '../ui/SegmentedControl';
@@ -40,6 +40,7 @@ export function StudioSidebar({
   isGenerating = false,
   handleCancel,
   handleGenerate,
+  handleDownloadPayload,
   
   isDemo = false,
   demoState = "upload" // 'upload' | 'configure' | 'generate'
@@ -205,6 +206,7 @@ export function StudioSidebar({
       <div className="p-6 pt-4 border-t border-white/5 shrink-0 relative bg-[#09090b]/80 backdrop-blur-xl">
         {isGenerating ? (
           <Button 
+            type="button"
             variant="outline" 
             className="w-full rounded-xl h-12 border-white/10 font-bold text-[14px] transition-all duration-300 gap-2 bg-transparent text-white hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30"
             onClick={handleCancel} 
@@ -216,8 +218,9 @@ export function StudioSidebar({
           </Button>
         ) : (
           <Button 
+            type="button"
             variant="primary" 
-            className={`w-full rounded-xl h-12 border-0 font-bold text-[14px] transition-all duration-300 gap-2 ${
+            className={`w-full rounded-xl h-12 border-0 font-bold text-[14px] transition-all duration-300 gap-2 ${isDemo ? "pointer-events-none" : "pointer-events-auto"} ${
               isDemo && demoState === "generate" ? "bg-[#84cc16] text-black shadow-[0_0_20px_rgba(132,204,22,0.3)] ring-2 ring-[#84cc16]" : "bg-white text-black hover:bg-neutral-200"
             }`}
             onClick={handleGenerate} 

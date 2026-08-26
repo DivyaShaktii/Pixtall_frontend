@@ -125,7 +125,7 @@ export function Hero({ onStart }) {
 
                     {/* DemoPlayback - Fixed to 1600x900 */}
                     <div className="w-[1600px] h-[900px] shrink-0 relative">
-                      <DemoPlayback demoState={demoState} cursor={cursor} ripples={ripples} />
+                      <DemoPlayback demoState={demoState} cursor={cursor} ripples={ripples} onStart={onStart} />
                     </div>
                   </div>
                 </div>

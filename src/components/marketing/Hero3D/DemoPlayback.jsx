@@ -13,7 +13,7 @@ const generatedImages = [
   "/hero-demo/hero-demo-result-4.png"
 ];
 
-export function DemoPlayback({ demoState, cursor, ripples }) {
+export function DemoPlayback({ demoState, cursor, ripples, onStart }) {
   const step = demoState?.step || 'upload_start';
   const isGenerating = step === 'generate';
   const hasResult = step === 'result';
@@ -132,6 +132,8 @@ export function DemoPlayback({ demoState, cursor, ripples }) {
             isDemo={true}
             demoState={demoStateMapped}
             productImageFile={showSource ? new File([], "demo.jpg") : null}
+            handleGenerate={onStart}
+            handleCancel={onStart}
           />
         </div>
       </div>

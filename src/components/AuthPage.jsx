@@ -6,6 +6,7 @@ import Interactive3DBackground from "./Interactive3DBackground";
 const DEFAULT_PASSWORD = "123456";
 const USERS_STORAGE_KEY = "ready2marketplace_users";
 const SESSION_STORAGE_KEY = "ready2marketplace_session";
+const DEMO_EMAIL = "admin@pixstall.ai";
 
 const createUserId = () => {
   if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
@@ -57,7 +58,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
     const fallback = {
       id: "default-demo-user",
       name: "Demo User",
-      email: "admin@pixtall.ai",
+      email: DEMO_EMAIL,
       password: DEFAULT_PASSWORD
     };
     const existing =
@@ -177,7 +178,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
             </div>
 
             <p className="text-xs text-zinc-400 text-center py-1">
-              Demo account · <span className="text-zinc-200 font-medium">admin@pixtall.ai</span> · <span className="text-zinc-200 font-medium">123456</span>
+              Demo account · <span className="text-zinc-200 font-medium">{DEMO_EMAIL}</span> · <span className="text-zinc-200 font-medium">123456</span>
             </p>
 
             {error && (
@@ -210,4 +211,4 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
 };
 
 export default AuthPage;
-export { SESSION_STORAGE_KEY };
+export { DEMO_EMAIL, SESSION_STORAGE_KEY };
