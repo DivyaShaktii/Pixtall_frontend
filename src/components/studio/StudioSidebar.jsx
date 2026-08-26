@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { CircleNotch, Sparkle, TShirt, User } from '@phosphor-icons/react';
+import { CircleNotch, DownloadSimple, Sparkle, TShirt, User } from '@phosphor-icons/react';
 import { Button } from '../ui/Button';
 import ProductImageUpload from '../ProductImageUpload';
 import SegmentedControl from '../ui/SegmentedControl';
@@ -33,10 +33,14 @@ export function StudioSidebar({
   numImages = 4,
   setNumImages,
   
+  imageQuality = "standard",
+  setImageQuality,
+  
   error = "",
   isGenerating = false,
   handleCancel,
   handleGenerate,
+  handleDownloadPayload,
   
   isDemo = false,
   demoState = "upload" // 'upload' | 'configure' | 'generate'
@@ -121,6 +125,31 @@ export function StudioSidebar({
         <div className="flex flex-col gap-5">
           <label className="text-white text-[11px] uppercase tracking-wider font-semibold">Output Settings</label>
           
+          {/* Quality Switcher */}
+          <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl">
+            <button 
+              onClick={() => setImageQuality?.("standard")}
+              className={`flex-1 justify-center py-2 rounded-lg font-medium text-[13px] transition-all border ${
+                imageQuality === "standard" 
+                  ? "border-[#84cc16]/50 bg-[#84cc16]/10 text-white shadow-[0_0_15px_rgba(132,204,22,0.2)]" 
+                  : "border-transparent text-neutral-500 hover:text-white"
+              }`}
+            >
+              Standard
+            </button>
+            <button 
+              onClick={() => setImageQuality?.("premium")}
+              className={`flex-1 justify-center py-2 rounded-lg font-medium text-[13px] transition-all flex items-center gap-2 border ${
+                imageQuality === "premium" 
+                  ? "border-[#84cc16]/50 bg-[#84cc16]/10 text-white shadow-[0_0_15px_rgba(132,204,22,0.2)]" 
+                  : "border-transparent text-neutral-500 hover:text-[#84cc16]"
+              }`}
+            >
+              <Sparkle size={14} weight={imageQuality === "premium" ? "fill" : "regular"} className={imageQuality === "premium" ? "text-[#84cc16]" : ""} />
+              Premium
+            </button>
+          </div>
+
           <div className="flex flex-col gap-4">
             {/* Category & Details Group */}
             <div className="flex flex-col gap-3 p-3 bg-white/[0.02] border border-white/5 rounded-xl">
@@ -177,6 +206,7 @@ export function StudioSidebar({
       <div className="p-6 pt-4 border-t border-white/5 shrink-0 relative bg-[#09090b]/80 backdrop-blur-xl">
         {isGenerating ? (
           <Button 
+            type="button"
             variant="outline" 
             className="w-full rounded-xl h-12 border-white/10 font-bold text-[14px] transition-all duration-300 gap-2 bg-transparent text-white hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30"
             onClick={handleCancel} 
@@ -188,8 +218,9 @@ export function StudioSidebar({
           </Button>
         ) : (
           <Button 
+            type="button"
             variant="primary" 
-            className={`w-full rounded-xl h-12 border-0 font-bold text-[14px] transition-all duration-300 gap-2 ${
+            className={`w-full rounded-xl h-12 border-0 font-bold text-[14px] transition-all duration-300 gap-2 ${isDemo ? "pointer-events-none" : "pointer-events-auto"} ${
               isDemo && demoState === "generate" ? "bg-[#84cc16] text-black shadow-[0_0_20px_rgba(132,204,22,0.3)] ring-2 ring-[#84cc16]" : "bg-white text-black hover:bg-neutral-200"
             }`}
             onClick={handleGenerate} 

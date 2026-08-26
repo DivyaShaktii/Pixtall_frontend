@@ -1,5 +1,5 @@
 import { useState } from "react";
-import AuthPage, { SESSION_STORAGE_KEY } from "./components/AuthPage";
+import AuthPage, { DEMO_EMAIL, SESSION_STORAGE_KEY } from "./components/AuthPage";
 import GalleryPage from "./components/GalleryPage";
 import ProductsPage from "./components/ProductsPage";
 import Sidebar from "./components/Sidebar";
@@ -17,14 +17,7 @@ const App = () => {
     return <TermsPage onStart={() => { window.location.href = '/'; }} />;
   }
 
-  const [currentUser, setCurrentUser] = useState(() => {
-    try {
-      const sessionRaw = localStorage.getItem(SESSION_STORAGE_KEY);
-      return sessionRaw ? JSON.parse(sessionRaw) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [currentUser, setCurrentUser] = useState(null);
 
   const [activeNav, setActiveNav] = useState("studio");
   const [showAuth, setShowAuth] = useState(false);
@@ -74,7 +67,7 @@ const App = () => {
 
         <main className={`flex-1 relative overflow-x-hidden scroll-smooth ${activeNav === "studio" ? "overflow-hidden bg-black" : "overflow-y-auto"}`}>
           {activeNav !== "studio" && <AmbientBackground variant="light" />}
-          {activeNav === "studio" && <StudioView />}
+          {activeNav === "studio" && <StudioView email={currentUser.email} />}
           {activeNav === "gallery" && (
             <div className="p-4 lg:p-8 w-full h-full">
               <GalleryPage email={currentUser.email} />

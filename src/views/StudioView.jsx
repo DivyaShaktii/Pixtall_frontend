@@ -20,6 +20,18 @@ import { downloadImage } from "../utils/downloadImage";
 
 const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
 const GENERATE_IMAGE_ENDPOINT = `${API_BASE_URL}/generate_image`;
+const LEGACY_DEMO_EMAIL = "admin@pixtall.ai";
+const BACKEND_DEMO_EMAIL = "admin@pixstall.ai";
+
+const getBackendError = payload => {
+  if (!payload || typeof payload !== "object") return "";
+  if (typeof payload.error === "string") return payload.error;
+  if (typeof payload.detail === "string") return payload.detail;
+  if (payload.success === false && typeof payload.message === "string") return payload.message;
+  if (payload.status === "failed" && typeof payload.message === "string") return payload.message;
+  if (typeof payload.message === "string" && /fail|error|unable/i.test(payload.message)) return payload.message;
+  return "";
+};
 
 const isAllowedModelPath = path =>
   typeof path === "string" && (
@@ -27,7 +39,7 @@ const isAllowedModelPath = path =>
     path.startsWith("data:image/")
   );
 
-export default function StudioView() {
+export default function StudioView({ email }) {
   const motionVariants = useMotionVariants();
   
   // Tools
@@ -42,7 +54,8 @@ export default function StudioView() {
   const [model, setModel] = useState("none");
   const [modelImagePath, setModelImagePath] = useState("");
   const [isModelModalOpen, setIsModelModalOpen] = useState(false);
-  const [numImages, setNumImages] = useState(4);
+  const [numImages, setNumImages] = useState(1);
+  const [imageQuality, setImageQuality] = useState("standard");
   
   // Generation State
   const [generatedImages, setGeneratedImages] = useState([null, null, null, null]);
@@ -67,7 +80,7 @@ export default function StudioView() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isGenerating, productImageFile, productCategory, productSubcategory, scene, size, model, modelImagePath]);
+  }, [isGenerating, productImageFile, productCategory, productSubcategory, scene, size, model, modelImagePath, activeTool, numImages, imageQuality, email]);
 
   // Polish: Toast timeout
   useEffect(() => {
@@ -79,9 +92,11 @@ export default function StudioView() {
   }, [successMessage]);
 
   const handleModelTypeChange = (value) => {
+    if (value !== model) {
+      setModelImagePath("");
+    }
     setModel(value);
     if (value === "none") {
-      setModelImagePath("");
       setIsModelModalOpen(false);
     } else {
       setIsModelModalOpen(true);
@@ -117,6 +132,62 @@ export default function StudioView() {
     return "";
   };
 
+  const createGenerationPayload = async () => {
+    const productImageBase64 = await fileToBase64(productImageFile);
+    let modelImageBase64 = null;
+
+    if (model !== "none") {
+      modelImageBase64 = modelImagePath.startsWith("data:image/")
+        ? modelImagePath
+        : await urlToBase64(modelImagePath);
+    }
+
+    const backendEmail = email === LEGACY_DEMO_EMAIL ? BACKEND_DEMO_EMAIL : (email || "");
+
+    return {
+      productImageBase64,
+      modelImageBase64,
+      productCategory,
+      productSubcategory,
+      scene: "studio",
+      size,
+      model,
+      intendUse: activeTool === "product-to-model" ? "marketplace" : "website",
+      numImages,
+      email: backendEmail
+    };
+  };
+
+  const handleDownloadPayload = async () => {
+    setError("");
+    setSuccessMessage("");
+    setShowToast(false);
+
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    try {
+      const payload = await createGenerationPayload();
+      const payloadBlob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json"
+      });
+      const downloadUrl = URL.createObjectURL(payloadBlob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = downloadUrl;
+      downloadLink.download = `pixtall-request-payload-${Date.now()}.json`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      URL.revokeObjectURL(downloadUrl);
+      setSuccessMessage("Payload downloaded for Postman testing.");
+    } catch (err) {
+      setError(err.message || "Could not create the payload file.");
+    }
+  };
+
   const handleGenerate = async () => {
     setError("");
     setSuccessMessage("");
@@ -135,36 +206,18 @@ export default function StudioView() {
     abortControllerRef.current = new AbortController();
 
     try {
-      const productImageBase64 = await fileToBase64(productImageFile);
-      let modelImageBase64 = "";
-      if (model !== "none") {
-        if (modelImagePath.startsWith("data:image/")) {
-          modelImageBase64 = modelImagePath;
-        } else {
-          modelImageBase64 = await urlToBase64(modelImagePath);
-        }
-      }
+      const payload = await createGenerationPayload();
 
       const response = await fetch(GENERATE_IMAGE_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: abortControllerRef.current.signal,
-        body: JSON.stringify({
-          productImage: productImageBase64,
-          productCategory,
-          productSubcategory,
-          scene,
-          size,
-          model,
-          modelImage: modelImageBase64,
-          intendUse: "marketplace",
-          numImages
-        })
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.detail || `Server returned ${response.status}`);
+        throw new Error(getBackendError(errData) || `Server returned ${response.status}`);
       }
 
       if (!response.body) throw new Error("No response body returned from server.");
@@ -173,6 +226,26 @@ export default function StudioView() {
       const decoder = new TextDecoder("utf-8");
       let buffer = "";
       let newlyGeneratedCount = 0;
+      const backendErrors = [];
+
+      const processPayload = parsed => {
+        const backendError = getBackendError(parsed);
+        if (backendError) {
+          backendErrors.push(backendError);
+          return;
+        }
+
+        const imageSrc = parsed?.image || parsed?.imageUrl || parsed?.imageBase64;
+        if (!imageSrc) return;
+
+        const slotIndex = typeof parsed.index === "number" ? parsed.index : newlyGeneratedCount;
+        setGeneratedImages(prev => {
+          const updated = [...prev];
+          updated[slotIndex] = imageSrc;
+          return updated;
+        });
+        newlyGeneratedCount++;
+      };
 
       while (true) {
         const { value, done } = await reader.read();
@@ -185,39 +258,31 @@ export default function StudioView() {
         for (const line of lines) {
           if (!line.trim()) continue;
           try {
-            const parsed = JSON.parse(line);
-            if (parsed.error) {
-              setError(parsed.error);
-            } else if (parsed.image && typeof parsed.index === "number") {
-              setGeneratedImages(prev => {
-                const updated = [...prev];
-                updated[parsed.index] = parsed.image;
-                return updated;
-              });
-              newlyGeneratedCount++;
-            }
+            processPayload(JSON.parse(line));
           } catch (e) {
             console.warn("Failed to parse NDJSON line:", line, e);
+            backendErrors.push("The server returned an unreadable response.");
           }
         }
       }
 
+      buffer += decoder.decode();
       if (buffer.trim()) {
         try {
-          const parsed = JSON.parse(buffer);
-          if (parsed.image && typeof parsed.index === "number") {
-            setGeneratedImages(prev => {
-              const updated = [...prev];
-              updated[parsed.index] = parsed.image;
-              return updated;
-            });
-            newlyGeneratedCount++;
-          }
+          processPayload(JSON.parse(buffer));
         } catch (e) {
-          // ignore
+          console.warn("Failed to parse NDJSON final buffer:", buffer, e);
+          backendErrors.push("The server returned an unreadable response.");
         }
       }
-      
+
+      if (newlyGeneratedCount === 0) {
+        throw new Error(backendErrors[0] || "The backend completed the request but returned no images.");
+      }
+
+      if (backendErrors.length > 0) {
+        setError(`${newlyGeneratedCount} image(s) generated; ${backendErrors.length} failed: ${backendErrors[0]}`);
+      }
       setSuccessMessage(`Successfully generated ${newlyGeneratedCount} image(s).`);
     } catch (err) {
       if (err.name === 'AbortError') {
@@ -348,10 +413,13 @@ export default function StudioView() {
         setHoveredSize={setHoveredSize}
         numImages={numImages}
         setNumImages={setNumImages}
+        imageQuality={imageQuality}
+        setImageQuality={setImageQuality}
         error={error}
         isGenerating={isGenerating}
         handleCancel={handleCancel}
         handleGenerate={handleGenerate}
+        handleDownloadPayload={handleDownloadPayload}
         isDemo={false}
       />
 
