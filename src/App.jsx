@@ -56,7 +56,7 @@ const App = () => {
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-col-reverse lg:flex-row flex-1 overflow-hidden">
         <Sidebar
           active={activeNav}
           onNavigate={setActiveNav}
@@ -65,7 +65,7 @@ const App = () => {
           creditsTotal={10}
         />
 
-        <main className={`flex-1 relative overflow-x-hidden scroll-smooth ${activeNav === "studio" ? "overflow-hidden bg-black" : "overflow-y-auto"}`}>
+        <main className={`flex-1 relative overflow-x-hidden scroll-smooth ${activeNav === "studio" ? "overflow-y-auto lg:overflow-hidden bg-black" : "overflow-y-auto"}`}>
           {activeNav !== "studio" && <AmbientBackground variant="light" />}
           {activeNav === "studio" && <StudioView email={currentUser.email} />}
           {activeNav === "gallery" && (

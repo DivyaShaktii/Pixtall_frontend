@@ -69,10 +69,7 @@ export const generationConfig = {
     { label: "Studio", value: "studio" },
     { label: "Outdoor", value: "outdoor" },
     { label: "Indoor", value: "indoor" },
-    { label: "Lifestyle", value: "lifestyle" },
-    { label: "Minimal", value: "minimal" },
-    { label: "Luxury", value: "luxury" },
-    { label: "Natural", value: "natural" }
+    { label: "Lifestyle", value: "lifestyle" }
   ],
   sizes: [
     { label: "9:16", value: "9:16" },

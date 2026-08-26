@@ -51,7 +51,7 @@ export function StudioSidebar({
   );
 
   return (
-    <div className="w-full lg:w-[320px] shrink-0 border-l border-white/5 bg-[#09090b]/80 backdrop-blur-xl flex flex-col h-full relative z-10 min-h-0 font-sans">
+    <div className="w-full lg:w-[320px] shrink-0 border-t lg:border-t-0 lg:border-l border-white/5 bg-[#09090b]/80 backdrop-blur-xl flex flex-col h-auto lg:h-full relative z-10 min-h-0 font-sans">
       
       {/* Tool Switcher */}
       <div className="p-6 pb-4 shrink-0">
@@ -78,7 +78,7 @@ export function StudioSidebar({
       </div>
 
       {/* Scrollable control content */}
-      <div className="flex-1 overflow-y-auto px-6 pb-6 flex flex-col gap-8">
+      <div className="flex-1 overflow-visible lg:overflow-y-auto px-6 pb-6 flex flex-col gap-8">
         
         {/* Source Material Upload */}
         <div className="flex flex-col gap-3">

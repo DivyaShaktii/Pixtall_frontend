@@ -16,7 +16,7 @@ const Sidebar = ({ active, onNavigate, currentUser, creditsUsed, creditsTotal })
   const workspaceName = currentUser?.workspace || "Personal Workspace";
 
   return (
-    <aside className="w-[72px] lg:w-[220px] bg-cloud border-r border-line flex flex-col h-full flex-shrink-0 transition-all duration-300 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+    <aside className="w-full lg:w-[220px] bg-cloud border-t lg:border-t-0 lg:border-r border-line flex flex-row lg:flex-col h-[72px] lg:h-full flex-shrink-0 transition-all duration-300 z-20 shadow-[4px_-4px_24px_rgba(0,0,0,0.02)] lg:shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
       
       {/* Workspace Selector (Visual Only) */}
       <div className="p-4 shrink-0 hidden lg:block">
@@ -34,14 +34,8 @@ const Sidebar = ({ active, onNavigate, currentUser, creditsUsed, creditsTotal })
         </button>
       </div>
 
-      <div className="p-4 shrink-0 lg:hidden flex justify-center">
-        <div className="w-8 h-8 rounded bg-accent text-white flex items-center justify-center font-bold text-sm">
-          {workspaceName.charAt(0).toUpperCase()}
-        </div>
-      </div>
-
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-2 space-y-1.5 overflow-y-auto">
+      <nav className="flex-1 flex flex-row lg:flex-col px-2 lg:px-3 py-2 space-x-2 lg:space-x-0 lg:space-y-1.5 overflow-x-auto lg:overflow-y-auto items-center justify-around lg:justify-start">
         <div className="mb-2 px-3 text-xs font-semibold text-slate uppercase tracking-wider hidden lg:block">Main</div>
         {NAV_ITEMS.map(item => {
           const Icon = item.icon;
@@ -50,7 +44,7 @@ const Sidebar = ({ active, onNavigate, currentUser, creditsUsed, creditsTotal })
             <button
               type="button"
               key={item.id}
-              className={`w-full flex items-center justify-center lg:justify-start gap-3 lg:px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 relative group ${
+              className={`flex-1 lg:w-full flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1 lg:gap-3 px-1 lg:px-3 py-2 lg:py-2.5 rounded-lg text-[10px] lg:text-sm font-medium transition-colors duration-200 relative group ${
                 isActive 
                   ? "text-ink font-semibold" 
                   : "text-slate hover:text-ink"
@@ -71,12 +65,12 @@ const Sidebar = ({ active, onNavigate, currentUser, creditsUsed, creditsTotal })
               {isActive && (
                 <motion.div 
                   layoutId="sidebar-active-indicator"
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[4px] h-3/5 bg-accent rounded-r-md z-10 shadow-[0_0_8px_var(--color-accent)]"
+                  className="absolute bottom-0 lg:bottom-auto lg:left-0 top-auto lg:top-1/2 lg:-translate-y-1/2 w-[20px] lg:w-[4px] h-[3px] lg:h-3/5 bg-accent rounded-t-md lg:rounded-r-md lg:rounded-t-none z-10 shadow-[0_0_8px_var(--color-accent)]"
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               )}
               <Icon size={20} weight={isActive ? "fill" : "regular"} className={`relative z-10 transition-colors ${isActive ? "text-accent" : "group-hover:text-ink"}`} />
-              <span className="hidden lg:inline relative z-10">{item.label}</span>
+              <span className="inline lg:inline relative z-10 truncate max-w-full">{item.label}</span>
             </button>
           );
         })}

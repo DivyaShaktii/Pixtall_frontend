@@ -312,8 +312,7 @@ export default function StudioView({ email }) {
       variants={motionVariants.pageEntrance}
       initial="initial"
       animate="animate"
-      exit="exit"
-      className="flex flex-col lg:flex-row h-[calc(100vh-64px)] w-full font-sans relative bg-black overflow-hidden"
+      className="flex flex-col lg:flex-row h-auto min-h-full lg:h-full w-full font-sans relative bg-black overflow-visible lg:overflow-hidden"
     >
       {/* Cinematic Studio Background */}
       <div className="pointer-events-none absolute inset-0 z-0">
@@ -341,7 +340,7 @@ export default function StudioView({ email }) {
       {/* ═══════════════════════════════════════════════
           LEFT: Canvas Panel (flex-1, full height)
           ═══════════════════════════════════════════════ */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative z-10">
+      <div className="flex-1 flex flex-col min-h-[50vh] lg:min-h-0 overflow-hidden relative z-10">
         <div className="flex-1 w-full overflow-hidden flex flex-col bg-transparent min-h-0">
           {/* Canvas header */}
           <div className="flex items-center justify-between p-4 border-b border-line bg-paper/40 backdrop-blur-md shrink-0">
