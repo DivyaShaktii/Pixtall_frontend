@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AuthPage, { DEMO_EMAIL, SESSION_STORAGE_KEY } from "./components/AuthPage";
 import GalleryPage from "./components/GalleryPage";
 import ProductsPage from "./components/ProductsPage";
@@ -10,6 +10,16 @@ import SettingsPage from "./views/SettingsPage";
 import BillingPage from "./views/BillingPage";
 import AmbientBackground from "./components/AmbientBackground";
 import TermsPage from "./views/legal/TermsPage";
+import { SYSTEM_API_BASE_URL } from "./utils/apiConfig";
+
+const readStoredSession = () => {
+  try {
+    const session = JSON.parse(localStorage.getItem(SESSION_STORAGE_KEY) || "null");
+    return session && typeof session.email === "string" ? session : null;
+  } catch {
+    return null;
+  }
+};
 
 const App = () => {
   const path = window.location.pathname;
@@ -17,14 +27,34 @@ const App = () => {
     return <TermsPage onStart={() => { window.location.href = '/'; }} />;
   }
 
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(readStoredSession);
 
   const [activeNav, setActiveNav] = useState("studio");
   const [showAuth, setShowAuth] = useState(false);
+  const [wallet, setWallet] = useState(null);
+  const [walletError, setWalletError] = useState("");
+
+  const refreshWallet = useCallback(async () => {
+    if (!currentUser) return;
+    try {
+      const response = await fetch(`${SYSTEM_API_BASE_URL}/v1/wallet`);
+      if (!response.ok) throw new Error(`Wallet request returned ${response.status}`);
+      setWallet(await response.json());
+      setWalletError("");
+    } catch (error) {
+      console.error("Could not load wallet", error);
+      setWalletError("Credits unavailable");
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    refreshWallet();
+  }, [refreshWallet]);
 
   const handleLogout = () => {
     localStorage.removeItem(SESSION_STORAGE_KEY);
     setCurrentUser(null);
+    setWallet(null);
     setShowAuth(false);
   };
 
@@ -61,13 +91,13 @@ const App = () => {
           active={activeNav}
           onNavigate={setActiveNav}
           currentUser={currentUser}
-          creditsUsed={4}
-          creditsTotal={10}
+          wallet={wallet}
+          walletError={walletError}
         />
 
         <main className={`flex-1 relative overflow-x-hidden scroll-smooth ${activeNav === "studio" ? "overflow-y-auto lg:overflow-hidden bg-black" : "overflow-y-auto"}`}>
           {activeNav !== "studio" && <AmbientBackground variant="light" />}
-          {activeNav === "studio" && <StudioView email={currentUser.email} />}
+          {activeNav === "studio" && <StudioView onWalletChange={refreshWallet} />}
           {activeNav === "gallery" && (
             <div className="p-4 lg:p-8 w-full h-full">
               <GalleryPage email={currentUser.email} />

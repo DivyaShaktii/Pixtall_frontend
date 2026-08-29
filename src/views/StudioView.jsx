@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import ModelSelector from "../components/ModelSelector";
 import { StudioCanvasGrid } from "../components/studio/StudioCanvasGrid";
 import { StudioSidebar } from "../components/studio/StudioSidebar";
@@ -7,7 +7,7 @@ import BeforeAfterSlider from "../components/BeforeAfterSlider";
 import { generationConfig } from "../config/generationConfig";
 import { fileToBase64 } from "../utils/fileToBase64";
 import { urlToBase64 } from "../utils/urlToBase64";
-import { API_BASE_URL } from "../utils/apiConfig";
+import { SYSTEM_API_BASE_URL } from "../utils/apiConfig";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMotionVariants } from "../lib/motion";
 
@@ -19,19 +19,27 @@ import { Image, Sparkle, DownloadSimple, CircleNotch, TShirt, User, CheckCircle,
 import { downloadImage } from "../utils/downloadImage";
 
 const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
-const GENERATE_IMAGE_ENDPOINT = `${API_BASE_URL}/generate_image`;
-const LEGACY_DEMO_EMAIL = "admin@pixtall.ai";
-const BACKEND_DEMO_EMAIL = "admin@pixstall.ai";
+const JOBS_ENDPOINT = `${SYSTEM_API_BASE_URL}/v1/generation-jobs`;
+const TERMINAL_JOB_STATUSES = new Set(["completed", "partially_completed", "failed"]);
+const POLL_INTERVAL_MS = 1500;
 
-const getBackendError = payload => {
+const getApiError = payload => {
   if (!payload || typeof payload !== "object") return "";
-  if (typeof payload.error === "string") return payload.error;
   if (typeof payload.detail === "string") return payload.detail;
-  if (payload.success === false && typeof payload.message === "string") return payload.message;
-  if (payload.status === "failed" && typeof payload.message === "string") return payload.message;
-  if (typeof payload.message === "string" && /fail|error|unable/i.test(payload.message)) return payload.message;
   return "";
 };
+
+const wait = (milliseconds, signal) => new Promise((resolve, reject) => {
+  const handleAbort = () => {
+    window.clearTimeout(timeout);
+    reject(new DOMException("Polling stopped", "AbortError"));
+  };
+  const timeout = window.setTimeout(() => {
+    signal.removeEventListener("abort", handleAbort);
+    resolve();
+  }, milliseconds);
+  signal.addEventListener("abort", handleAbort, { once: true });
+});
 
 const isAllowedModelPath = path =>
   typeof path === "string" && (
@@ -39,7 +47,7 @@ const isAllowedModelPath = path =>
     path.startsWith("data:image/")
   );
 
-export default function StudioView({ email }) {
+export default function StudioView({ onWalletChange }) {
   const motionVariants = useMotionVariants();
   
   // Tools
@@ -60,6 +68,7 @@ export default function StudioView({ email }) {
   // Generation State
   const [generatedImages, setGeneratedImages] = useState([null, null, null, null]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [jobStatus, setJobStatus] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   
@@ -80,7 +89,7 @@ export default function StudioView({ email }) {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isGenerating, productImageFile, productCategory, productSubcategory, scene, size, model, modelImagePath, activeTool, numImages, imageQuality, email]);
+  }, [isGenerating, productImageFile, productCategory, productSubcategory, scene, size, model, modelImagePath, activeTool, numImages, imageQuality]);
 
   // Polish: Toast timeout
   useEffect(() => {
@@ -142,20 +151,32 @@ export default function StudioView({ email }) {
         : await urlToBase64(modelImagePath);
     }
 
-    const backendEmail = email === LEGACY_DEMO_EMAIL ? BACKEND_DEMO_EMAIL : (email || "");
-
     return {
-      productImageBase64,
-      modelImageBase64,
-      productCategory,
-      productSubcategory,
-      scene: "studio",
+      product_image_base64: productImageBase64,
+      model_image_base64: modelImageBase64,
+      product_category: productCategory,
+      product_subcategory: productSubcategory,
+      scene,
       size,
       model,
-      intendUse: activeTool === "product-to-model" ? "marketplace" : "website",
-      numImages,
-      email: backendEmail
+      intended_use: activeTool === "product-to-model" ? "marketplace" : "website",
+      image_count: numImages,
+      quality: imageQuality
     };
+  };
+
+  const pollJob = async (jobId, signal) => {
+    while (!signal.aborted) {
+      const response = await fetch(`${JOBS_ENDPOINT}/${jobId}`, { signal });
+      const job = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(getApiError(job) || `Could not retrieve job (${response.status})`);
+      }
+      setJobStatus(job.status);
+      if (TERMINAL_JOB_STATUSES.has(job.status)) return job;
+      await wait(POLL_INTERVAL_MS, signal);
+    }
+    throw new DOMException("Polling stopped", "AbortError");
   };
 
   const handleDownloadPayload = async () => {
@@ -200,99 +221,59 @@ export default function StudioView({ email }) {
     }
 
     setIsGenerating(true);
+    setJobStatus("submitting");
     setGeneratedImages([null, null, null, null]);
-    
-    // Setup abort controller
     abortControllerRef.current = new AbortController();
 
     try {
       const payload = await createGenerationPayload();
-
-      const response = await fetch(GENERATE_IMAGE_ENDPOINT, {
+      const idempotencyKey = typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : `generation-${Date.now()}`;
+      const response = await fetch(JOBS_ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": idempotencyKey
+        },
         signal: abortControllerRef.current.signal,
         body: JSON.stringify(payload)
       });
-
+      const submittedJob = await response.json().catch(() => ({}));
       if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(getBackendError(errData) || `Server returned ${response.status}`);
+        throw new Error(getApiError(submittedJob) || `Could not create job (${response.status})`);
       }
+      setJobStatus(submittedJob.status);
+      await onWalletChange?.();
 
-      if (!response.body) throw new Error("No response body returned from server.");
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder("utf-8");
-      let buffer = "";
-      let newlyGeneratedCount = 0;
-      const backendErrors = [];
-
-      const processPayload = parsed => {
-        const backendError = getBackendError(parsed);
-        if (backendError) {
-          backendErrors.push(backendError);
-          return;
-        }
-
-        const imageSrc = parsed?.image || parsed?.imageUrl || parsed?.imageBase64;
-        if (!imageSrc) return;
-
-        const slotIndex = typeof parsed.index === "number" ? parsed.index : newlyGeneratedCount;
-        setGeneratedImages(prev => {
-          const updated = [...prev];
-          updated[slotIndex] = imageSrc;
-          return updated;
-        });
-        newlyGeneratedCount++;
-      };
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          if (!line.trim()) continue;
-          try {
-            processPayload(JSON.parse(line));
-          } catch (e) {
-            console.warn("Failed to parse NDJSON line:", line, e);
-            backendErrors.push("The server returned an unreadable response.");
-          }
-        }
+      const completedJob = await pollJob(
+        submittedJob.id,
+        abortControllerRef.current.signal
+      );
+      const nextImages = [null, null, null, null];
+      completedJob.outputs.forEach(output => {
+        if (output.result_reference) nextImages[output.output_index] = output.result_reference;
+      });
+      setGeneratedImages(nextImages);
+      const completedCount = nextImages.filter(Boolean).length;
+      if (completedCount === 0) {
+        throw new Error(completedJob.safe_error || "The generation job failed.");
       }
-
-      buffer += decoder.decode();
-      if (buffer.trim()) {
-        try {
-          processPayload(JSON.parse(buffer));
-        } catch (e) {
-          console.warn("Failed to parse NDJSON final buffer:", buffer, e);
-          backendErrors.push("The server returned an unreadable response.");
-        }
+      if (completedJob.status === "partially_completed") {
+        setError(`${completedCount} of ${numImages} images completed. Unused credits were returned.`);
       }
-
-      if (newlyGeneratedCount === 0) {
-        throw new Error(backendErrors[0] || "The backend completed the request but returned no images.");
-      }
-
-      if (backendErrors.length > 0) {
-        setError(`${newlyGeneratedCount} image(s) generated; ${backendErrors.length} failed: ${backendErrors[0]}`);
-      }
-      setSuccessMessage(`Successfully generated ${newlyGeneratedCount} image(s).`);
+      setSuccessMessage(`${completedCount} image${completedCount === 1 ? "" : "s"} generated.`);
     } catch (err) {
       if (err.name === 'AbortError') {
-        console.log("Generation cancelled by user.");
+        setError("Stopped waiting. If the job was accepted, it will continue in the background.");
       } else {
         console.error(err);
         setError(err.message || "An error occurred during generation.");
       }
     } finally {
+      await onWalletChange?.();
       setIsGenerating(false);
+      setJobStatus("");
       abortControllerRef.current = null;
     }
   };
@@ -302,6 +283,13 @@ export default function StudioView({ email }) {
       abortControllerRef.current.abort();
     }
   };
+
+  const statusLabel = {
+    submitting: "Reserving credits…",
+    queued: "Queued…",
+    processing: "Rendering…",
+    retrying: "Retrying…"
+  }[jobStatus] || "Rendering…";
 
   const productImageUrl = useMemo(() => {
     return productImageFile ? URL.createObjectURL(productImageFile) : null;
@@ -353,7 +341,7 @@ export default function StudioView({ email }) {
                   {activeTool === "product-to-model" ? "Marketplace Studio" : "Personal Studio"}
                 </h3>
                 <p className="text-xs text-slate m-0">
-                  {isGenerating ? "Rendering..." : "Generate and compare."}
+                  {isGenerating ? statusLabel : "Generate and compare."}
                 </p>
               </div>
             </div>
@@ -416,6 +404,7 @@ export default function StudioView({ email }) {
         setImageQuality={setImageQuality}
         error={error}
         isGenerating={isGenerating}
+        generationStatus={statusLabel}
         handleCancel={handleCancel}
         handleGenerate={handleGenerate}
         handleDownloadPayload={handleDownloadPayload}
