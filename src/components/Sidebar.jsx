@@ -10,9 +10,12 @@ const NAV_ITEMS = [
   { id: "settings", label: "Settings", icon: Gear }
 ];
 
-const Sidebar = ({ active, onNavigate, currentUser, creditsUsed, creditsTotal }) => {
-  const remaining = Math.max(creditsTotal - creditsUsed, 0);
-  const percentUsed = creditsTotal > 0 ? Math.round((creditsUsed / creditsTotal) * 100) : 100;
+const Sidebar = ({ active, onNavigate, currentUser, wallet, walletError }) => {
+  const remaining = wallet?.available_credits;
+  const reserved = wallet?.reserved_credits ?? 0;
+  const consumed = wallet?.lifetime_consumed_credits ?? 0;
+  const trackedTotal = (remaining ?? 0) + reserved + consumed;
+  const percentUsed = trackedTotal > 0 ? Math.round(((reserved + consumed) / trackedTotal) * 100) : 0;
   const workspaceName = currentUser?.workspace || "Personal Workspace";
 
   return (
@@ -27,7 +30,7 @@ const Sidebar = ({ active, onNavigate, currentUser, creditsUsed, creditsTotal })
             </div>
             <div className="flex flex-col items-start">
               <span className="text-sm font-medium text-ink leading-tight truncate max-w-[100px]">{workspaceName}</span>
-              <span className="text-[10px] uppercase font-bold text-slate tracking-wider">Pro Plan</span>
+              <span className="text-[10px] uppercase font-bold text-slate tracking-wider">Secure account</span>
             </div>
           </div>
           <CaretUpDown size={14} className="text-slate group-hover:text-ink transition-colors" />
@@ -82,17 +85,26 @@ const Sidebar = ({ active, onNavigate, currentUser, creditsUsed, creditsTotal })
           <div className="flex justify-between items-end mb-2 relative z-10">
             <span className="text-[11px] font-bold text-slate uppercase tracking-wider">Credits</span>
             <span className={`text-sm font-bold ${remaining === 0 ? "text-danger" : "text-ink"}`}>
-              {remaining} left
+              {walletError || (remaining == null ? "Loading…" : `${remaining} left`)}
             </span>
           </div>
+          {reserved > 0 && (
+            <p className="text-[11px] text-slate mb-3 relative z-10">
+              {reserved} reserved for active jobs
+            </p>
+          )}
           <div className="h-1.5 w-full bg-cloud-2 rounded-full overflow-hidden mb-3 relative z-10 shadow-inner border border-line-2">
             <div 
               className={`h-full transition-all duration-500 ease-out ${remaining === 0 ? "bg-danger" : "bg-accent"}`} 
               style={{ width: `${percentUsed}%` }} 
             />
           </div>
-          <button className="w-full text-xs font-bold bg-accent hover:bg-accent-ink text-white py-2 rounded-lg transition-all shadow-sm active:scale-95 border border-transparent relative z-10 hover:shadow-md">
-            Upgrade Plan
+          <button
+            type="button"
+            onClick={() => onNavigate("billing")}
+            className="w-full text-xs font-bold bg-accent hover:bg-accent-ink text-paper py-2 rounded-lg transition-all active:scale-95 border border-transparent relative z-10"
+          >
+            Manage billing
           </button>
         </div>
       </div>

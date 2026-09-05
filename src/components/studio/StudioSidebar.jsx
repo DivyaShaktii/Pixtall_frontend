@@ -38,6 +38,7 @@ export function StudioSidebar({
   
   error = "",
   isGenerating = false,
+  generationStatus = "Rendering…",
   handleCancel,
   handleGenerate,
   handleDownloadPayload,
@@ -214,7 +215,7 @@ export function StudioSidebar({
             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
               <CircleNotch size={18} weight="bold" />
             </motion.div>
-            Cancel Generation
+            Stop Waiting · {generationStatus}
           </Button>
         ) : (
           <Button 

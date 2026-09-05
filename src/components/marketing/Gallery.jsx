@@ -3,12 +3,114 @@ import { motion } from 'framer-motion';
 import { RevealText } from './RevealText';
 
 const images = [
-  "/gallery/ecom_1.png",
-  "/gallery/ecom_2.png",
-  "/gallery/ecom_3.png",
-  "/gallery/stallpix-generated-1.png",
-  "/gallery/stallpix-generated-2.png",
-  "/gallery/stallpix-generated-3.png"
+  {
+    src: "/gallery/catalog-indian-menswear-v2.webp",
+    alt: "AI-generated Indian menswear portrait with a charcoal shirt and ivory tailored trousers"
+  },
+  {
+    src: "/gallery/catalog-retro-basketball-sneakers-v2.webp",
+    alt: "AI-generated catalog photo of logo-free red, black, and ivory high-top basketball sneakers"
+  },
+  {
+    src: "/gallery/catalog-velora-skincare.webp",
+    alt: "AI-generated product photo of VELORA Hydrating Serum and Daily Moisturizer"
+  },
+  {
+    src: "/gallery/catalog-satin-dress.webp",
+    alt: "AI-generated catalog photo of a model wearing a burgundy satin midi dress"
+  },
+  {
+    src: "/gallery/stallpix-generated-1.png",
+    alt: "AI-generated product photo of a rose-gold mesh-strap watch on a wrist"
+  },
+  {
+    src: "/gallery/stallpix-generated-3.png",
+    alt: "AI-generated portrait of a model wearing a pink floral jewelry set"
+  },
+  {
+    src: "/gallery/catalog-indian-rings.webp",
+    alt: "AI-generated close-up of gold rings on a hand resting on rose-colored saree fabric"
+  },
+  {
+    src: "/gallery/catalog-watch-editorial.webp",
+    alt: "AI-generated close-up of a rose-gold mesh watch styled with a charcoal jacket on a walnut surface"
+  },
+  {
+    src: "/gallery/catalog-fullbody-emerald-saree.webp",
+    alt: "AI-generated full-body Indian model in an emerald silk saree with gold polki earrings and sandals"
+  },
+  {
+    src: "/gallery/catalog-fullbody-sneaker-streetwear.webp",
+    alt: "AI-generated full-body Indian model in a burgundy jacket and charcoal jeans wearing logo-free high-top sneakers"
+  },
+  {
+    src: "/gallery/catalog-studio-jewelry-earrings-v1.webp",
+    alt: "AI-generated close-up of an Indian model wearing a gold polki and pearl earring with a small dusty-rose saree accent"
+  },
+  {
+    src: "/gallery/catalog-studio-fashion-shirt-v1.webp",
+    alt: "AI-generated Indian model wearing a sage-green linen shirt with stone-colored trousers"
+  },
+  {
+    src: "/gallery/catalog-studio-fashion-jeans-v1.webp",
+    alt: "AI-generated product-focused view of straight-leg indigo jeans worn with an ivory top and flats"
+  },
+  {
+    src: "/gallery/catalog-studio-fashion-skirt-v1.webp",
+    alt: "AI-generated product-focused view of a camel pleated midi skirt worn with an ivory top"
+  },
+  {
+    src: "/gallery/catalog-studio-accessories-bag-v1.webp",
+    alt: "AI-generated close-up of a cognac leather handbag with gold hardware held by an Indian model"
+  },
+  {
+    src: "/gallery/catalog-studio-accessories-watch-v1.webp",
+    alt: "AI-generated close-up of a blue-dial steel watch with a brown leather strap on a wrist"
+  },
+  {
+    src: "/gallery/catalog-studio-beauty-lipstick-v1.webp",
+    alt: "AI-generated VELORA rose-nude lipstick in a champagne-metal tube with its cap"
+  },
+  {
+    src: "/gallery/catalog-studio-beauty-perfume-v1.webp",
+    alt: "AI-generated VELORA Amber perfume in a clear glass bottle with a dark wooden cap"
+  },
+  {
+    src: "/gallery/catalog-studio-beauty-skincare-v1.webp",
+    alt: "AI-generated VELORA Hydrating Serum and Daily Moisturizer with readable product labels"
+  },
+  {
+    src: "/gallery/catalog-studio-food-packaged_food-v1.webp",
+    alt: "AI-generated PANTRY Basmati Rice pouch with a transparent product window"
+  },
+  {
+    src: "/gallery/catalog-studio-jewelry-ring-v1.webp",
+    alt: "AI-generated close-up of a gold ring with a pale-green stone worn on a hand"
+  },
+  {
+    src: "/gallery/catalog-studio-jewelry-necklace-v1.webp",
+    alt: "AI-generated close-up of a gold necklace with a teardrop pendant and pearl worn by an Indian model"
+  },
+  {
+    src: "/gallery/catalog-studio-jewelry-bracelet-v1.webp",
+    alt: "AI-generated close-up of a delicate gold link bracelet with clear stones on a wrist"
+  },
+  {
+    src: "/gallery/catalog-studio-footwear-sneakers-v1.webp",
+    alt: "AI-generated logo-free ivory, burgundy, and black retro basketball high-top sneakers"
+  },
+  {
+    src: "/gallery/catalog-studio-footwear-boots-v1.webp",
+    alt: "AI-generated dark-brown leather Chelsea boots with elastic side panels"
+  },
+  {
+    src: "/gallery/catalog-studio-footwear-sandals-v1.webp",
+    alt: "AI-generated tan leather crossover sandals with buckled ankle straps"
+  },
+  {
+    src: "/gallery/catalog-studio-footwear-heels-v1.webp",
+    alt: "AI-generated champagne-beige slingback pumps with pointed toes and block heels"
+  }
 ];
 
 export function Gallery() {
@@ -32,9 +134,9 @@ export function Gallery() {
         </div>
 
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-          {images.map((src, i) => (
+          {images.map(({ src, alt }, i) => (
             <motion.div
-              key={i}
+              key={src}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
@@ -43,7 +145,7 @@ export function Gallery() {
             >
               <img 
                 src={src} 
-                alt="AI Generated Fashion Model" 
+                alt={alt}
                 className="w-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
                 loading="lazy"
               />

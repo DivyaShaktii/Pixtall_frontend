@@ -2,9 +2,14 @@ node_modules/
 dist/
 .DS_Store
 .env
+.env.local
+.env.*.local
 scratch/
 .agent/
 .agents/
 .claude/
 .impeccable/
 .cursor/
+curl_output.txt
+diff_*.txt
+output/
