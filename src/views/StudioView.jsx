@@ -8,6 +8,7 @@ import { generationConfig } from "../config/generationConfig";
 import { fileToBase64 } from "../utils/fileToBase64";
 import { urlToBase64 } from "../utils/urlToBase64";
 import { SYSTEM_API_BASE_URL } from "../utils/apiConfig";
+import { authenticatedFetch } from "../lib/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMotionVariants } from "../lib/motion";
 
@@ -167,7 +168,7 @@ export default function StudioView({ onWalletChange }) {
 
   const pollJob = async (jobId, signal) => {
     while (!signal.aborted) {
-      const response = await fetch(`${JOBS_ENDPOINT}/${jobId}`, { signal });
+      const response = await authenticatedFetch(`${JOBS_ENDPOINT}/${jobId}`, { signal });
       const job = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new Error(getApiError(job) || `Could not retrieve job (${response.status})`);
@@ -230,7 +231,7 @@ export default function StudioView({ onWalletChange }) {
       const idempotencyKey = typeof crypto.randomUUID === "function"
         ? crypto.randomUUID()
         : `generation-${Date.now()}`;
-      const response = await fetch(JOBS_ENDPOINT, {
+      const response = await authenticatedFetch(JOBS_ENDPOINT, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

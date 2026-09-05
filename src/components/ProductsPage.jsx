@@ -1,26 +1,21 @@
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../utils/apiConfig";
+import { SYSTEM_API_BASE_URL } from "../utils/apiConfig";
 import { downloadImage } from "../utils/downloadImage";
+import { authenticatedFetch } from "../lib/api";
 
 /**
  * Fetches this user's uploaded product photos from the backend
- * (GET /products?email=...). Photos are pre-signed S3 URLs.
+ * (GET /products). Photos are pre-signed S3 URLs.
  */
-const ProductsPage = ({ email }) => {
+const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [status, setStatus] = useState("loading"); // loading | ready | error
 
   useEffect(() => {
-    if (!email) {
-      setProducts([]);
-      setStatus("ready");
-      return;
-    }
-
     let cancelled = false;
     setStatus("loading");
 
-    fetch(`${API_BASE_URL}/products?email=${encodeURIComponent(email)}`)
+    authenticatedFetch(`${SYSTEM_API_BASE_URL}/v1/products`)
       .then(response => {
         if (!response.ok) throw new Error(`Server responded with ${response.status}`);
         return response.json();
@@ -36,7 +31,7 @@ const ProductsPage = ({ email }) => {
       });
 
     return () => { cancelled = true; };
-  }, [email]);
+  }, []);
 
   return (
     <div className="gallery-page">

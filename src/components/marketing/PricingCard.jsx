@@ -111,7 +111,7 @@ export function PricingCard({ plan, index, onStart }) {
       <motion.button 
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        onClick={onStart}
+        onClick={() => onStart?.(plan.id)}
         className={`w-full py-4 px-4 mt-auto rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center ${
           ctaPrimary
             ? 'bg-accent text-paper hover:bg-accent-ink shadow-[0_4px_14px_0_rgba(132,204,22,0.39)]' 

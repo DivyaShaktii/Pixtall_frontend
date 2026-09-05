@@ -214,7 +214,7 @@ const TermsPage = ({ onStart }) => {
               transition={{ delay: 0.3 }}
               className="text-sm font-medium text-[#a3e635]"
             >
-              Last Updated: July 2026
+              Last Updated: September 3, 2026
             </motion.div>
 
             <FloatingGlassDocument />
@@ -334,6 +334,7 @@ const TermsPage = ({ onStart }) => {
                   "Upload illegal, defamatory, or harmful content.",
                   "Upload copyrighted material, trademarks, or IP for which you do not hold the rights or a valid license.",
                   "Upload or generate adult, explicit, or excessively violent material.",
+                  "Upload, select, or otherwise use celebrity images or likenesses as models for image generation, including virtual try-on, fashion imagery, or product promotions.",
                   "Generate misleading advertisements or deepfakes intended to deceive.",
                   "Upload malware, viruses, or disruptive code.",
                   "Reverse engineer, decompile, or extract the source code or AI models.",
@@ -341,6 +342,9 @@ const TermsPage = ({ onStart }) => {
                   "Use the platform for spam or to impersonate individuals or entities.",
                   "Violate any applicable local, state, national, or international laws."
                 ]} />
+                <Paragraph>
+                  Use of celebrity models is strictly prohibited. Celebrity model submissions and image-generation requests using celebrity models will be rejected.
+                </Paragraph>
               </GlassCard>
 
               <Divider />

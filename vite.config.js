@@ -12,5 +12,9 @@ export default defineConfig({
       // Exclude locked/copy image files that crash the watcher on Windows
       ignored: ["**/public/models/**/*Copy*", "**/public/models/**/* *"]
     }
+  },
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.js"]
   }
 });

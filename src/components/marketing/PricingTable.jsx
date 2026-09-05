@@ -1,9 +1,7 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Check } from '@phosphor-icons/react';
-import { plans } from '../../data/pricingData';
 
-export function PricingTable() {
+export function PricingTable({ plans }) {
   return (
     <div className="mt-32 mx-auto w-full max-w-[1500px]">
       <div className="text-center mb-16">

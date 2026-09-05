@@ -30,7 +30,7 @@ const Sidebar = ({ active, onNavigate, currentUser, wallet, walletError }) => {
             </div>
             <div className="flex flex-col items-start">
               <span className="text-sm font-medium text-ink leading-tight truncate max-w-[100px]">{workspaceName}</span>
-              <span className="text-[10px] uppercase font-bold text-slate tracking-wider">Pro Plan</span>
+              <span className="text-[10px] uppercase font-bold text-slate tracking-wider">Secure account</span>
             </div>
           </div>
           <CaretUpDown size={14} className="text-slate group-hover:text-ink transition-colors" />
@@ -99,8 +99,12 @@ const Sidebar = ({ active, onNavigate, currentUser, wallet, walletError }) => {
               style={{ width: `${percentUsed}%` }} 
             />
           </div>
-          <button className="w-full text-xs font-bold bg-accent hover:bg-accent-ink text-white py-2 rounded-lg transition-all shadow-sm active:scale-95 border border-transparent relative z-10 hover:shadow-md">
-            Upgrade Plan
+          <button
+            type="button"
+            onClick={() => onNavigate("billing")}
+            className="w-full text-xs font-bold bg-accent hover:bg-accent-ink text-paper py-2 rounded-lg transition-all active:scale-95 border border-transparent relative z-10"
+          >
+            Manage billing
           </button>
         </div>
       </div>

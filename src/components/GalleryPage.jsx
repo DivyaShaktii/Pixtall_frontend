@@ -1,29 +1,23 @@
 import { useEffect, useState } from "react";
 import GalleryModal from "./GalleryModal";
-import { API_BASE_URL } from "../utils/apiConfig";
-import { mockGallerySessions } from "../data/mockGallery";
+import { SYSTEM_API_BASE_URL } from "../utils/apiConfig";
+import { authenticatedFetch } from "../lib/api";
 
 /**
  * Fetches this user's generated-image sessions from the backend
- * (GET /gallery?email=...), grouped server-side by generation run. Each
+ * (GET /gallery), grouped server-side by generation run. Each
  * session's photos are pre-signed S3 URLs, ready to render directly.
  */
-const GalleryPage = ({ email }) => {
+const GalleryPage = () => {
   const [sessions, setSessions] = useState([]);
   const [status, setStatus] = useState("loading"); // loading | ready | error
   const [openSessionId, setOpenSessionId] = useState(null);
 
   useEffect(() => {
-    if (!email) {
-      setSessions([]);
-      setStatus("ready");
-      return;
-    }
-
     let cancelled = false;
     setStatus("loading");
 
-    fetch(`${API_BASE_URL}/gallery?email=${encodeURIComponent(email)}`)
+    authenticatedFetch(`${SYSTEM_API_BASE_URL}/v1/gallery`)
       .then(response => {
         if (!response.ok) throw new Error(`Server responded with ${response.status}`);
         return response.json();
@@ -39,7 +33,7 @@ const GalleryPage = ({ email }) => {
       });
 
     return () => { cancelled = true; };
-  }, [email]);
+  }, []);
 
   const openSession = sessions.find(s => s.id === openSessionId) ?? null;
 
