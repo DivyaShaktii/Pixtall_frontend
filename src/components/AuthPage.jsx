@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, CircleNotch } from "@phosphor-icons/react";
 import Interactive3DBackground from "./Interactive3DBackground";
 import { SYSTEM_API_BASE_URL } from "../utils/apiConfig";
 import { jsonOrError } from "../lib/api";
 import { createAuthSession, saveAuthSession } from "../lib/auth";
+import { loadGoogleIdentity } from "../lib/googleIdentity";
 import {
   DEVELOPMENT_DEMO_EMAIL,
   DEVELOPMENT_DEMO_PASSWORD,
 } from "../lib/developmentAuth";
 
 const AuthPage = ({ onAuthSuccess, onBack }) => {
+  const googleButtonRef = useRef(null);
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim();
   const [mode, setMode] = useState("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState(import.meta.env.DEV ? DEVELOPMENT_DEMO_EMAIL : "");
@@ -17,6 +20,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(Boolean(googleClientId));
 
   const switchMode = nextMode => {
     setMode(nextMode);
@@ -70,6 +74,83 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
     }
   };
 
+  const handleGoogleCredential = useCallback(async credential => {
+    if (!credential) {
+      setError("Google did not return a sign-in credential. Please try again.");
+      return;
+    }
+
+    setError("");
+    setSubmitting(true);
+    try {
+      const response = await fetch(`${SYSTEM_API_BASE_URL}/v1/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credential }),
+      });
+      const data = await jsonOrError(response);
+      const session = createAuthSession(data.access_token);
+      saveAuthSession(session);
+      onAuthSuccess(session);
+    } catch (authError) {
+      setError(authError.message || "Google sign-in failed. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }, [onAuthSuccess]);
+
+  useEffect(() => {
+    const buttonContainer = googleButtonRef.current;
+    if (!googleClientId || !buttonContainer) return undefined;
+
+    let active = true;
+    let resizeObserver;
+    setGoogleLoading(true);
+
+    loadGoogleIdentity()
+      .then(google => {
+        if (!active) return;
+        google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: response => handleGoogleCredential(response?.credential),
+          ux_mode: "popup",
+          use_fedcm_for_prompt: true,
+        });
+
+        const renderButton = () => {
+          if (!active || !googleButtonRef.current) return;
+          const width = Math.min(400, Math.floor(googleButtonRef.current.clientWidth));
+          googleButtonRef.current.replaceChildren();
+          google.accounts.id.renderButton(googleButtonRef.current, {
+            type: "standard",
+            theme: "filled_black",
+            size: "large",
+            text: mode === "signup" ? "signup_with" : "signin_with",
+            shape: "rectangular",
+            logo_alignment: "left",
+            width,
+          });
+        };
+
+        renderButton();
+        if (typeof ResizeObserver !== "undefined") {
+          resizeObserver = new ResizeObserver(renderButton);
+          resizeObserver.observe(buttonContainer);
+        }
+        setGoogleLoading(false);
+      })
+      .catch(loadError => {
+        if (!active) return;
+        setGoogleLoading(false);
+        setError(loadError.message || "Google sign-in is temporarily unavailable.");
+      });
+
+    return () => {
+      active = false;
+      resizeObserver?.disconnect();
+    };
+  }, [googleClientId, handleGoogleCredential, mode]);
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-[#0a0a0a] text-zinc-100 relative overflow-hidden p-4 sm:p-8">
       <Interactive3DBackground />
@@ -122,6 +203,38 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
               </button>
             ))}
           </div>
+
+          {googleClientId && (
+            <div className="mb-6">
+              <div
+                className={`relative min-h-11 w-full overflow-hidden rounded-md transition-opacity ${
+                  submitting ? "pointer-events-none opacity-50" : "opacity-100"
+                }`}
+                aria-busy={googleLoading || submitting}
+              >
+                <div ref={googleButtonRef} className="min-h-11 w-full" />
+                {googleLoading && (
+                  <div className="absolute inset-0 h-11 w-full flex items-center justify-center gap-2 rounded-md border border-zinc-700 bg-zinc-950 text-sm font-medium text-zinc-300">
+                    <CircleNotch size={17} className="animate-spin" /> Connecting to Google
+                  </div>
+                )}
+              </div>
+              {mode === "signup" && (
+                <p className="mt-2 text-center text-[11px] leading-relaxed text-zinc-500">
+                  By continuing with Google, you agree to our{" "}
+                  <a href="/terms" className="text-zinc-300 underline underline-offset-2">Terms of Service</a>
+                  {" "}and Privacy Policy.
+                </p>
+              )}
+              <div className="mt-5 flex items-center gap-3" aria-hidden="true">
+                <span className="h-px flex-1 bg-zinc-800" />
+                <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                  or use email
+                </span>
+                <span className="h-px flex-1 bg-zinc-800" />
+              </div>
+            </div>
+          )}
 
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             {mode === "signup" && (

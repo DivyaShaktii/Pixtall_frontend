@@ -1,9 +1,22 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const googleIdentityMock = vi.hoisted(() => ({
+  callback: null,
+  initialize: vi.fn(config => {
+    googleIdentityMock.callback = config.callback;
+  }),
+  loadGoogleIdentity: vi.fn(),
+  renderButton: vi.fn(),
+}));
 
 vi.mock("./Interactive3DBackground", () => ({
   default: () => <div data-testid="auth-background" />,
+}));
+
+vi.mock("../lib/googleIdentity", () => ({
+  loadGoogleIdentity: googleIdentityMock.loadGoogleIdentity,
 }));
 
 import AuthPage from "./AuthPage";
@@ -31,6 +44,13 @@ describe("custom JWT authentication", () => {
   beforeEach(() => {
     localStorage.clear();
     vi.restoreAllMocks();
+    vi.unstubAllEnvs();
+    googleIdentityMock.callback = null;
+    googleIdentityMock.initialize.mockClear();
+    googleIdentityMock.loadGoogleIdentity.mockReset().mockResolvedValue({
+      accounts: { id: googleIdentityMock },
+    });
+    googleIdentityMock.renderButton.mockClear();
   });
 
   it("creates an account through the system API", async () => {
@@ -107,5 +127,35 @@ describe("custom JWT authentication", () => {
         body: JSON.stringify({ email: "demo@pixtall.dev", password: "123456" }),
       }),
     ));
+  });
+
+  it("exchanges a verified Google credential for a Pixtall session", async () => {
+    vi.stubEnv("VITE_GOOGLE_CLIENT_ID", "web-client.apps.googleusercontent.com");
+    const user = {
+      id: "00000000-0000-0000-0000-000000000012",
+      email: "google-user@example.com",
+      name: "Google User",
+    };
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(successfulResponse(user));
+    const onAuthSuccess = vi.fn();
+
+    render(<AuthPage onAuthSuccess={onAuthSuccess} />);
+
+    await waitFor(() => expect(googleIdentityMock.initialize).toHaveBeenCalledWith(
+      expect.objectContaining({ client_id: "web-client.apps.googleusercontent.com" }),
+    ));
+
+    await act(async () => {
+      googleIdentityMock.callback({ credential: "google-id-token" });
+    });
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining("/v1/auth/google"),
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ credential: "google-id-token" }),
+      }),
+    ));
+    expect(onAuthSuccess).toHaveBeenCalledWith(expect.objectContaining({ user }));
   });
 });
