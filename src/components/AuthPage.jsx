@@ -18,12 +18,22 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
   const [email, setEmail] = useState(import.meta.env.DEV ? DEVELOPMENT_DEMO_EMAIL : "");
   const [password, setPassword] = useState(import.meta.env.DEV ? DEVELOPMENT_DEMO_PASSWORD : "");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [recoveryMode, setRecoveryMode] = useState(false);
+  const [recoverySent, setRecoverySent] = useState(false);
+  const [verificationMode, setVerificationMode] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [verificationSent, setVerificationSent] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(Boolean(googleClientId));
 
   const switchMode = nextMode => {
     setMode(nextMode);
+    setRecoveryMode(false);
+    setRecoverySent(false);
+    setVerificationMode(false);
+    setVerificationCode("");
+    setVerificationSent(false);
     if (nextMode === "login" && import.meta.env.DEV) {
       setEmail(DEVELOPMENT_DEMO_EMAIL);
       setPassword(DEVELOPMENT_DEMO_PASSWORD);
@@ -40,6 +50,48 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
 
     const normalizedEmail = email.trim().toLowerCase();
     if (!normalizedEmail) return setError("Email is required.");
+    if (verificationMode) {
+      if (!/^\d{6}$/.test(verificationCode)) {
+        return setError("Enter the six-digit code from your email.");
+      }
+      setSubmitting(true);
+      try {
+        const response = await fetch(`${SYSTEM_API_BASE_URL}/v1/auth/signup/verify`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: normalizedEmail, code: verificationCode }),
+        });
+        const data = await jsonOrError(response);
+        const session = createAuthSession(data.access_token, {
+          email: normalizedEmail,
+          name: name.trim(),
+        });
+        saveAuthSession(session);
+        onAuthSuccess(session);
+      } catch (authError) {
+        setError(authError.message || "Could not verify this code. Please try again.");
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
+    if (recoveryMode) {
+      setSubmitting(true);
+      try {
+        const response = await fetch(`${SYSTEM_API_BASE_URL}/v1/auth/password/forgot`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: normalizedEmail }),
+        });
+        await jsonOrError(response);
+        setRecoverySent(true);
+      } catch (authError) {
+        setError(authError.message || "Could not request a reset link. Please try again.");
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
     if (!password) return setError("Password is required.");
     if (mode === "signup" && password.length < 8) {
       return setError("Use a password with at least 8 characters.");
@@ -61,6 +113,12 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
         ),
       });
       const data = await jsonOrError(response);
+      if (mode === "signup") {
+        setVerificationMode(true);
+        setVerificationCode("");
+        setVerificationSent(true);
+        return;
+      }
       const session = createAuthSession(data.access_token, {
         email: normalizedEmail,
         name: name.trim(),
@@ -69,6 +127,26 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
       onAuthSuccess(session);
     } catch (authError) {
       setError(authError.message || "Authentication failed. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    setError("");
+    setVerificationSent(false);
+    setSubmitting(true);
+    try {
+      const response = await fetch(`${SYSTEM_API_BASE_URL}/v1/auth/signup/resend`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
+      await jsonOrError(response);
+      setVerificationCode("");
+      setVerificationSent(true);
+    } catch (authError) {
+      setError(authError.message || "Could not send another code. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -101,7 +179,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
 
   useEffect(() => {
     const buttonContainer = googleButtonRef.current;
-    if (!googleClientId || !buttonContainer) return undefined;
+    if (!googleClientId || !buttonContainer || recoveryMode || verificationMode) return undefined;
 
     let active = true;
     let resizeObserver;
@@ -149,7 +227,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
       active = false;
       resizeObserver?.disconnect();
     };
-  }, [googleClientId, handleGoogleCredential, mode]);
+  }, [googleClientId, handleGoogleCredential, mode, recoveryMode, verificationMode]);
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-[#0a0a0a] text-zinc-100 relative overflow-hidden p-4 sm:p-8">
@@ -179,32 +257,44 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
         <div className="bg-[#121215] rounded-2xl p-6 sm:p-8 border border-zinc-800">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-zinc-100 mb-2">
-              {mode === "login" ? "Welcome back" : "Create your account"}
+              {verificationMode
+                ? "Verify your email"
+                : recoveryMode
+                ? "Reset your password"
+                : mode === "login"
+                  ? "Welcome back"
+                  : "Create your account"}
             </h1>
             <p className="text-sm text-zinc-400">
-              Your account keeps payments, credits, and generated work private.
+              {verificationMode
+                ? `We sent a six-digit code to ${email.trim().toLowerCase()}.`
+                : recoveryMode
+                ? "Enter your account email and we will send you a secure reset link."
+                : "Your account keeps payments, credits, and generated work private."}
             </p>
           </div>
 
-          <div className="flex border-b border-zinc-800 mb-6" role="tablist" aria-label="Authentication mode">
-            {[{ id: "login", label: "Log in" }, { id: "signup", label: "Sign up" }].map(tab => (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-selected={mode === tab.id}
-                className={`flex-1 pb-3 text-sm font-semibold relative ${
-                  mode === tab.id ? "text-white" : "text-zinc-500 hover:text-zinc-300"
-                }`}
-                onClick={() => switchMode(tab.id)}
-              >
-                {tab.label}
-                {mode === tab.id && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />}
-              </button>
-            ))}
-          </div>
+          {!recoveryMode && !verificationMode && (
+            <div className="flex border-b border-zinc-800 mb-6" role="tablist" aria-label="Authentication mode">
+              {[{ id: "login", label: "Log in" }, { id: "signup", label: "Sign up" }].map(tab => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={mode === tab.id}
+                  className={`flex-1 pb-3 text-sm font-semibold relative ${
+                    mode === tab.id ? "text-white" : "text-zinc-500 hover:text-zinc-300"
+                  }`}
+                  onClick={() => switchMode(tab.id)}
+                >
+                  {tab.label}
+                  {mode === tab.id && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />}
+                </button>
+              ))}
+            </div>
+          )}
 
-          {googleClientId && (
+          {googleClientId && !recoveryMode && !verificationMode && (
             <div className="mb-6">
               <div
                 className={`relative min-h-11 w-full overflow-hidden rounded-md transition-opacity ${
@@ -237,7 +327,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
           )}
 
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            {mode === "signup" && (
+            {!recoveryMode && !verificationMode && mode === "signup" && (
               <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-300">
                 Full name
                 <input
@@ -250,36 +340,73 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
               </label>
             )}
 
-            {mode === "login" && import.meta.env.DEV && (
+            {!recoveryMode && !verificationMode && mode === "login" && import.meta.env.DEV && (
               <p className="text-xs text-zinc-400 text-center py-1">
-                Local demo · <span className="text-zinc-200 font-medium">{DEVELOPMENT_DEMO_EMAIL}</span>
-                {" · "}<span className="text-zinc-200 font-medium">{DEVELOPMENT_DEMO_PASSWORD}</span>
+                Local demo: <span className="text-zinc-200 font-medium">{DEVELOPMENT_DEMO_EMAIL}</span>
+                {" / "}<span className="text-zinc-200 font-medium">{DEVELOPMENT_DEMO_PASSWORD}</span>
               </p>
             )}
-            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-300">
-              Email
-              <input
-                type="email"
-                value={email}
-                onChange={event => setEmail(event.target.value)}
-                autoComplete="email"
-                placeholder="you@company.com"
-                className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-100 placeholder:text-zinc-500 focus:border-accent focus:ring-2 focus:ring-accent/20"
-              />
-            </label>
-            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-300">
-              Password
-              <input
-                type="password"
-                value={password}
-                onChange={event => setPassword(event.target.value)}
-                autoComplete={mode === "login" ? "current-password" : "new-password"}
-                placeholder="At least 8 characters"
-                className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-100 placeholder:text-zinc-500 focus:border-accent focus:ring-2 focus:ring-accent/20"
-              />
-            </label>
+            {!verificationMode && (
+              <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-300">
+                Email
+                <input
+                  type="email"
+                  value={email}
+                  onChange={event => setEmail(event.target.value)}
+                  autoComplete="email"
+                  placeholder="you@company.com"
+                  className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-100 placeholder:text-zinc-500 focus:border-accent focus:ring-2 focus:ring-accent/20"
+                />
+              </label>
+            )}
+            {!recoveryMode && !verificationMode && (
+              <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-300">
+                Password
+                <input
+                  type="password"
+                  value={password}
+                  onChange={event => setPassword(event.target.value)}
+                  autoComplete={mode === "login" ? "current-password" : "new-password"}
+                  placeholder="At least 8 characters"
+                  className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-100 placeholder:text-zinc-500 focus:border-accent focus:ring-2 focus:ring-accent/20"
+                />
+              </label>
+            )}
 
-            {mode === "signup" && (
+            {verificationMode && (
+              <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-300">
+                Verification code
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  value={verificationCode}
+                  onChange={event => setVerificationCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
+                  autoComplete="one-time-code"
+                  placeholder="000000"
+                  autoFocus
+                  className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-center text-xl font-semibold tracking-[0.35em] tabular-nums text-zinc-100 placeholder:text-zinc-600 focus:border-accent focus:ring-2 focus:ring-accent/20"
+                />
+              </label>
+            )}
+
+            {!recoveryMode && mode === "login" && (
+              <button
+                type="button"
+                onClick={() => {
+                  setRecoveryMode(true);
+                  setRecoverySent(false);
+                  setPassword("");
+                  setError("");
+                }}
+                className="self-end text-sm font-semibold text-zinc-300 underline decoration-zinc-600 underline-offset-4 hover:text-white"
+              >
+                Forgot password?
+              </button>
+            )}
+
+            {!verificationMode && mode === "signup" && (
               <label className="flex items-start gap-3 text-xs text-zinc-400 leading-relaxed mt-1">
                 <input
                   type="checkbox"
@@ -298,14 +425,71 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
                 {error}
               </div>
             )}
+            {recoverySent && (
+              <div role="status" className="p-3 bg-lime-950/40 text-lime-200 text-sm leading-relaxed rounded-lg border border-lime-900">
+                If an account exists for this email, a password reset link has been sent.
+              </div>
+            )}
+            {verificationMode && verificationSent && (
+              <div role="status" className="p-3 bg-lime-950/40 text-lime-200 text-sm leading-relaxed rounded-lg border border-lime-900">
+                Verification code sent. Check your inbox and spam folder.
+              </div>
+            )}
             <button
               type="submit"
-              disabled={submitting}
-              className="w-full flex items-center justify-center gap-2 bg-accent text-[#0a0a0a] py-3.5 rounded-xl font-bold text-sm hover:bg-lime-400 disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+              disabled={submitting || recoverySent}
+              className="auth-primary-button w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm active:scale-[0.98] mt-1"
             >
               {submitting && <CircleNotch size={18} className="animate-spin" />}
-              {submitting ? "Please wait" : mode === "login" ? "Log in" : "Create account"}
+              {submitting
+                ? "Please wait"
+                : verificationMode
+                  ? "Verify and create account"
+                  : recoveryMode
+                  ? recoverySent
+                    ? "Email sent"
+                    : "Send reset link"
+                  : mode === "login"
+                    ? "Log in"
+                    : "Create account"}
             </button>
+            {recoveryMode && (
+              <button
+                type="button"
+                onClick={() => {
+                  setRecoveryMode(false);
+                  setRecoverySent(false);
+                  setError("");
+                }}
+                className="w-full py-2 text-sm font-semibold text-zinc-400 hover:text-white"
+              >
+                Back to login
+              </button>
+            )}
+            {verificationMode && (
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setVerificationMode(false);
+                    setVerificationCode("");
+                    setVerificationSent(false);
+                    setError("");
+                  }}
+                  className="py-2 text-sm font-semibold text-zinc-400 hover:text-white"
+                >
+                  Change details
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResendCode}
+                  disabled={submitting}
+                  className="py-2 text-sm font-semibold text-zinc-300 underline decoration-zinc-600 underline-offset-4 hover:text-white disabled:opacity-60"
+                >
+                  Resend code
+                </button>
+              </div>
+            )}
           </form>
         </div>
       </div>

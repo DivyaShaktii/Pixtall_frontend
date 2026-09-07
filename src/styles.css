@@ -138,6 +138,14 @@ button {
 button:active { transform: translateY(1px); }
 input, select { outline: none; }
 
+.auth-primary-button {
+  background-color: var(--accent);
+  color: #0a0a0a;
+}
+
+.auth-primary-button:hover { background-color: #a3e635; }
+.auth-primary-button:disabled { opacity: 0.6; cursor: not-allowed; }
+
 :focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;

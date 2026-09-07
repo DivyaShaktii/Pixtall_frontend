@@ -53,13 +53,19 @@ describe("custom JWT authentication", () => {
     googleIdentityMock.renderButton.mockClear();
   });
 
-  it("creates an account through the system API", async () => {
+  it("creates an account only after verifying the emailed code", async () => {
     const user = {
       id: "00000000-0000-0000-0000-000000000010",
       email: "asha@example.com",
       name: "Asha Rao",
     };
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(successfulResponse(user));
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 202,
+        json: vi.fn().mockResolvedValue({ message: "Enter the verification code" }),
+      })
+      .mockResolvedValueOnce(successfulResponse(user));
     const onAuthSuccess = vi.fn();
 
     render(<AuthPage onAuthSuccess={onAuthSuccess} />);
@@ -81,7 +87,55 @@ describe("custom JWT authentication", () => {
         }),
       }),
     ));
+    expect(await screen.findByRole("heading", { name: "Verify your email" })).toBeVisible();
+    expect(onAuthSuccess).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText("Verification code"), {
+      target: { value: "471208" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Verify and create account" }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenLastCalledWith(
+      expect.stringContaining("/v1/auth/signup/verify"),
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ email: "asha@example.com", code: "471208" }),
+      }),
+    ));
     expect(onAuthSuccess).toHaveBeenCalledWith(expect.objectContaining({ user }));
+  });
+
+  it("resends a manual sign-up verification code", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 202,
+        json: vi.fn().mockResolvedValue({ message: "Enter the verification code" }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 202,
+        json: vi.fn().mockResolvedValue({ message: "Enter the verification code" }),
+      });
+
+    render(<AuthPage onAuthSuccess={vi.fn()} />);
+    fireEvent.click(screen.getByRole("tab", { name: "Sign up" }));
+    fireEvent.change(screen.getByLabelText("Full name"), { target: { value: "Asha Rao" } });
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "asha@example.com" } });
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "secure-pass" } });
+    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("button", { name: "Create account" }));
+
+    await screen.findByRole("heading", { name: "Verify your email" });
+    fireEvent.click(screen.getByRole("button", { name: "Resend code" }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenLastCalledWith(
+      expect.stringContaining("/v1/auth/signup/resend"),
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ email: "asha@example.com" }),
+      }),
+    ));
   });
 
   it("logs in through the system API and stores the JWT session", async () => {
@@ -157,5 +211,33 @@ describe("custom JWT authentication", () => {
       }),
     ));
     expect(onAuthSuccess).toHaveBeenCalledWith(expect.objectContaining({ user }));
+  });
+
+  it("requests a password reset without revealing whether the account exists", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      status: 202,
+      json: vi.fn().mockResolvedValue({
+        message: "If an account exists for this email, a password reset link has been sent.",
+      }),
+    });
+
+    render(<AuthPage onAuthSuccess={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Forgot password?" }));
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: " OWNER@EXAMPLE.COM " },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Send reset link" }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining("/v1/auth/password/forgot"),
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ email: "owner@example.com" }),
+      }),
+    ));
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "If an account exists for this email",
+    );
   });
 });

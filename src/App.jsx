@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import AuthPage from "./components/AuthPage";
+import ResetPasswordPage from "./components/ResetPasswordPage";
 import GalleryPage from "./components/GalleryPage";
 import ProductsPage from "./components/ProductsPage";
 import Sidebar from "./components/Sidebar";
@@ -22,6 +23,7 @@ const checkoutFromLocation = () => {
 const App = () => {
   const path = window.location.pathname;
   const isStudioPath = path === "/studio" || path === "/studio/";
+  const isResetPasswordPath = path === "/reset-password" || path === "/reset-password/";
   const initialCheckoutPlan = useMemo(checkoutFromLocation, []);
   const storedSession = useMemo(readAuthSession, []);
   const [currentUser, setCurrentUser] = useState(storedSession?.user || null);
@@ -107,6 +109,12 @@ const App = () => {
 
   if (path === "/terms" || path === "/legal/terms") {
     return <TermsPage onStart={() => { window.location.href = "/"; }} />;
+  }
+
+  if (isResetPasswordPath) {
+    return (
+      <ResetPasswordPage onReturnToLogin={() => { window.location.href = "/studio"; }} />
+    );
   }
 
   if (authLoading) {
