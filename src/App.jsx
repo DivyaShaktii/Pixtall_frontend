@@ -41,9 +41,10 @@ const App = () => {
     }
     setCurrentUser(session.user);
     try {
-      await jsonOrError(await authenticatedFetch(`${SYSTEM_API_BASE_URL}/v1/account/bootstrap`, {
+      const account = await jsonOrError(await authenticatedFetch(`${SYSTEM_API_BASE_URL}/v1/account/bootstrap`, {
         method: "POST",
       }));
+      setCurrentUser({ ...session.user, ...account });
       setAuthError("");
     } catch (error) {
       setAuthError(error.message || "Could not prepare your account.");
@@ -176,10 +177,15 @@ const App = () => {
 
         <main className={`flex-1 relative overflow-x-hidden scroll-smooth ${activeNav === "studio" ? "overflow-y-auto lg:overflow-hidden bg-black" : "overflow-y-auto"}`}>
           {activeNav !== "studio" && <AmbientBackground variant="light" />}
-          {activeNav === "studio" && <StudioView onWalletChange={refreshWallet} />}
+          {activeNav === "studio" && <div className="flex flex-col min-h-full lg:h-full">
+            <div role="status" className="shrink-0 px-4 py-3 text-center text-sm text-ink border-b border-line bg-paper">
+              {walletError ? <span className="text-slate">{walletError}</span> : wallet ? <><span className="font-semibold text-accent tabular-nums">{wallet.available_credits} credits</span> available in your wallet</> : "Loading your wallet…"}
+            </div>
+            <div className="flex-1 min-h-0"><StudioView onWalletChange={refreshWallet} /></div>
+          </div>}
           {activeNav === "gallery" && <div className="p-4 lg:p-8 w-full h-full"><GalleryPage /></div>}
           {activeNav === "products" && <div className="p-4 lg:p-8 w-full h-full"><ProductsPage /></div>}
-          {activeNav === "settings" && <div className="p-4 lg:p-8 w-full h-full"><SettingsPage /></div>}
+          {activeNav === "settings" && <div className="p-4 lg:p-8 w-full h-full"><SettingsPage user={currentUser} /></div>}
           {activeNav === "billing" && (
             <div className="p-4 lg:p-8 w-full h-full">
               <BillingPage
