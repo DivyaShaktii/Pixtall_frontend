@@ -17,12 +17,10 @@ import {
   clearCheckoutRequestKey,
 } from "../lib/checkoutIntent";
 import { openRazorpayCheckout } from "../lib/razorpay";
+import { useRegionalCurrency } from "../hooks/useRegionalCurrency";
+import { formatPrice, planPrice } from "../lib/regionalPricing";
 
-const money = (amount, currency = "INR") => new Intl.NumberFormat(currency === "INR" ? "en-IN" : "en-US", {
-  style: "currency",
-  currency: currency,
-  maximumFractionDigits: 2,
-}).format((amount || 0) / 100);
+const money = (amount, currency = "INR") => formatPrice(amount, currency);
 
 const date = value => value
   ? new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value))
@@ -42,7 +40,7 @@ const BillingSkeleton = () => (
   </div>
 );
 
-const BillingPage = ({ initialPlanCode, onWalletChange }) => {
+const BillingPage = ({ initialPlanCode, initialCurrency, onWalletChange }) => {
   const [summary, setSummary] = useState(null);
   const [payments, setPayments] = useState([]);
   const [plans, setPlans] = useState([]);
@@ -51,12 +49,12 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
   const [notice, setNotice] = useState("");
   const [action, setAction] = useState("");
   const [confirmCancel, setConfirmCancel] = useState(false);
-  const [currency, setCurrency] = useState("INR");
+  const { currency, currencyLoading } = useRegionalCurrency(initialCurrency);
   const resumedPlanRef = useRef("");
 
-  const finishCheckoutIntent = planCode => {
+  const finishCheckoutIntent = (planCode, checkoutCurrency) => {
     clearCheckoutIntent();
-    clearCheckoutRequestKey(planCode);
+    clearCheckoutRequestKey(planCode, checkoutCurrency);
     window.history.replaceState({}, document.title, "/studio");
   };
 
@@ -85,20 +83,6 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
 
   useEffect(() => {
     loadBilling();
-
-    const storedOverride = localStorage.getItem("__TEST_USA_PRICING");
-    if (storedOverride === "true") {
-      setCurrency("USD");
-      return;
-    }
-    fetch("https://api.country.is")
-      .then(res => res.json())
-      .then(data => {
-        // Uncomment the line below to force USA for testing
-        data = { country: 'US' };
-        if (data && data.country && data.country !== "IN") setCurrency("USD");
-      })
-      .catch(console.error);
   }, [loadBilling]);
 
   const confirmPayment = async (checkout, response) => {
@@ -114,7 +98,7 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
         razorpay_subscription_id: response.razorpay_subscription_id || null,
       }),
     }));
-    finishCheckoutIntent(checkout.plan_code);
+    finishCheckoutIntent(checkout.plan_code, checkout.currency);
     if (result.status === "paid") {
       setNotice("Payment confirmed. Your credits are ready to use.");
       await Promise.all([loadBilling(), onWalletChange?.()]);
@@ -125,7 +109,7 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
   };
 
   const startCheckout = useCallback(async planCode => {
-    if (!planCode || action) return;
+    if (!planCode || action || currencyLoading) return;
     setAction(`checkout:${planCode}`);
     setError("");
     setNotice("");
@@ -134,7 +118,7 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Idempotency-Key": checkoutRequestKey(planCode),
+          "Idempotency-Key": checkoutRequestKey(planCode, currency),
         },
         body: JSON.stringify({ plan_code: planCode, currency }),
       }));
@@ -145,7 +129,7 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
           setAction("");
         }),
         onDismiss: message => {
-          finishCheckoutIntent(planCode);
+          finishCheckoutIntent(planCode, checkout.currency);
           setAction("");
           if (message) setError(message);
           else setNotice("Checkout closed. No credits were added.");
@@ -155,14 +139,14 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
       setError(checkoutError.message || "Could not start checkout.");
       setAction("");
     }
-  }, [action, loadBilling, onWalletChange]);
+  }, [action, currency, currencyLoading, loadBilling, onWalletChange]);
 
   useEffect(() => {
-    if (!loading && initialPlanCode && resumedPlanRef.current !== initialPlanCode) {
+    if (!loading && !currencyLoading && initialPlanCode && resumedPlanRef.current !== initialPlanCode) {
       resumedPlanRef.current = initialPlanCode;
       startCheckout(initialPlanCode);
     }
-  }, [initialPlanCode, loading, startCheckout]);
+  }, [currencyLoading, initialPlanCode, loading, startCheckout]);
 
   const cancelSubscription = async () => {
     setAction("cancel");
@@ -193,7 +177,7 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
         </div>
         <div className="flex items-center gap-2 text-xs text-slate">
           <ShieldCheck size={18} className="text-accent" weight="fill" />
-          Secure checkout by Razorpay
+          {currencyLoading ? "Detecting regional pricing…" : `Secure ${currency} checkout by Razorpay`}
         </div>
       </div>
 
@@ -302,17 +286,19 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
                       <h3 className="font-semibold text-ink">{plan.name}</h3>
                       {plan.code === "pro" && <span className="text-[11px] font-semibold text-accent">Popular</span>}
                     </div>
-                    <p className="text-2xl font-bold text-ink tabular-nums">{money(currency === "INR" ? plan.final_price_paise : plan.final_price_usd_cents, currency)}</p>
+                    <p className="text-2xl font-bold text-ink tabular-nums">
+                      {currencyLoading ? "—" : money(planPrice(plan, currency), currency)}
+                    </p>
                     <p className="text-xs text-slate mt-1">{plan.recurring ? "per month" : "one-time · valid 6 months"}</p>
                     <p className="text-sm text-ink-2 mt-4 mb-5">{plan.included_credits.toLocaleString()} credits</p>
                     <button
                       type="button"
                       onClick={() => startCheckout(plan.code)}
-                      disabled={Boolean(action)}
+                      disabled={Boolean(action) || currencyLoading}
                       className={`w-full py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 ${plan.code === "pro" ? "bg-accent text-paper hover:bg-accent-ink" : "border border-line-2 text-ink hover:bg-cloud"}`}
                     >
                       {working && <CircleNotch size={17} className="animate-spin" />}
-                      {working ? "Opening…" : plan.code === "payg" ? "Buy credits" : `Buy ${plan.name}`}
+                      {currencyLoading ? "Detecting region…" : working ? "Opening…" : plan.code === "payg" ? "Buy credits" : `Buy ${plan.name}`}
                     </button>
                   </div>
                 );

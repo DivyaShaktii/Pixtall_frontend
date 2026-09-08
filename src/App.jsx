@@ -17,14 +17,20 @@ import { clearAuthSession, readAuthSession } from "./lib/auth";
 
 const checkoutFromLocation = () => {
   const fromQuery = new URLSearchParams(window.location.search).get("checkout");
-  return fromQuery || readCheckoutIntent()?.planCode || "";
+  const storedIntent = readCheckoutIntent();
+  const planCode = fromQuery || storedIntent?.planCode || "";
+  return {
+    planCode,
+    currency: storedIntent?.planCode === planCode ? storedIntent.currency || null : null,
+  };
 };
 
 const App = () => {
   const path = window.location.pathname;
   const isStudioPath = path === "/studio" || path === "/studio/";
   const isResetPasswordPath = path === "/reset-password" || path === "/reset-password/";
-  const initialCheckoutPlan = useMemo(checkoutFromLocation, []);
+  const initialCheckoutIntent = useMemo(checkoutFromLocation, []);
+  const initialCheckoutPlan = initialCheckoutIntent.planCode;
   const storedSession = useMemo(readAuthSession, []);
   const [currentUser, setCurrentUser] = useState(storedSession?.user || null);
   const [authLoading, setAuthLoading] = useState(Boolean(storedSession));
@@ -85,9 +91,9 @@ const App = () => {
     refreshWallet();
   }, [refreshWallet]);
 
-  const enterStudio = planCode => {
+  const enterStudio = (planCode, currency) => {
     const selectedPlan = typeof planCode === "string" ? planCode : "";
-    if (selectedPlan) saveCheckoutIntent(selectedPlan);
+    if (selectedPlan) saveCheckoutIntent(selectedPlan, currency);
     if (currentUser) {
       const query = selectedPlan ? `?checkout=${encodeURIComponent(selectedPlan)}` : "";
       window.location.href = `/studio${query}`;
@@ -190,6 +196,7 @@ const App = () => {
             <div className="p-4 lg:p-8 w-full h-full">
               <BillingPage
                 initialPlanCode={initialCheckoutPlan}
+                initialCurrency={initialCheckoutIntent.currency}
                 onWalletChange={refreshWallet}
               />
             </div>
