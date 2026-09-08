@@ -36,7 +36,6 @@ export function StudioSidebar({
   imageQuality = "standard",
   setImageQuality,
   
-  error = "",
   isGenerating = false,
   generationStatus = "Rendering…",
   handleCancel,
@@ -194,13 +193,6 @@ export function StudioSidebar({
           </div>
         </div>
 
-        {/* Error */}
-        {error && (
-          <div className="p-3 bg-red-500/10 text-red-400 text-xs rounded-xl border border-red-500/20 font-medium flex gap-2 items-start mt-2">
-            <span className="shrink-0 pt-0.5">⚠️</span>
-            {error}
-          </div>
-        )}
       </div>
 
       {/* Generate button */}

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import ModelSelector from "../components/ModelSelector";
 import { StudioCanvasGrid } from "../components/studio/StudioCanvasGrid";
 import { StudioSidebar } from "../components/studio/StudioSidebar";
+import { GenerationErrorAlert } from "../components/studio/GenerationErrorAlert";
 import ProductImageUpload from "../components/ProductImageUpload";
 import BeforeAfterSlider from "../components/BeforeAfterSlider";
 import { generationConfig } from "../config/generationConfig";
@@ -403,7 +404,6 @@ export default function StudioView({ onWalletChange }) {
         setNumImages={setNumImages}
         imageQuality={imageQuality}
         setImageQuality={setImageQuality}
-        error={error}
         isGenerating={isGenerating}
         generationStatus={statusLabel}
         handleCancel={handleCancel}
@@ -411,6 +411,8 @@ export default function StudioView({ onWalletChange }) {
         handleDownloadPayload={handleDownloadPayload}
         isDemo={false}
       />
+
+      <GenerationErrorAlert message={error} onDismiss={() => setError("")} />
 
       {/* Model Selector Modal */}
       <ModelSelector 
