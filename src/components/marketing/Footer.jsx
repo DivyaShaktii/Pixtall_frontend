@@ -1,5 +1,7 @@
 import React from 'react'
 import { TwitterLogo, InstagramLogo, LinkedinLogo, YoutubeLogo } from '@phosphor-icons/react'
+import { EnterpriseButton } from './EnterpriseButton'
+import { scrollToMarketingSection } from '../../lib/marketingNavigation'
 
 const columns = [
   { title: 'Product', links: ['Features', 'Pricing', 'Enterprise', 'Community Gallery'] },
@@ -59,9 +61,12 @@ export function Footer() {
               <ul className="mt-4 space-y-3">
                 {col.links.map((link) => (
                   <li key={link}>
-                    <a href="#" className="text-sm text-neutral-500 transition-colors hover:text-neutral-300">
+                    {link === 'Enterprise' ? <EnterpriseButton className="min-h-11 text-sm text-neutral-400 hover:text-white" /> : <a href="#" onClick={event => {
+                      const section = { Features: 'features', Pricing: 'pricing', 'Community Gallery': 'gallery' }[link];
+                      if (section) { event.preventDefault(); scrollToMarketingSection(section); }
+                    }} className="text-sm text-neutral-500 transition-colors hover:text-neutral-300">
                       {link}
-                    </a>
+                    </a>}
                   </li>
                 ))}
               </ul>

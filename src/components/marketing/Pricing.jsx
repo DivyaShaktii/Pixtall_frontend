@@ -4,15 +4,13 @@ import { plans } from '../../data/pricingData';
 import { PricingCard } from './PricingCard';
 import { PricingTable } from './PricingTable';
 import { SYSTEM_API_BASE_URL } from '../../utils/apiConfig';
+import { useRegionalCurrency } from '../../hooks/useRegionalCurrency';
+import { formatPrice, planPrice } from '../../lib/regionalPricing';
 
-const toCardPlan = plan => ({
+const toCardPlan = (plan, currency) => ({
   id: plan.code,
   name: plan.name,
-  price: new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(plan.final_price_paise / 100),
+  price: formatPrice(planPrice(plan, currency), currency),
   billingPeriod: plan.recurring ? '/month' : 'one-time',
   credits: plan.included_credits,
   creditUsage: {
@@ -31,18 +29,37 @@ const toCardPlan = plan => ({
 });
 
 export function Pricing({ onStart }) {
-  const [displayPlans, setDisplayPlans] = useState(plans);
+  const [displayPlans, setDisplayPlans] = useState([]);
+  const [backendPlans, setBackendPlans] = useState(null);
+  const { currency, currencyLoading } = useRegionalCurrency();
 
   useEffect(() => {
     let active = true;
+
     fetch(`${SYSTEM_API_BASE_URL}/v1/plans`)
       .then(response => response.ok ? response.json() : Promise.reject())
       .then(data => {
-        if (active && Array.isArray(data) && data.length) setDisplayPlans(data.map(toCardPlan));
+        if (active && Array.isArray(data) && data.length) {
+          setBackendPlans(data);
+        }
       })
       .catch(() => {});
+
     return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    if (!currency) {
+      setDisplayPlans([]);
+    } else if (backendPlans) {
+      setDisplayPlans(backendPlans.map(plan => toCardPlan(plan, currency)));
+    } else {
+      setDisplayPlans(plans.map(plan => ({
+        ...plan,
+        price: currency === 'INR' ? plan.priceINR : plan.priceUSD
+      })));
+    }
+  }, [backendPlans, currency]);
 
   return (
     <section id="pricing" className="relative w-full py-32 z-10">
@@ -61,6 +78,12 @@ export function Pricing({ onStart }) {
           />
         </div>
 
+        {currencyLoading && (
+          <p role="status" className="mb-10 text-center text-sm text-neutral-400">
+            Detecting regional pricing…
+          </p>
+        )}
+
         {/* Pricing Cards Grid */}
         <div 
           className="flex flex-nowrap overflow-x-auto pb-8 snap-x snap-mandatory items-stretch gap-10 xl:justify-center xl:overflow-x-visible"
@@ -74,7 +97,11 @@ export function Pricing({ onStart }) {
               key={plan.id}
               className="flex-none w-[85vw] md:w-[350px] xl:flex-1 xl:w-auto xl:max-w-[320px] snap-center flex flex-col"
             >
-              <PricingCard plan={plan} index={i} onStart={onStart} />
+              <PricingCard
+                plan={plan}
+                index={i}
+                onStart={planCode => onStart?.(planCode, currency)}
+              />
             </div>
           ))}
         </div>
