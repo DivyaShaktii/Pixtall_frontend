@@ -1,8 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from pixtall.models import ImageQuality
-from pixtall.schemas import GenerationRequest
+from pixtall.core import GenerationRequest, ImageQuality
 
 
 def valid_request() -> dict[str, object]:

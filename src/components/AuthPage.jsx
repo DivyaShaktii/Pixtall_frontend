@@ -26,6 +26,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(Boolean(googleClientId));
+  const googleCredentialHandlerRef = useRef(null);
 
   const switchMode = nextMode => {
     setMode(nextMode);
@@ -178,11 +179,16 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
   }, [onAuthSuccess]);
 
   useEffect(() => {
+    googleCredentialHandlerRef.current = handleGoogleCredential;
+  }, [handleGoogleCredential]);
+
+  useEffect(() => {
     const buttonContainer = googleButtonRef.current;
     if (!googleClientId || !buttonContainer || recoveryMode || verificationMode) return undefined;
 
     let active = true;
     let resizeObserver;
+    let lastRenderedWidth = null;
     setGoogleLoading(true);
 
     loadGoogleIdentity()
@@ -190,7 +196,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
         if (!active) return;
         google.accounts.id.initialize({
           client_id: googleClientId,
-          callback: response => handleGoogleCredential(response?.credential),
+          callback: response => googleCredentialHandlerRef.current?.(response?.credential),
           ux_mode: "popup",
           use_fedcm_for_prompt: true,
         });
@@ -198,6 +204,10 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
         const renderButton = () => {
           if (!active || !googleButtonRef.current) return;
           const width = Math.min(400, Math.floor(googleButtonRef.current.clientWidth));
+          // GIS can change its iframe height on hover/focus. Do not rebuild it
+          // for height-only ResizeObserver notifications: that loses focus.
+          if (width <= 0 || width === lastRenderedWidth) return;
+          lastRenderedWidth = width;
           googleButtonRef.current.replaceChildren();
           google.accounts.id.renderButton(googleButtonRef.current, {
             type: "standard",
@@ -227,17 +237,17 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
       active = false;
       resizeObserver?.disconnect();
     };
-  }, [googleClientId, handleGoogleCredential, mode, recoveryMode, verificationMode]);
+  }, [googleClientId, mode, recoveryMode, verificationMode]);
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[#0a0a0a] text-zinc-100 relative overflow-hidden p-4 sm:p-8">
+    <div className={`min-h-screen w-full flex items-center justify-center bg-[#0a0a0a] text-zinc-100 relative overflow-hidden p-4 sm:p-8 ${onBack ? "pt-24 sm:pt-24" : ""}`}>
       <Interactive3DBackground />
 
       {onBack && (
         <button
           type="button"
           onClick={onBack}
-          className="absolute top-5 left-5 z-20 flex items-center gap-2 text-sm font-semibold text-zinc-300 bg-zinc-950 border border-zinc-800 px-4 py-2 rounded-lg hover:border-zinc-600 hover:text-white"
+          className="absolute top-5 left-5 z-20 flex min-h-11 items-center gap-2 text-sm font-semibold text-zinc-300 bg-zinc-950! border border-zinc-800 px-4 py-2 rounded-lg hover:border-zinc-600 hover:text-white"
         >
           <ArrowLeft size={16} weight="bold" /> Back to home
         </button>
@@ -282,7 +292,7 @@ const AuthPage = ({ onAuthSuccess, onBack }) => {
                   type="button"
                   role="tab"
                   aria-selected={mode === tab.id}
-                  className={`flex-1 pb-3 text-sm font-semibold relative ${
+                  className={`flex-1 min-h-11 pb-3 text-sm font-semibold relative ${
                     mode === tab.id ? "text-white" : "text-zinc-500 hover:text-zinc-300"
                   }`}
                   onClick={() => switchMode(tab.id)}

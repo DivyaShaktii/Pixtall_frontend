@@ -240,4 +240,32 @@ describe("custom JWT authentication", () => {
       "If an account exists for this email",
     );
   });
+
+  it("keeps the Google button and input focus stable on height-only resizes and parent updates", async () => {
+    vi.stubEnv("VITE_GOOGLE_CLIENT_ID", "web-client.apps.googleusercontent.com");
+    let resize;
+    let width = 340;
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockImplementation(() => width);
+    const originalObserver = globalThis.ResizeObserver;
+    globalThis.ResizeObserver = class {
+      constructor(callback) { resize = callback; }
+      observe() {}
+      disconnect() {}
+    };
+    try {
+      const { rerender } = render(<AuthPage onAuthSuccess={vi.fn()} />);
+      await waitFor(() => expect(googleIdentityMock.renderButton).toHaveBeenCalledTimes(1));
+      screen.getByLabelText("Email").focus();
+      act(() => { resize(); resize(); resize(); });
+      rerender(<AuthPage onAuthSuccess={vi.fn()} />);
+      expect(googleIdentityMock.renderButton).toHaveBeenCalledTimes(1);
+      expect(screen.getByLabelText("Email")).toHaveFocus();
+      act(() => { width = 300; resize(); });
+      expect(googleIdentityMock.renderButton).toHaveBeenCalledTimes(2);
+      fireEvent.click(screen.getByRole("tab", { name: "Sign up" }));
+      await waitFor(() => expect(googleIdentityMock.renderButton).toHaveBeenCalledTimes(3));
+    } finally {
+      globalThis.ResizeObserver = originalObserver;
+    }
+  });
 });

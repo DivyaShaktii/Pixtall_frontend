@@ -2,7 +2,8 @@ export const plans = [
   {
     id: "payg",
     name: "Pay as You Go",
-    price: "₹499",
+    priceINR: "₹499",
+    priceUSD: "$9.99",
     billingPeriod: "one-time",
     credits: 420,
     creditUsage: {
@@ -21,7 +22,8 @@ export const plans = [
   {
     id: "creator",
     name: "Creator",
-    price: "₹999",
+    priceINR: "₹999",
+    priceUSD: "$15.99",
     billingPeriod: "/month",
     credits: 1000,
     creditUsage: {
@@ -40,7 +42,8 @@ export const plans = [
   {
     id: "pro",
     name: "Pro",
-    price: "₹1,999",
+    priceINR: "₹1,999",
+    priceUSD: "$29.99",
     billingPeriod: "/month",
     credits: 2200,
     creditUsage: {
@@ -60,7 +63,8 @@ export const plans = [
   {
     id: "business",
     name: "Business",
-    price: "₹3,999",
+    priceINR: "₹3,999",
+    priceUSD: "$54.99",
     billingPeriod: "/month",
     credits: 4800,
     creditUsage: {

@@ -1,15 +1,32 @@
 import os
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 import pytest
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, text
 from sqlalchemy.orm import Session
 
-from pixtall.db import Base
-from pixtall.models import ImageQuality, JobStatus, Plan, Subscription, User, Wallet
-from pixtall.schemas import GenerationRequest
-from pixtall.services import settle_job, submit_job
+from pixtall.api import current_identity, login, signup, verify_signup_email
+from pixtall.auth import (
+    EmailVerificationRequest,
+    LoginRequest,
+    SignupRequest,
+    hash_email_verification_code,
+)
+from pixtall.core import (
+    Base,
+    CreditGrant,
+    GenerationRequest,
+    ImageQuality,
+    JobStatus,
+    Plan,
+    Settings,
+    Subscription,
+    User,
+    Wallet,
+    settle_job,
+    submit_job,
+)
 
 DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 pytestmark = [
@@ -24,6 +41,7 @@ def session() -> Session:
     Base.metadata.create_all(engine)
     connection = engine.connect()
     transaction = connection.begin()
+    connection.execute(text("SET LOCAL statement_timeout = '10s'"))
     session = Session(bind=connection)
     yield session
     session.close()
@@ -34,7 +52,7 @@ def session() -> Session:
 def seeded_user(session: Session) -> tuple[User, Wallet]:
     user = User(id=uuid4(), email=f"{uuid4()}@example.com")
     plan = Plan(
-        code=f"test-{uuid4()}",
+        code=f"t-{uuid4().hex}",
         name="Test",
         base_price_paise=100,
         included_credits=100,
@@ -48,6 +66,17 @@ def seeded_user(session: Session) -> tuple[User, Wallet]:
     session.flush()
     session.add(
         Subscription(user_id=user.id, plan_id=plan.id, status="active", starts_at=datetime.now(UTC))
+    )
+    session.add(
+        CreditGrant(
+            user_id=user.id,
+            plan_id=plan.id,
+            source_type="test",
+            provider_reference=f"test:{user.id}",
+            granted_credits=100,
+            available_credits=100,
+            expires_at=datetime.now(UTC) + timedelta(days=30),
+        )
     )
     session.commit()
     return user, wallet
@@ -65,6 +94,55 @@ def generation_request(count: int = 2) -> GenerationRequest:
         image_count=count,
         quality=ImageQuality.STANDARD,
     )
+
+
+def test_custom_signup_and_login_use_the_railway_users_table(
+    session: Session,
+    monkeypatch,
+) -> None:
+    email = f"integration-{uuid4().hex}@example.com"
+    settings = Settings(
+        _env_file=None,
+        app_env="test",
+        auth_mode="custom",
+        database_url=DATABASE_URL,
+        jwt_secret="integration-test-secret",
+        smtp_host="smtp.example.com",
+        smtp_username="mailer@example.com",
+        smtp_password="app-password",
+        smtp_from_email="mailer@example.com",
+    )
+    monkeypatch.setattr(
+        "pixtall.api.create_email_verification_code",
+        lambda requested_email, secret: (
+            "471208",
+            hash_email_verification_code(requested_email, "471208", secret),
+        ),
+    )
+    monkeypatch.setattr("pixtall.api.send_email_verification_code", lambda *args, **kwargs: None)
+    signup(
+        SignupRequest(email=email, password="integration-password", name="Integration User"),
+        settings,
+        session,
+    )
+    created = verify_signup_email(
+        EmailVerificationRequest(email=email, code="471208"),
+        settings,
+        session,
+    )
+    identity = current_identity(f"Bearer {created.access_token}", settings, session)
+    wallet = session.scalar(select(Wallet).where(Wallet.user_id == identity.user_id))
+    assert identity.email == email
+    assert wallet is not None
+    assert wallet.available_credits == 0
+
+    authenticated = login(
+        LoginRequest(email=email, password="integration-password"),
+        session,
+    )
+    assert current_identity(
+        f"Bearer {authenticated.access_token}", settings, session
+    ).user_id == identity.user_id
 
 
 def test_reservation_and_partial_settlement_are_idempotent(session: Session) -> None:

@@ -3,7 +3,7 @@ import json
 import httpx
 import pytest
 
-from pixtall.backend_client import BackendCallError, RailwayBackendClient
+from pixtall.worker import BackendCallError, RailwayBackendClient
 
 
 def request_payload(count: int = 2) -> dict[str, object]:

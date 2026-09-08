@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { restoreMarketingSection } from '../lib/marketingNavigation';
 import { Navbar } from './marketing/Navbar';
 import { Hero } from './marketing/Hero';
 import { BrandStrip } from './marketing/BrandStrip';
@@ -10,6 +11,7 @@ import { CtaSection } from './marketing/CtaSection';
 import { Footer } from './marketing/Footer';
 
 const MarketingPage = ({ onStart }) => {
+  useEffect(restoreMarketingSection, []);
   return (
     <div className="min-h-full w-full bg-[#070707] font-sans text-white antialiased overflow-hidden selection:bg-[#a3e635]/20">
       {/* Cinematic Environment Background */}

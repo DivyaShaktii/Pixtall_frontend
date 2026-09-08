@@ -18,11 +18,11 @@ import {
 } from "../lib/checkoutIntent";
 import { openRazorpayCheckout } from "../lib/razorpay";
 
-const money = paise => new Intl.NumberFormat("en-IN", {
+const money = (amount, currency = "INR") => new Intl.NumberFormat(currency === "INR" ? "en-IN" : "en-US", {
   style: "currency",
-  currency: "INR",
+  currency: currency,
   maximumFractionDigits: 2,
-}).format((paise || 0) / 100);
+}).format((amount || 0) / 100);
 
 const date = value => value
   ? new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value))
@@ -51,6 +51,7 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
   const [notice, setNotice] = useState("");
   const [action, setAction] = useState("");
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [currency, setCurrency] = useState("INR");
   const resumedPlanRef = useRef("");
 
   const finishCheckoutIntent = planCode => {
@@ -84,6 +85,20 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
 
   useEffect(() => {
     loadBilling();
+
+    const storedOverride = localStorage.getItem("__TEST_USA_PRICING");
+    if (storedOverride === "true") {
+      setCurrency("USD");
+      return;
+    }
+    fetch("https://api.country.is")
+      .then(res => res.json())
+      .then(data => {
+        // Uncomment the line below to force USA for testing
+        data = { country: 'US' };
+        if (data && data.country && data.country !== "IN") setCurrency("USD");
+      })
+      .catch(console.error);
   }, [loadBilling]);
 
   const confirmPayment = async (checkout, response) => {
@@ -121,7 +136,7 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
           "Content-Type": "application/json",
           "Idempotency-Key": checkoutRequestKey(planCode),
         },
-        body: JSON.stringify({ plan_code: planCode }),
+        body: JSON.stringify({ plan_code: planCode, currency }),
       }));
       await openRazorpayCheckout({
         checkout,
@@ -287,7 +302,7 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
                       <h3 className="font-semibold text-ink">{plan.name}</h3>
                       {plan.code === "pro" && <span className="text-[11px] font-semibold text-accent">Popular</span>}
                     </div>
-                    <p className="text-2xl font-bold text-ink tabular-nums">{money(plan.final_price_paise)}</p>
+                    <p className="text-2xl font-bold text-ink tabular-nums">{money(currency === "INR" ? plan.final_price_paise : plan.final_price_usd_cents, currency)}</p>
                     <p className="text-xs text-slate mt-1">{plan.recurring ? "per month" : "one-time · valid 6 months"}</p>
                     <p className="text-sm text-ink-2 mt-4 mb-5">{plan.included_credits.toLocaleString()} credits</p>
                     <button
@@ -330,8 +345,8 @@ const BillingPage = ({ initialPlanCode, onWalletChange }) => {
                       <tr key={payment.id}>
                         <td className="px-5 py-4 text-slate">{date(payment.captured_at || payment.created_at)}</td>
                         <td className="px-5 py-4 font-medium text-ink">{payment.plan_name}</td>
-                        <td className="px-5 py-4 text-ink tabular-nums">{money(payment.total_amount_paise)}</td>
-                        <td className="px-5 py-4 text-slate tabular-nums">{money(payment.gst_amount_paise)}</td>
+                        <td className="px-5 py-4 text-ink tabular-nums">{money(payment.total_amount_paise, payment.currency)}</td>
+                        <td className="px-5 py-4 text-slate tabular-nums">{money(payment.gst_amount_paise, payment.currency)}</td>
                         <td className="px-5 py-4">
                           <span className={`inline-flex px-2.5 py-1 rounded-full border text-xs font-semibold capitalize ${statusTone(payment.status)}`}>
                             {payment.status}

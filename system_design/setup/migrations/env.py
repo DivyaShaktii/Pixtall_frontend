@@ -3,9 +3,7 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from pixtall import models  # noqa: F401
-from pixtall.config import get_settings
-from pixtall.db import Base
+from pixtall.core import Base, get_settings
 
 config = context.config
 # ConfigParser treats percent-encoded URL characters as interpolation markers.

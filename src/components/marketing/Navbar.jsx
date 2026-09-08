@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CaretDown, List, X } from '@phosphor-icons/react';
+import { scrollToMarketingSection } from '../../lib/marketingNavigation';
+import { EnterpriseButton } from './EnterpriseButton';
 
 const navLinks = [
   { label: 'Features', href: '/#features' },
@@ -21,7 +23,7 @@ export function Navbar({ onStart }) {
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 w-full transition-[background-color,border-color,padding] duration-150 motion-reduce:transition-none ${
         isScrolled ? 'bg-[#070707]/60 backdrop-blur-xl border-b border-white/5 py-2' : 'bg-transparent border-b border-transparent py-4'
       }`}
     >
@@ -30,7 +32,7 @@ export function Navbar({ onStart }) {
         aria-label="Primary"
       >
         {/* Left - Logo */}
-        <a href="#" className="flex items-center gap-3 text-white" aria-label="Pixtall AI home">
+        <a href="/" onClick={event => { if (window.location.pathname === '/' && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); scrollToMarketingSection('top'); } }} className="flex min-h-11 items-center gap-3 text-white" aria-label="Pixtall AI home">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#a3e635] text-black shadow-[0_0_15px_rgba(163,230,53,0.3)]">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
@@ -48,15 +50,16 @@ export function Navbar({ onStart }) {
         <ul className="hidden items-center gap-8 lg:flex absolute left-1/2 -translate-x-1/2">
           {navLinks.map((link) => (
             <li key={link.label}>
-              <a
+              {link.label === 'Enterprise' ? <EnterpriseButton className="flex min-h-11 items-center text-sm text-neutral-300 hover:text-white" /> : <a
                 href={link.href}
-                className="flex items-center gap-1 text-sm text-neutral-300 transition-colors hover:text-white"
+                onClick={event => { if (link.href.includes('#') && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); scrollToMarketingSection(link.href.split('#')[1]); } }}
+                className="flex min-h-11 items-center gap-1 text-sm text-neutral-300 transition-colors duration-150 hover:text-white"
               >
                 {link.label}
                 {link.hasDropdown && (
                   <CaretDown className="h-4 w-4 text-neutral-500" aria-hidden="true" />
                 )}
-              </a>
+              </a>}
             </li>
           ))}
         </ul>
@@ -65,13 +68,13 @@ export function Navbar({ onStart }) {
         <div className="hidden items-center gap-6 lg:flex">
           <button
             onClick={onStart}
-            className="text-sm font-medium text-neutral-300 transition-colors hover:text-white"
+            className="min-h-11 text-sm font-medium text-neutral-300 transition-colors duration-150 hover:text-white"
           >
             Log In
           </button>
           <button
             onClick={onStart}
-            className="rounded-lg bg-[#a3e635] px-5 py-2.5 text-sm font-semibold text-black transition-all hover:bg-[#b6ef5c] shadow-[0_0_15px_rgba(163,230,53,0.2)] hover:shadow-[0_0_25px_rgba(163,230,53,0.4)]"
+            className="auth-primary-button min-h-11 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors duration-150"
           >
             Start Creating
           </button>
@@ -81,7 +84,7 @@ export function Navbar({ onStart }) {
         <button
           type="button"
           onClick={() => setMobileOpen((v) => !v)}
-          className="flex h-9 w-9 items-center justify-center rounded-md text-neutral-300 lg:hidden"
+          className="flex h-11 w-11 items-center justify-center rounded-md text-neutral-300 lg:hidden"
           aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileOpen}
         >
@@ -95,13 +98,14 @@ export function Navbar({ onStart }) {
           <ul className="flex flex-col gap-1">
             {navLinks.map((link) => (
               <li key={link.label}>
-                <a
+                {link.label === 'Enterprise' ? <EnterpriseButton className="flex min-h-11 w-full items-center rounded-md px-3 py-2.5 text-sm text-neutral-300 hover:text-white" /> : <a
                   href={link.href}
-                  className="flex items-center justify-between rounded-md px-3 py-2.5 text-sm text-neutral-300 hover:bg-white/5 hover:text-white"
+                  onClick={event => { setMobileOpen(false); if (link.href.includes('#') && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); scrollToMarketingSection(link.href.split('#')[1]); } }}
+                  className="flex min-h-11 items-center justify-between rounded-md px-3 py-2.5 text-sm text-neutral-300 hover:bg-white/5 hover:text-white"
                 >
                   {link.label}
                   {link.hasDropdown && <CaretDown className="h-4 w-4 text-neutral-500" />}
-                </a>
+                </a>}
               </li>
             ))}
           </ul>
@@ -114,7 +118,7 @@ export function Navbar({ onStart }) {
             </button>
             <button
               onClick={onStart}
-              className="block w-full rounded-lg bg-[#a3e635] px-5 py-2.5 text-center text-sm font-semibold text-black shadow-[0_0_15px_rgba(163,230,53,0.2)]"
+              className="auth-primary-button block min-h-11 w-full rounded-lg px-5 py-2.5 text-center text-sm font-semibold transition-colors duration-150"
             >
               Start Creating
             </button>

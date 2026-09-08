@@ -7,3 +7,14 @@ __pycache__/
 *.py[cod]
 .coverage
 htmlcov/
+.DS_Store
+*.sqlite3
+*.db
+tests/
+*.md
+
+# Local Railway/Postgres troubleshooting scripts; schema changes belong in Alembic.
+check_db.py
+fix_db*.py
+insert_plans.py
+query*.py

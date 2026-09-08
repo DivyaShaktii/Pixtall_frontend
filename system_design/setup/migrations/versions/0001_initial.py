@@ -1,4 +1,4 @@
-"""Initial credit and generation schema."""
+"""Create the initial credit and generation schema."""
 
 from collections.abc import Sequence
 
@@ -11,14 +11,14 @@ down_revision: str | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
-image_quality = sa.Enum("STANDARD", "PREMIUM", name="image_quality")
+image_quality = sa.Enum("standard", "premium", name="image_quality")
 job_status = sa.Enum(
-    "QUEUED",
-    "PROCESSING",
-    "RETRYING",
-    "COMPLETED",
-    "PARTIALLY_COMPLETED",
-    "FAILED",
+    "queued",
+    "processing",
+    "retrying",
+    "completed",
+    "partially_completed",
+    "failed",
     name="job_status",
 )
 transaction_type = sa.Enum(
@@ -102,7 +102,7 @@ def upgrade() -> None:
         sa.Column("reserved_credits", sa.Integer, nullable=False),
         sa.Column("consumed_credits", sa.Integer, server_default="0", nullable=False),
         sa.Column("released_credits", sa.Integer, server_default="0", nullable=False),
-        sa.Column("status", job_status, server_default="QUEUED", nullable=False),
+        sa.Column("status", job_status, server_default="queued", nullable=False),
         sa.Column("request_payload", postgresql.JSONB, nullable=False),
         sa.Column("backend_request_id", sa.String(200)),
         sa.Column("error_code", sa.String(80)),

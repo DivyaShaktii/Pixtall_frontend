@@ -1,6 +1,6 @@
 """${message}
 
-Revision ID: ${up_revision}
+Revision: ${up_revision}
 Revises: ${down_revision | comma,n}
 """
 from typing import Sequence, Union
@@ -21,4 +21,3 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     ${downgrades if downgrades else "pass"}
-
