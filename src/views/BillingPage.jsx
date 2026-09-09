@@ -281,7 +281,10 @@ const BillingPage = ({ initialPlanCode, initialCurrency, onWalletChange }) => {
               {plans.map(plan => {
                 const working = action === `checkout:${plan.code}`;
                 return (
-                  <div key={plan.code} className={`rounded-xl bg-paper p-5 ${plan.code === "pro" ? "border-2 border-accent" : "border border-line"}`}>
+                  <div
+                    key={plan.code}
+                    className={`group rounded-xl bg-paper p-5 transition-[transform,border-color,background-color,box-shadow] duration-150 ease-out hover:-translate-y-1 hover:border-accent hover:bg-accent-soft/30 hover:shadow-[0_14px_34px_-20px_rgba(132,204,22,0.65)] ${plan.code === "pro" ? "border-2 border-accent" : "border border-line"}`}
+                  >
                     <div className="flex items-center justify-between gap-2 mb-4">
                       <h3 className="font-semibold text-ink">{plan.name}</h3>
                       {plan.code === "pro" && <span className="text-[11px] font-semibold text-accent">Popular</span>}
@@ -295,7 +298,7 @@ const BillingPage = ({ initialPlanCode, initialCurrency, onWalletChange }) => {
                       type="button"
                       onClick={() => startCheckout(plan.code)}
                       disabled={Boolean(action) || currencyLoading}
-                      className={`w-full py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 ${plan.code === "pro" ? "bg-accent text-paper hover:bg-accent-ink" : "border border-line-2 text-ink hover:bg-cloud"}`}
+                      className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-accent !bg-[#84cc16] px-4 py-2.5 text-sm font-semibold !text-[#09090b] shadow-[0_6px_18px_-8px_rgba(132,204,22,0.8)] transition-[scale,background-color,border-color,box-shadow] duration-150 ease-out hover:border-[#a3e635] hover:!bg-[#a3e635] hover:shadow-[0_9px_24px_-10px_rgba(132,204,22,0.95)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-paper active:scale-[0.96] disabled:opacity-50 disabled:shadow-none"
                     >
                       {working && <CircleNotch size={17} className="animate-spin" />}
                       {currencyLoading ? "Detecting region…" : working ? "Opening…" : plan.code === "payg" ? "Buy credits" : `Buy ${plan.name}`}

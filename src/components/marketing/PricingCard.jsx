@@ -18,8 +18,7 @@ export function PricingCard({ plan, index, onStart }) {
     maxImages, 
     highlight, 
     badge, 
-    cta, 
-    ctaPrimary 
+    cta
   } = plan;
 
   return (
@@ -28,8 +27,12 @@ export function PricingCard({ plan, index, onStart }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ y: -8, scale: 1.02 }}
-      className={`group relative px-8 pt-10 pb-8 rounded-3xl border flex flex-col h-full bg-paper/50 backdrop-blur-md shadow-lg transition-all duration-300 ${
+      whileHover={{
+        y: -8,
+        scale: 1.02,
+        transition: { duration: 0.15, ease: 'easeOut' },
+      }}
+      className={`group relative px-8 pt-10 pb-8 rounded-3xl border flex flex-col h-full bg-paper/50 backdrop-blur-md shadow-lg transition-[border-color,background-color,box-shadow] duration-150 ease-out ${
         highlight 
           ? 'border-accent/40 bg-accent/5 shadow-[0_8px_32px_-12px_rgba(132,204,22,0.2)] hover:border-accent/60 hover:bg-accent/10 hover:shadow-[0_8px_32px_-12px_rgba(132,204,22,0.5)]' 
           : 'border-white/10 hover:border-accent/40 hover:bg-white/5 hover:shadow-[0_8px_32px_-12px_rgba(132,204,22,0.4)]'
@@ -45,7 +48,7 @@ export function PricingCard({ plan, index, onStart }) {
       <div className="mb-8">
         <h3 className="text-xl font-medium text-white mb-3">{name}</h3>
         <div className="flex items-baseline gap-2 mb-4">
-          <span className="text-4xl font-bold text-white tracking-tight transition-all duration-300 group-hover:text-purple-400 group-hover:drop-shadow-[0_0_15px_rgba(192,132,252,0.8)]">{price}</span>
+          <span className="text-4xl font-bold text-white tracking-tight transition-[color,filter] duration-150 ease-out group-hover:text-purple-400 group-hover:drop-shadow-[0_0_15px_rgba(192,132,252,0.8)]">{price}</span>
           <span className="text-sm text-slate">{billingPeriod}</span>
         </div>
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm font-medium text-white">
@@ -110,13 +113,9 @@ export function PricingCard({ plan, index, onStart }) {
       {/* CTA Button */}
       <motion.button 
         whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        whileTap={{ scale: 0.96 }}
         onClick={() => onStart?.(plan.id)}
-        className={`w-full py-4 px-4 mt-auto rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center ${
-          ctaPrimary
-            ? 'bg-accent text-paper hover:bg-accent-ink shadow-[0_4px_14px_0_rgba(132,204,22,0.39)]' 
-            : 'bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-white/20'
-        }`}
+        className="mt-auto flex min-h-11 w-full items-center justify-center rounded-xl border border-accent !bg-[#84cc16] px-4 py-4 text-sm font-semibold !text-[#09090b] shadow-[0_6px_20px_-8px_rgba(132,204,22,0.9)] transition-[background-color,border-color,box-shadow] duration-150 ease-out hover:border-[#a3e635] hover:!bg-[#a3e635] hover:shadow-[0_10px_28px_-10px_rgba(132,204,22,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
       >
         {cta}
       </motion.button>

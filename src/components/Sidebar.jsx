@@ -1,5 +1,5 @@
 import React from "react";
-import { Sparkle, Tag, Images, CreditCard, Gear, CaretUpDown } from "@phosphor-icons/react";
+import { Sparkle, Tag, Images, CreditCard, Gear } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 
 const NAV_ITEMS = [
@@ -21,25 +21,21 @@ const Sidebar = ({ active, onNavigate, currentUser, wallet, walletError }) => {
   return (
     <aside className="w-full lg:w-[220px] bg-cloud border-t lg:border-t-0 lg:border-r border-line flex flex-row lg:flex-col h-[72px] lg:h-full flex-shrink-0 transition-all duration-300 z-20 shadow-[4px_-4px_24px_rgba(0,0,0,0.02)] lg:shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
       
-      {/* Workspace Selector (Visual Only) */}
+      {/* Workspace identity */}
       <div className="p-4 shrink-0 hidden lg:block">
-        <button className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-paper hover:shadow-sm transition-all duration-200 border border-transparent hover:border-line group">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-accent text-white flex items-center justify-center font-bold text-xs">
-              {workspaceName.charAt(0).toUpperCase()}
-            </div>
-            <div className="flex flex-col items-start">
-              <span className="text-sm font-medium text-ink leading-tight truncate max-w-[100px]">{workspaceName}</span>
-              <span className="text-[10px] uppercase font-bold text-slate tracking-wider">Secure account</span>
-            </div>
+        <div className="flex w-full items-center gap-2 px-3 py-2">
+          <div className="flex h-6 w-6 items-center justify-center rounded bg-accent text-xs font-bold text-white">
+            {workspaceName.charAt(0).toUpperCase()}
           </div>
-          <CaretUpDown size={14} className="text-slate group-hover:text-ink transition-colors" />
-        </button>
+          <div className="flex min-w-0 flex-col items-start">
+            <span className="max-w-[120px] truncate text-sm font-medium leading-tight text-ink">{workspaceName}</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate">Secure account</span>
+          </div>
+        </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 flex flex-row lg:flex-col px-2 lg:px-3 py-2 space-x-2 lg:space-x-0 lg:space-y-1.5 overflow-x-auto lg:overflow-y-auto items-center justify-around lg:justify-start">
-        <div className="mb-2 px-3 text-xs font-semibold text-slate uppercase tracking-wider hidden lg:block">Main</div>
         {NAV_ITEMS.map(item => {
           const Icon = item.icon;
           const isActive = active === item.id;
