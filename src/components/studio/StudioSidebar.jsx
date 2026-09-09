@@ -58,8 +58,9 @@ export function StudioSidebar({
         <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl">
           <button 
             onClick={() => setActiveTool?.("product-to-model")}
-            className={`flex items-center gap-2 flex-1 justify-center py-2 rounded-lg font-medium text-[13px] transition-all ${
-              activeTool === "product-to-model" ? "bg-white/10 text-white shadow-sm" : "text-neutral-500 hover:text-white"
+            aria-pressed={activeTool === "product-to-model"}
+            className={`flex items-center gap-2 flex-1 justify-center py-2 rounded-lg border font-medium text-[13px] transition-[background-color,border-color,color,box-shadow] duration-150 ${
+              activeTool === "product-to-model" ? "studio-selected-control" : "border-transparent text-neutral-500 hover:text-white"
             }`}
           >
             <TShirt size={16} weight={activeTool === "product-to-model" ? "fill" : "regular"} />
@@ -67,8 +68,9 @@ export function StudioSidebar({
           </button>
           <button 
             onClick={() => setActiveTool?.("virtual-try-on")}
-            className={`flex items-center gap-2 flex-1 justify-center py-2 rounded-lg font-medium text-[13px] transition-all ${
-              activeTool === "virtual-try-on" ? "bg-white/10 text-white shadow-sm" : "text-neutral-500 hover:text-white"
+            aria-pressed={activeTool === "virtual-try-on"}
+            className={`flex items-center gap-2 flex-1 justify-center py-2 rounded-lg border font-medium text-[13px] transition-[background-color,border-color,color,box-shadow] duration-150 ${
+              activeTool === "virtual-try-on" ? "studio-selected-control" : "border-transparent text-neutral-500 hover:text-white"
             }`}
           >
             <User size={16} weight={activeTool === "virtual-try-on" ? "fill" : "regular"} />
@@ -103,12 +105,14 @@ export function StudioSidebar({
           {model !== "none" && (
             <button 
               onClick={() => setIsModelModalOpen?.(true)}
-              className="w-full h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 transition-colors overflow-hidden group mt-1"
+              className={`w-full h-12 rounded-xl border flex items-center justify-center text-neutral-400 hover:text-white transition-[background-color,border-color,color,box-shadow] duration-150 overflow-hidden group mt-1 ${
+                modelImagePath ? "studio-selected-control" : "border-white/10 bg-white/5 hover:bg-white/10"
+              }`}
             >
               {modelImagePath ? (
                 <div className="flex items-center justify-between w-full px-3">
                   <div className="flex items-center gap-3">
-                    <img src={modelImagePath} alt="Selected" className="w-8 h-8 rounded-lg object-cover" />
+                    <img src={modelImagePath} alt="" className="w-8 h-8 rounded-lg object-cover" />
                     <span className="text-[13px] font-medium text-white">Change Model</span>
                   </div>
                 </div>
@@ -129,9 +133,10 @@ export function StudioSidebar({
           <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl">
             <button 
               onClick={() => setImageQuality?.("standard")}
-              className={`flex-1 justify-center py-2 rounded-lg font-medium text-[13px] transition-all border ${
+              aria-pressed={imageQuality === "standard"}
+              className={`flex-1 justify-center py-2 rounded-lg font-medium text-[13px] transition-[background-color,border-color,color,box-shadow] duration-150 border ${
                 imageQuality === "standard" 
-                  ? "border-[#84cc16]/50 bg-[#84cc16]/10 text-white shadow-[0_0_15px_rgba(132,204,22,0.2)]" 
+                  ? "studio-selected-control"
                   : "border-transparent text-neutral-500 hover:text-white"
               }`}
             >
@@ -139,9 +144,10 @@ export function StudioSidebar({
             </button>
             <button 
               onClick={() => setImageQuality?.("premium")}
-              className={`flex-1 justify-center py-2 rounded-lg font-medium text-[13px] transition-all flex items-center gap-2 border ${
+              aria-pressed={imageQuality === "premium"}
+              className={`flex-1 justify-center py-2 rounded-lg font-medium text-[13px] transition-[background-color,border-color,color,box-shadow] duration-150 flex items-center gap-2 border ${
                 imageQuality === "premium" 
-                  ? "border-[#84cc16]/50 bg-[#84cc16]/10 text-white shadow-[0_0_15px_rgba(132,204,22,0.2)]" 
+                  ? "studio-selected-control"
                   : "border-transparent text-neutral-500 hover:text-[#84cc16]"
               }`}
             >
@@ -181,8 +187,10 @@ export function StudioSidebar({
                   <button
                     key={n}
                     onClick={() => setNumImages?.(n)}
-                    className={`flex-1 h-8 flex items-center justify-center rounded-lg text-xs font-semibold transition-all ${
-                      numImages === n ? "bg-white/10 text-white" : "text-neutral-500 hover:text-white"
+                    aria-label={`${n} ${n === 1 ? "image" : "images"}`}
+                    aria-pressed={numImages === n}
+                    className={`flex-1 h-8 flex items-center justify-center rounded-lg border text-xs font-semibold transition-[background-color,border-color,color,box-shadow] duration-150 ${
+                      numImages === n ? "studio-selected-control" : "border-transparent text-neutral-500 hover:text-white"
                     }`}
                   >
                     {n}

@@ -14,14 +14,15 @@ const SegmentedControl = ({ options, value, onChange, className = "" }) => {
             key={option.value}
             type="button"
             onClick={() => onChange(option.value)}
-            className={`relative flex-1 flex items-center justify-center h-[34px] px-3 text-xs font-bold rounded-md transition-all duration-200 ${
+            aria-pressed={isActive}
+            className={`relative flex-1 flex items-center justify-center h-[34px] px-3 text-xs font-bold rounded-md transition-colors duration-150 ${
               isActive ? "text-accent" : "text-slate hover:bg-cloud hover:text-ink"
             }`}
           >
             {isActive && (
               <motion.div
                 layoutId={`segmented-active-${uniqueId}`}
-                className="absolute inset-0 bg-paper rounded-md shadow-sm border border-[#a3e635]/50 ring-1 ring-[#a3e635]"
+                className="studio-selected-control absolute inset-0 rounded-md"
                 transition={transitions.springLayout}
               />
             )}

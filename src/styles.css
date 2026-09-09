@@ -146,6 +146,31 @@ input, select { outline: none; }
 .auth-primary-button:hover { background-color: #a3e635; }
 .auth-primary-button:disabled { opacity: 0.6; cursor: not-allowed; }
 
+/* Studio controls share one quiet, unmistakable selected state. */
+.studio-selected-control {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(135deg, rgba(39, 39, 42, 0.96), rgba(24, 24, 27, 0.96)) padding-box,
+    linear-gradient(135deg, rgba(163, 230, 53, 0.82), rgba(132, 204, 22, 0.38) 58%, rgba(255, 255, 255, 0.18)) border-box !important;
+  color: var(--color-ink) !important;
+  box-shadow: 0 8px 20px -16px rgba(132, 204, 22, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.studio-selected-control:hover {
+  background:
+    linear-gradient(135deg, rgba(45, 48, 42, 0.98), rgba(27, 30, 25, 0.98)) padding-box,
+    linear-gradient(135deg, rgba(190, 242, 100, 0.92), rgba(132, 204, 22, 0.5) 58%, rgba(255, 255, 255, 0.22)) border-box !important;
+}
+
+.studio-selected-option {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(var(--color-cloud), var(--color-cloud)) padding-box,
+    linear-gradient(135deg, rgba(163, 230, 53, 0.76), rgba(132, 204, 22, 0.3) 62%, rgba(255, 255, 255, 0.14)) border-box !important;
+  color: var(--color-accent) !important;
+  font-weight: 700;
+}
+
 :focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;

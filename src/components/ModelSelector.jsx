@@ -157,7 +157,7 @@ const ModelReferenceModal = ({
                       type="button"
                       onClick={() => handleSelect(imagePath)}
                       className={`relative aspect-[3/4] rounded-lg overflow-hidden group border-2 transition-all duration-200 ${
-                        isSelected ? "border-[#84cc16] shadow-[0_0_12px_rgba(132,204,22,0.2)]" : "border-transparent hover:border-line"
+                        isSelected ? "studio-selected-control" : "border-transparent hover:border-line"
                       }`}
                     >
                       <img src={imagePath} alt="" className="w-full h-full object-cover bg-cloud" loading="lazy" />
