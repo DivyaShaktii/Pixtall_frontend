@@ -4,10 +4,10 @@ import { scrollToMarketingSection } from '../../lib/marketingNavigation';
 import { EnterpriseButton } from './EnterpriseButton';
 
 const navLinks = [
-  { label: 'Features', href: '/#features' },
-  { label: 'Pricing', href: '/#pricing' },
-  { label: 'Enterprise', href: '/#enterprise' },
-  { label: 'Gallery', href: '/#gallery' },
+  { label: 'Features', href: '/', section: 'features' },
+  { label: 'Pricing', href: '/', section: 'pricing' },
+  { label: 'Enterprise' },
+  { label: 'Gallery', href: '/', section: 'gallery' },
   { label: 'Terms', href: '/terms' },
 ];
 
@@ -52,7 +52,7 @@ export function Navbar({ onStart }) {
             <li key={link.label}>
               {link.label === 'Enterprise' ? <EnterpriseButton className="flex min-h-11 items-center text-sm text-neutral-300 hover:text-white" /> : <a
                 href={link.href}
-                onClick={event => { if (link.href.includes('#') && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); scrollToMarketingSection(link.href.split('#')[1]); } }}
+                onClick={event => { if (link.section && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); scrollToMarketingSection(link.section); } }}
                 className="flex min-h-11 items-center gap-1 text-sm text-neutral-300 transition-colors duration-150 hover:text-white"
               >
                 {link.label}
@@ -100,7 +100,7 @@ export function Navbar({ onStart }) {
               <li key={link.label}>
                 {link.label === 'Enterprise' ? <EnterpriseButton className="flex min-h-11 w-full items-center rounded-md px-3 py-2.5 text-sm text-neutral-300 hover:text-white" /> : <a
                   href={link.href}
-                  onClick={event => { setMobileOpen(false); if (link.href.includes('#') && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); scrollToMarketingSection(link.href.split('#')[1]); } }}
+                  onClick={event => { setMobileOpen(false); if (link.section && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); scrollToMarketingSection(link.section); } }}
                   className="flex min-h-11 items-center justify-between rounded-md px-3 py-2.5 text-sm text-neutral-300 hover:bg-white/5 hover:text-white"
                 >
                   {link.label}

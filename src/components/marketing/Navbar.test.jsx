@@ -11,12 +11,16 @@ beforeEach(() => {
 
 it("scrolls to landing sections without adding a URL fragment", () => {
   render(<><Navbar /><section id="features">Features content</section><section id="pricing">Pricing content</section></>);
-  fireEvent.click(screen.getByRole("link", { name: "Features" }));
+  const featuresLink = screen.getByRole("link", { name: "Features" });
+  const pricingLink = screen.getByRole("link", { name: "Pricing" });
+  expect(featuresLink).toHaveAttribute("href", "/");
+  expect(pricingLink).toHaveAttribute("href", "/");
+  fireEvent.click(featuresLink);
   expect(window.location.hash).toBe("");
   expect(window.scrollTo).toHaveBeenCalled();
   expect(document.getElementById("features")).toHaveFocus();
   window.history.replaceState(null, "", "/#features");
-  fireEvent.click(screen.getByRole("link", { name: "Pricing" }));
+  fireEvent.click(pricingLink);
   expect(window.location.hash).toBe("");
 });
 
