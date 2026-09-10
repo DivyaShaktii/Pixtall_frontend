@@ -519,8 +519,8 @@ const TermsPage = ({ onStart }) => {
                 <Paragraph>
                   Have questions about these terms? Our legal and support teams are here to help.
                 </Paragraph>
-                <a href="mailto:support@pixstall.ai" className="inline-block mt-4 text-[#a3e635] font-medium hover:text-white transition-colors text-lg">
-                  support@pixstall.ai
+                <a href="mailto:contact@pixtall.com" className="inline-block mt-4 text-[#a3e635] font-medium hover:text-white transition-colors text-lg">
+                  contact@pixtall.com
                 </a>
               </div>
               

@@ -1,19 +1,30 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import AuthPage from "./components/AuthPage";
-import ResetPasswordPage from "./components/ResetPasswordPage";
-import GalleryPage from "./components/GalleryPage";
-import ProductsPage from "./components/ProductsPage";
-import Sidebar from "./components/Sidebar";
-import StudioView from "./views/StudioView";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import MarketingPage from "./components/MarketingPage";
-import SettingsPage from "./views/SettingsPage";
-import BillingPage from "./views/BillingPage";
-import AmbientBackground from "./components/AmbientBackground";
+import NotFoundPage from "./components/NotFoundPage";
 import TermsPage from "./views/legal/TermsPage";
 import { SYSTEM_API_BASE_URL } from "./utils/apiConfig";
 import { authenticatedFetch, jsonOrError } from "./lib/api";
 import { readCheckoutIntent, saveCheckoutIntent } from "./lib/checkoutIntent";
 import { clearAuthSession, readAuthSession } from "./lib/auth";
+import { applySeoMetadata } from "./lib/seo";
+
+const AuthPage = lazy(() => import("./components/AuthPage"));
+const ResetPasswordPage = lazy(() => import("./components/ResetPasswordPage"));
+const GalleryPage = lazy(() => import("./components/GalleryPage"));
+const ProductsPage = lazy(() => import("./components/ProductsPage"));
+const Sidebar = lazy(() => import("./components/Sidebar"));
+const StudioView = lazy(() => import("./views/StudioView"));
+const SettingsPage = lazy(() => import("./views/SettingsPage"));
+const BillingPage = lazy(() => import("./views/BillingPage"));
+const AmbientBackground = lazy(() => import("./components/AmbientBackground"));
+
+const PageLoader = () => (
+  <div className="flex min-h-screen items-center justify-center bg-paper text-sm text-slate" role="status">
+    Loading Pixtall AI…
+  </div>
+);
+
+const withSuspense = element => <Suspense fallback={<PageLoader />}>{element}</Suspense>;
 
 const checkoutFromLocation = () => {
   const fromQuery = new URLSearchParams(window.location.search).get("checkout");
@@ -29,6 +40,8 @@ const App = () => {
   const path = window.location.pathname;
   const isStudioPath = path === "/studio" || path === "/studio/";
   const isResetPasswordPath = path === "/reset-password" || path === "/reset-password/";
+  const isTermsPath = path === "/terms" || path === "/terms/" || path === "/legal/terms";
+  const isKnownPath = path === "/" || isStudioPath || isResetPasswordPath || isTermsPath;
   const initialCheckoutIntent = useMemo(checkoutFromLocation, []);
   const initialCheckoutPlan = initialCheckoutIntent.planCode;
   const storedSession = useMemo(readAuthSession, []);
@@ -91,6 +104,10 @@ const App = () => {
     refreshWallet();
   }, [refreshWallet]);
 
+  useEffect(() => {
+    applySeoMetadata(path);
+  }, [path]);
+
   const enterStudio = (planCode, currency) => {
     const selectedPlan = typeof planCode === "string" ? planCode : "";
     if (selectedPlan) saveCheckoutIntent(selectedPlan, currency);
@@ -114,14 +131,18 @@ const App = () => {
     window.location.href = "/";
   };
 
-  if (path === "/terms" || path === "/legal/terms") {
+  if (isTermsPath) {
     return <TermsPage onStart={() => { window.location.href = "/"; }} />;
   }
 
   if (isResetPasswordPath) {
-    return (
+    return withSuspense(
       <ResetPasswordPage onReturnToLogin={() => { window.location.href = "/studio"; }} />
     );
+  }
+
+  if (!isKnownPath) {
+    return <NotFoundPage />;
   }
 
   if (authLoading) {
@@ -134,16 +155,16 @@ const App = () => {
 
   if (!isStudioPath) {
     if (showAuth) {
-      return <AuthPage onAuthSuccess={handleAuthSuccess} onBack={() => setShowAuth(false)} />;
+      return withSuspense(<AuthPage onAuthSuccess={handleAuthSuccess} onBack={() => setShowAuth(false)} />);
     }
     return <MarketingPage onStart={enterStudio} />;
   }
 
   if (!currentUser) {
-    return <AuthPage onAuthSuccess={handleAuthSuccess} onBack={() => { window.location.href = "/"; }} />;
+    return withSuspense(<AuthPage onAuthSuccess={handleAuthSuccess} onBack={() => { window.location.href = "/"; }} />);
   }
 
-  return (
+  return withSuspense(
     <div className="flex h-screen w-full bg-cloud font-sans text-ink overflow-hidden selection:bg-accent/20 flex-col">
       <header className="h-16 flex items-center justify-between px-6 bg-paper border-b border-line shrink-0 z-10">
         <div className="flex items-center gap-3">

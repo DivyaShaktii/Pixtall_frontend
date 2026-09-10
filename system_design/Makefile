@@ -1,4 +1,4 @@
-.PHONY: install notebook-install notebook db migrate seed api worker test integration lint typecheck check
+.PHONY: install notebook-install notebook db migrate seed start dev test integration lint typecheck check
 
 install:
 	python3.12 -m venv .venv
@@ -17,19 +17,19 @@ migrate:
 	.venv/bin/alembic upgrade head
 
 seed:
-	.venv/bin/python -m pixtall.dev_seed
+	.venv/bin/python setup/dev_seed.py
 
-api:
-	.venv/bin/uvicorn pixtall.main:app --reload
+start:
+	uvicorn pixtall.api:app --host 0.0.0.0 --port $${PORT:-8000}
 
-worker:
-	.venv/bin/python -m pixtall.worker
+dev:
+	.venv/bin/uvicorn pixtall.api:app --host 127.0.0.1 --port 8000 --reload
 
 test:
 	.venv/bin/pytest -m 'not integration'
 
 integration:
-	TEST_DATABASE_URL="$$(.venv/bin/python -c 'from pixtall.config import get_settings; print(get_settings().database_url)')" .venv/bin/pytest tests/integration
+	TEST_DATABASE_URL="$$(.venv/bin/python -c 'from pixtall.core import get_settings; print(get_settings().database_url)')" .venv/bin/pytest tests/integration
 
 lint:
 	.venv/bin/ruff check .
