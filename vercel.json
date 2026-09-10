@@ -1,8 +1,48 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/legal/terms",
+      "destination": "/terms",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/studio",
+      "destination": "/app"
+    },
+    {
+      "source": "/studio/:path*",
+      "destination": "/app"
+    },
+    {
+      "source": "/reset-password",
+      "destination": "/app"
+    },
+    {
+      "source": "/reset-password/:path*",
+      "destination": "/app"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/studio",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }]
+    },
+    {
+      "source": "/studio/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }]
+    },
+    {
+      "source": "/reset-password",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }]
+    },
+    {
+      "source": "/reset-password/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }]
     }
   ]
 }

@@ -1,0 +1,16 @@
+{
+  "name": "Pixtall AI",
+  "short_name": "Pixtall",
+  "description": "AI product image generation for ecommerce brands.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070707",
+  "theme_color": "#070707",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

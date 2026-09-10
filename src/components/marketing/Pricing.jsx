@@ -29,7 +29,10 @@ const toCardPlan = (plan, currency) => ({
 });
 
 export function Pricing({ onStart }) {
-  const [displayPlans, setDisplayPlans] = useState([]);
+  const [displayPlans, setDisplayPlans] = useState(() => plans.map(plan => ({
+    ...plan,
+    price: plan.priceUSD,
+  })));
   const [backendPlans, setBackendPlans] = useState(null);
   const { currency, currencyLoading } = useRegionalCurrency();
 
@@ -49,9 +52,8 @@ export function Pricing({ onStart }) {
   }, []);
 
   useEffect(() => {
-    if (!currency) {
-      setDisplayPlans([]);
-    } else if (backendPlans) {
+    if (!currency) return;
+    if (backendPlans) {
       setDisplayPlans(backendPlans.map(plan => toCardPlan(plan, currency)));
     } else {
       setDisplayPlans(plans.map(plan => ({

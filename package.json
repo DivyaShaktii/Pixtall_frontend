@@ -5,7 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run generate:seo && npm run build:client && npm run build:ssr && npm run prerender",
+    "build:client": "vite build",
+    "build:ssr": "vite build --ssr src/entry-server.jsx --outDir .prerender",
+    "prerender": "node scripts/prerender.mjs && node scripts/verify-seo-build.mjs",
+    "generate:seo": "node scripts/generate-seo-files.mjs",
     "test": "vitest run",
     "preview": "vite preview",
     "mock-api": "node mock-api/server.js"
