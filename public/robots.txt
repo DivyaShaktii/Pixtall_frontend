@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://pixtall.ai/sitemap.xml
+Sitemap: https://www.pixtall.com/sitemap.xml

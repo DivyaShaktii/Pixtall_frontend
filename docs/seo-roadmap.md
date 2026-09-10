@@ -19,7 +19,7 @@ Completed in code:
 
 Still requires owner input or a later content phase:
 
-- Confirm whether the canonical domain is `pixtall.ai`, `pixstall.ai`, or another hostname. Neither spelling currently resolves publicly. The build defaults to `https://pixtall.ai` and can be changed with `VITE_SITE_URL`.
+- The canonical production domain is `https://www.pixtall.com`. Keep `VITE_SITE_URL` set to this exact origin in every production build.
 - Provide official organization details and social profiles before expanding entity schema.
 - Approve a legally accurate Privacy Policy before adding a public Privacy page.
 - Create original use-case, marketplace, case-study, and resource pages before expanding the sitemap.

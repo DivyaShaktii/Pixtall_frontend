@@ -118,7 +118,7 @@ export function Hero({ onStart }) {
                         <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
                       </div>
                       <div className="text-[10px] text-neutral-500 font-medium px-4 py-0.5 bg-white/5 rounded-md border border-white/5">
-                        pixtall.ai/studio
+                        www.pixtall.com/studio
                       </div>
                       <div className="w-[42px]" /> {/* Spacer to balance traffic lights */}
                     </div>

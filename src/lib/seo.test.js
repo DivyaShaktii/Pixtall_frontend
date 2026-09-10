@@ -23,7 +23,7 @@ describe('SEO metadata', () => {
     applySeoMetadata('/terms');
 
     expect(document.title).toBe('Terms of Service | Pixtall AI');
-    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', 'https://pixtall.ai/terms');
+    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.pixtall.com/terms');
     expect(document.querySelector('meta[name="description"]')).toHaveAttribute('content', expect.stringContaining('terms'));
     expect(document.querySelectorAll('script[data-pixtall-structured-data]')).toHaveLength(1);
   });
