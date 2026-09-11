@@ -39,6 +39,7 @@ const headMarkup = (seo, structuredData) => {
     <meta name="twitter:title" content="${escapeHtml(seo.title)}" />
     <meta name="twitter:description" content="${escapeHtml(seo.description)}" />
     <meta name="twitter:image" content="${DEFAULT_SOCIAL_IMAGE}" />
+    <meta name="twitter:image:alt" content="Examples of products transformed into AI-generated model photography" />
     ${jsonLd}
     <!-- SEO_HEAD_END -->`;
 };

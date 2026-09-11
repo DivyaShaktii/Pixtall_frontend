@@ -9,6 +9,8 @@ const steps = [
     title: 'Upload your product photo',
     body: 'Any clean shot works — jewelry, apparel, bags, beauty, food. Straight off a phone is fine.',
     img: '/gallery/step1.jpg',
+    width: 895,
+    height: 1200,
   },
   {
     number: '02',
@@ -16,6 +18,8 @@ const steps = [
     title: 'Set the context',
     body: 'Pick a category, a scene, and an aspect ratio. Choose one of several preset models — or upload a photo of your own.',
     img: '/gallery/step2.jpg',
+    width: 895,
+    height: 1200,
   },
   {
     number: '03',
@@ -23,6 +27,8 @@ const steps = [
     title: 'Pixtall composites the shot',
     body: 'The engine places your product on the model, matching light, angle, and perspective.',
     img: '/gallery/step3.png',
+    width: 1792,
+    height: 2400,
   },
   {
     number: '04',
@@ -30,6 +36,8 @@ const steps = [
     title: 'Export, ready to list',
     body: 'Download a listing photo sized for Amazon, Flipkart, Etsy, and more.',
     img: '/gallery/step4.png',
+    width: 2048,
+    height: 2048,
   }
 ];
 
@@ -104,6 +112,10 @@ export function HowItWorks() {
                 <img 
                   src={step.img} 
                   alt={step.title}
+                  width={step.width}
+                  height={step.height}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105 group-hover:opacity-100"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />

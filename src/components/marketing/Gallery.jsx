@@ -113,6 +113,21 @@ const images = [
   }
 ];
 
+const imageDimensions = {
+  '/gallery/catalog-indian-menswear-v2.webp': [1003, 1568],
+  '/gallery/catalog-retro-basketball-sneakers-v2.webp': [1122, 1402],
+  '/gallery/catalog-velora-skincare.webp': [1122, 1402],
+  '/gallery/catalog-satin-dress.webp': [1122, 1402],
+  '/gallery/stallpix-generated-1.png': [1792, 2400],
+  '/gallery/stallpix-generated-3.png': [1792, 2400],
+  '/gallery/catalog-indian-rings.webp': [1122, 1402],
+  '/gallery/catalog-watch-editorial.webp': [1085, 1450],
+  '/gallery/catalog-fullbody-emerald-saree.webp': [1024, 1536],
+  '/gallery/catalog-fullbody-sneaker-streetwear.webp': [1024, 1536],
+};
+
+const dimensionsFor = src => imageDimensions[src] || [1122, 1402];
+
 export function Gallery() {
   return (
     <section id="gallery" className="relative w-full py-24 z-10 bg-white/[0.01] border-y border-white/5">
@@ -146,8 +161,11 @@ export function Gallery() {
               <img 
                 src={src} 
                 alt={alt}
+                width={dimensionsFor(src)[0]}
+                height={dimensionsFor(src)[1]}
                 className="w-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
                 loading="lazy"
+                decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </motion.div>

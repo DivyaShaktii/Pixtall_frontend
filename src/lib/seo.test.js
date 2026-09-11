@@ -9,7 +9,12 @@ describe('SEO metadata', () => {
   it('uses indexable canonical metadata for public routes', () => {
     expect(getSeoForPath('/').robots).toContain('index, follow');
     expect(getSeoForPath('/terms/').canonicalPath).toBe('/terms');
-    expect(structuredDataForPath('/').map(item => item['@type'])).toEqual(['Organization', 'WebSite']);
+    expect(structuredDataForPath('/').map(item => item['@type'])).toEqual([
+      'Organization',
+      'WebSite',
+      'WebPage',
+    ]);
+    expect(structuredDataForPath('/terms').map(item => item['@type'])).toContain('BreadcrumbList');
   });
 
   it('prevents indexing of private and unknown routes', () => {
@@ -17,6 +22,7 @@ describe('SEO metadata', () => {
     expect(isPrivatePath('/studio/jobs/123')).toBe(true);
     expect(getSeoForPath('/reset-password').robots).toContain('noindex');
     expect(getSeoForPath('/missing-page').robots).toContain('noindex');
+    expect(structuredDataForPath('/missing-page')).toEqual([]);
   });
 
   it('updates the live document head when the route changes', () => {
@@ -25,6 +31,6 @@ describe('SEO metadata', () => {
     expect(document.title).toBe('Terms of Service | Pixtall AI');
     expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.pixtall.com/terms');
     expect(document.querySelector('meta[name="description"]')).toHaveAttribute('content', expect.stringContaining('terms'));
-    expect(document.querySelectorAll('script[data-pixtall-structured-data]')).toHaveLength(1);
+    expect(document.querySelectorAll('script[data-pixtall-structured-data]')).toHaveLength(4);
   });
 });

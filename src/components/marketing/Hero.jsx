@@ -60,8 +60,8 @@ export function Hero({ onStart }) {
           style={{ perspective: '1000px' }}
         >
           {[
-            { text: "One", class: "text-white mr-[2vw] sm:mr-[1.5vw]" },
-            { text: "Photo.", class: "text-white" },
+            { text: "AI Product", class: "text-white mr-[2vw] sm:mr-[1.5vw]" },
+            { text: "Photos.", class: "text-white" },
             { br: true },
             { text: "Marketplace", class: "text-neutral-600 mr-[2vw] sm:mr-[1.5vw]" },
             { text: "Ready.", class: "text-neutral-600" }

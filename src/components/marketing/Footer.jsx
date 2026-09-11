@@ -4,7 +4,7 @@ import { scrollToMarketingSection } from '../../lib/marketingNavigation'
 
 const columns = [
   { title: 'Product', links: ['Features', 'Pricing', 'Enterprise', 'Community Gallery'] },
-  { title: 'Legal', links: ['Terms'] },
+  { title: 'Legal', links: ['Terms', 'Contact'] },
 ]
 
 export function Footer() {
@@ -37,7 +37,7 @@ export function Footer() {
               <ul className="mt-4 space-y-3">
                 {col.links.map((link) => (
                   <li key={link}>
-                    {link === 'Enterprise' ? <EnterpriseButton className="min-h-11 text-sm text-neutral-400 hover:text-white" /> : <a href={link === 'Terms' ? '/terms' : `/#${link.toLowerCase().replace('community ', '')}`} onClick={event => {
+                    {link === 'Enterprise' ? <EnterpriseButton className="min-h-11 text-sm text-neutral-400 hover:text-white" /> : <a href={link === 'Terms' ? '/terms' : link === 'Contact' ? 'mailto:contact@aivatika.com' : `/#${link.toLowerCase().replace('community ', '')}`} onClick={event => {
                       const section = { Features: 'features', Pricing: 'pricing', 'Community Gallery': 'gallery' }[link];
                       if (section) { event.preventDefault(); scrollToMarketingSection(section); }
                     }} className="text-sm text-neutral-500 transition-colors hover:text-neutral-300">

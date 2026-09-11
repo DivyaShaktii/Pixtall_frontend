@@ -10,8 +10,10 @@
     "build:ssr": "vite build --ssr src/entry-server.jsx --outDir .prerender",
     "prerender": "node scripts/prerender.mjs && node scripts/verify-seo-build.mjs",
     "generate:seo": "node scripts/generate-seo-files.mjs",
+    "verify:serve": "node scripts/verify-serving.mjs",
     "test": "vitest run",
     "preview": "vite preview",
+    "start": "node server.js",
     "mock-api": "node mock-api/server.js"
   },
   "dependencies": {

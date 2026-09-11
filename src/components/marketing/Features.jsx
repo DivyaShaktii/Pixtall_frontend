@@ -27,7 +27,7 @@ export function Features() {
 
       <div className="mx-auto w-full px-5">
         <div className="max-w-3xl mb-16 flex flex-col items-start gap-6">
-          <motion.h3 
+          <motion.p
             initial={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
             whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -35,7 +35,7 @@ export function Features() {
             className="tracking-[0.1em] text-4xl sm:text-6xl font-black text-[#a3e635] uppercase mb-2"
           >
             About Pixtall AI
-          </motion.h3>
+          </motion.p>
           <RevealText
             as="h2"
             text="AI product image generator for Amazon, Flipkart & every major marketplace"

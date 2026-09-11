@@ -56,28 +56,56 @@ export const getSeoForPath = pathname => {
 
 export const structuredDataForPath = pathname => {
   const path = normalizePath(pathname);
+  const seo = getSeoForPath(path);
+  if (seo.robots.startsWith('noindex')) return [];
+
   const organization = {
     '@type': 'Organization',
     '@id': `${SITE_URL}/#organization`,
     name: 'Pixtall AI',
     url: SITE_URL,
     logo: `${SITE_URL}/favicon.svg`,
-  };
-
-  if (path !== '/') return [{ '@context': 'https://schema.org', ...organization }];
-
-  return [
-    { '@context': 'https://schema.org', ...organization },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'WebSite',
-      '@id': `${SITE_URL}/#website`,
-      name: 'Pixtall AI',
-      url: SITE_URL,
-      publisher: { '@id': `${SITE_URL}/#organization` },
-      inLanguage: 'en',
+    email: 'contact@aivatika.com',
+    description: HOME_SEO.description,
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer support',
+      email: 'contact@aivatika.com',
+      availableLanguage: ['English'],
     },
-  ];
+  };
+  const website = {
+    '@type': 'WebSite',
+    '@id': `${SITE_URL}/#website`,
+    name: 'Pixtall AI',
+    url: SITE_URL,
+    publisher: { '@id': `${SITE_URL}/#organization` },
+    inLanguage: 'en',
+  };
+  const webPage = {
+    '@type': 'WebPage',
+    '@id': `${new URL(seo.canonicalPath, SITE_URL).href}#webpage`,
+    url: new URL(seo.canonicalPath, SITE_URL).href,
+    name: seo.title,
+    description: seo.description,
+    isPartOf: { '@id': `${SITE_URL}/#website` },
+    about: { '@id': `${SITE_URL}/#organization` },
+    inLanguage: 'en',
+  };
+  const data = [organization, website, webPage];
+
+  if (path === '/terms') {
+    data.push({
+      '@type': 'BreadcrumbList',
+      '@id': `${SITE_URL}/terms#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+        { '@type': 'ListItem', position: 2, name: 'Terms of Service', item: `${SITE_URL}/terms` },
+      ],
+    });
+  }
+
+  return data.map(item => ({ '@context': 'https://schema.org', ...item }));
 };
 
 const setMeta = (selector, attribute, value) => {
@@ -104,9 +132,13 @@ export const applySeoMetadata = pathname => {
   setMeta('meta[property="og:type"]', 'content', seo.type);
   setMeta('meta[property="og:url"]', 'content', canonicalUrl);
   setMeta('meta[property="og:image"]', 'content', DEFAULT_SOCIAL_IMAGE);
+  setMeta('meta[property="og:image:width"]', 'content', '1024');
+  setMeta('meta[property="og:image:height"]', 'content', '558');
+  setMeta('meta[property="og:image:alt"]', 'content', 'Examples of products transformed into AI-generated model photography');
   setMeta('meta[name="twitter:title"]', 'content', seo.title);
   setMeta('meta[name="twitter:description"]', 'content', seo.description);
   setMeta('meta[name="twitter:image"]', 'content', DEFAULT_SOCIAL_IMAGE);
+  setMeta('meta[name="twitter:image:alt"]', 'content', 'Examples of products transformed into AI-generated model photography');
 
   let canonical = document.head.querySelector('link[rel="canonical"]');
   if (!canonical) {
