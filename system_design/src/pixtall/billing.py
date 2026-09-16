@@ -2,7 +2,7 @@ import hashlib
 import hmac
 from contextlib import suppress
 from datetime import UTC, datetime, timedelta
-from typing import Any, Literal
+from typing import Any, Literal, cast
 from uuid import UUID
 
 import httpx
@@ -175,8 +175,31 @@ def _provider_request(
         if not isinstance(payload, dict):
             raise ProviderRequestError("Razorpay returned an invalid response")
         return payload
-    except (httpx.HTTPError, ValueError) as exc:
-        raise ProviderRequestError("Razorpay request failed") from exc
+    except httpx.HTTPStatusError as exc:
+        status_code = exc.response.status_code
+        if status_code in {401, 403}:
+            message = (
+                "Razorpay rejected the API credentials. Check that the Key ID and secret "
+                "belong to the same Razorpay mode and account."
+            )
+        else:
+            description = ""
+            with suppress(ValueError):
+                error = exc.response.json().get("error", {})
+                if isinstance(error, dict):
+                    description = str(error.get("description") or "").strip()
+            message = (
+                f"Razorpay rejected checkout: {description}"
+                if description
+                else f"Razorpay rejected checkout ({status_code})"
+            )
+        raise ProviderRequestError(message) from exc
+    except httpx.TimeoutException as exc:
+        raise ProviderRequestError("Razorpay timed out. Please try again.") from exc
+    except httpx.HTTPError as exc:
+        raise ProviderRequestError("Could not reach Razorpay. Please try again.") from exc
+    except ValueError as exc:
+        raise ProviderRequestError("Razorpay returned an invalid response") from exc
 
 
 def _inclusive_tax(total_paise: int, rate_bps: int) -> tuple[int, int]:
@@ -266,11 +289,14 @@ def bootstrap_account(
 
 
 def _checkout_response(
-    payment: BillingPayment, plan: Plan, user: User, settings: Settings, currency: Literal["INR", "USD"] = "INR"
+    payment: BillingPayment, plan: Plan, user: User, settings: Settings
 ) -> CheckoutResponse:
+    if payment.currency not in {"INR", "USD"}:
+        raise BillingError("Checkout has an unsupported currency")
+    currency = cast(Literal["INR", "USD"], payment.currency)
     amount = None
     if not plan.recurring:
-        amount = plan.base_price_paise if currency == "INR" else plan.base_price_usd_cents
+        amount = payment.total_amount_paise
 
     return CheckoutResponse(
         checkout_id=payment.id,
@@ -309,7 +335,9 @@ def create_checkout(
         user = session.get(User, user_id)
         if plan is None or user is None:
             raise BillingError("Checkout account is incomplete")
-        return _checkout_response(existing, plan, user, settings, currency=currency)
+        if plan.code != plan_code or existing.currency != currency:
+            raise BillingError("Checkout request conflicts with an existing payment")
+        return _checkout_response(existing, plan, user, settings)
 
     plan = session.scalar(select(Plan).where(Plan.code == plan_code, Plan.active.is_(True)))
     user = session.get(User, user_id)
@@ -340,6 +368,8 @@ def create_checkout(
                     )
 
     amount_to_charge = plan.base_price_paise if currency == "INR" else plan.base_price_usd_cents
+    if amount_to_charge <= 0:
+        raise BillingConfigurationError(f"Price is missing for {plan.code} ({currency})")
     tax_rate = settings.gst_rate_bps if currency == "INR" else 0
     base, gst = _inclusive_tax(amount_to_charge, tax_rate)
     payment = BillingPayment(
@@ -369,13 +399,21 @@ def create_checkout(
         duplicate_user = session.get(User, user_id)
         if duplicate_plan is None or duplicate_user is None:
             raise BillingError("Checkout account is incomplete") from None
-        return _checkout_response(duplicate, duplicate_plan, duplicate_user, settings, currency=currency)
+        if duplicate_plan.code != plan_code or duplicate.currency != currency:
+            raise BillingError("Checkout request conflicts with an existing payment") from None
+        return _checkout_response(duplicate, duplicate_plan, duplicate_user, settings)
     notes = {"checkout_id": str(payment.id), "user_id": str(user_id), "plan_code": plan.code}
     if plan.recurring:
-        plan_ids = settings.razorpay_plan_ids if currency == "INR" else settings.razorpay_usd_plan_ids
+        plan_ids = (
+            settings.razorpay_plan_ids
+            if currency == "INR"
+            else settings.razorpay_usd_plan_ids
+        )
         provider_plan_id = plan_ids.get(plan.code)
         if not provider_plan_id:
-            raise BillingConfigurationError(f"Razorpay Plan ID is missing for {plan.code} ({currency})")
+            raise BillingConfigurationError(
+                f"Razorpay Plan ID is missing for {plan.code} ({currency})"
+            )
         provider = _provider_request(
             settings,
             "POST",
@@ -400,7 +438,7 @@ def create_checkout(
                 payment_status="pending",
                 base_amount_paise=base,
                 gst_amount_paise=gst,
-                total_amount_paise=plan.base_price_paise,
+                total_amount_paise=amount_to_charge,
                 starts_at=datetime.now(UTC),
                 provider_subscription_id=provider_id,
                 provider_plan_id=provider_plan_id,
@@ -427,7 +465,7 @@ def create_checkout(
         payment.provider_order_id = provider_id
     session.commit()
     session.refresh(payment)
-    return _checkout_response(payment, plan, user, settings, currency=currency)
+    return _checkout_response(payment, plan, user, settings)
 
 
 def _wallet_for_update(session: Session, user_id: UUID) -> Wallet:
@@ -555,9 +593,21 @@ def fulfill_subscription_charge(
     )
     if existing and existing.status == "paid":
         return existing
-    if int(payment_entity.get("amount") or 0) != plan.base_price_paise:
+
+    checkout_payment = existing or session.scalar(
+        select(BillingPayment)
+        .where(BillingPayment.provider_subscription_id == provider_subscription_id)
+        .order_by(BillingPayment.created_at.desc())
+        .limit(1)
+        .with_for_update()
+    )
+    if checkout_payment is None:
+        raise BillingError("Subscription checkout payment not found")
+    expected_currency = checkout_payment.currency
+    expected_amount = subscription.total_amount_paise or checkout_payment.total_amount_paise
+    if int(payment_entity.get("amount") or 0) != expected_amount:
         raise BillingError("Subscription charge amount does not match plan")
-    if str(payment_entity.get("currency") or "") != "INR":
+    if str(payment_entity.get("currency") or "") != expected_currency:
         raise BillingError("Subscription charge currency does not match plan")
     if str(payment_entity.get("status") or "") != "captured" and not payment_entity.get("captured"):
         raise BillingError("Subscription charge is not captured")
@@ -572,7 +622,7 @@ def fulfill_subscription_charge(
         .limit(1)
         .with_for_update()
     )
-    base = subscription.base_amount_paise or plan.base_price_paise
+    base = subscription.base_amount_paise or checkout_payment.base_amount_paise
     gst = subscription.gst_amount_paise or 0
     if payment is None:
         payment = BillingPayment(
@@ -583,8 +633,8 @@ def fulfill_subscription_charge(
             provider_subscription_id=provider_subscription_id,
             base_amount_paise=base,
             gst_amount_paise=gst,
-            total_amount_paise=plan.base_price_paise,
-            currency="INR",
+            total_amount_paise=expected_amount,
+            currency=expected_currency,
         )
         session.add(payment)
         session.flush()

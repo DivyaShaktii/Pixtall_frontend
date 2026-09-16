@@ -3,8 +3,6 @@ export const GLOBAL_CURRENCY = "USD";
 
 const COUNTRY_ENDPOINT = "https://api.country.is/";
 const COUNTRY_TIMEOUT_MS = 4_000;
-// Temporary testing override. Set to null to restore IP-based country detection.
-const TEST_COUNTRY_OVERRIDE = "US";
 
 let currencyPromise;
 
@@ -16,10 +14,6 @@ const PLAN_PRICES = {
 };
 
 const requestCurrency = async () => {
-  if (TEST_COUNTRY_OVERRIDE) {
-    return TEST_COUNTRY_OVERRIDE === "IN" ? INDIA_CURRENCY : GLOBAL_CURRENCY;
-  }
-
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), COUNTRY_TIMEOUT_MS);
 
