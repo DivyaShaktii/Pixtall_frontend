@@ -172,24 +172,32 @@ export function StudioSidebar({
               )}
             </div>
 
-            {/* Grid for Size and Count */}
-            <div className="grid grid-cols-2 gap-3 relative">
-              <HoverSelect 
-                value={size} 
-                onChange={setSize} 
-                options={generationConfig.sizes} 
-                placeholder="Size" 
+            <div className="flex flex-col gap-3">
+              <p className="text-[11px] font-semibold text-neutral-400">Aspect ratio</p>
+              <HoverSelect
+                value={size}
+                onChange={setSize}
+                options={generationConfig.sizes}
+                placeholder="Select aspect ratio"
                 onOptionHover={setHoveredSize}
               />
-              
-              <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1 border border-white/5">
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <p id="image-count-label" className="text-[11px] font-semibold text-neutral-400">Number of images</p>
+              <div
+                role="group"
+                aria-labelledby="image-count-label"
+                className="flex items-center gap-1 bg-white/5 rounded-xl p-1 border border-white/5"
+              >
                 {[1, 2, 3, 4].map(n => (
                   <button
                     key={n}
+                    type="button"
                     onClick={() => setNumImages?.(n)}
                     aria-label={`${n} ${n === 1 ? "image" : "images"}`}
                     aria-pressed={numImages === n}
-                    className={`flex-1 h-8 flex items-center justify-center rounded-lg border text-xs font-semibold transition-[background-color,border-color,color,box-shadow] duration-150 ${
+                    className={`flex-1 h-9 flex items-center justify-center rounded-lg border text-xs font-semibold transition-[background-color,border-color,color,box-shadow] duration-150 ${
                       numImages === n ? "studio-selected-control" : "border-transparent text-neutral-500 hover:text-white"
                     }`}
                   >
