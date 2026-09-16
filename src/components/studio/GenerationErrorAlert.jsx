@@ -1,8 +1,20 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { WarningCircle, X } from "@phosphor-icons/react";
 
 export function GenerationErrorAlert({ message, onDismiss }) {
+  const dismissRef = useRef(onDismiss);
+
+  useEffect(() => {
+    dismissRef.current = onDismiss;
+  }, [onDismiss]);
+
+  useEffect(() => {
+    if (!message) return;
+    const timer = setTimeout(() => dismissRef.current?.(), 5000);
+    return () => clearTimeout(timer);
+  }, [message]);
+
   if (!message) return null;
 
   return createPortal(

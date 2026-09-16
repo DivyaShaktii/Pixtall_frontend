@@ -15,7 +15,7 @@ from pixtall.core import (
 )
 
 
-def grant_plan(email: str, plan_code: str = "creator"):
+def grant_plan(email: str, plan_code: str = "creator") -> None:
     with next(get_session()) as session:
         user = session.scalar(select(User).where(User.email == email))
         if not user:
