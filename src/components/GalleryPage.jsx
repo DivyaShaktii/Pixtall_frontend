@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import GalleryModal from "./GalleryModal";
 import { SYSTEM_API_BASE_URL } from "../utils/apiConfig";
 import { authenticatedFetch } from "../lib/api";
+import { toCssAspectRatio } from "../lib/aspectRatio";
 
 /**
  * Fetches this user's generated-image sessions from the backend
@@ -71,7 +72,10 @@ const GalleryPage = () => {
               key={session.id}
               onClick={() => setOpenSessionId(session.id)}
             >
-              <div className="gallery-card-image">
+              <div
+                className="gallery-card-image"
+                style={{ aspectRatio: toCssAspectRatio(session.aspect) }}
+              >
                 <img src={session.photos[0]} alt="" loading="lazy" decoding="async" />
                 <span className="gallery-card-badge">
                   {session.photos.length} photo{session.photos.length === 1 ? "" : "s"}

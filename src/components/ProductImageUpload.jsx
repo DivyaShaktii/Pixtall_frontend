@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UploadSimple, Image as ImageIcon, CheckCircle } from "@phosphor-icons/react";
+import { UploadSimple, Image as ImageIcon, CheckCircle, Sparkle } from "@phosphor-icons/react";
 import { transitions } from "../lib/motion";
 
 const ProductImageUpload = ({ file, onFileChange, vertical, isDemo }) => {
   const [preview, setPreview] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [premiumHintSequence, setPremiumHintSequence] = useState(0);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -18,6 +19,19 @@ const ProductImageUpload = ({ file, onFileChange, vertical, isDemo }) => {
     setPreview(url);
     return () => URL.revokeObjectURL(url);
   }, [file, isDemo]);
+
+  useEffect(() => {
+    if (!premiumHintSequence) return undefined;
+    const timer = window.setTimeout(() => setPremiumHintSequence(0), 4000);
+    return () => window.clearTimeout(timer);
+  }, [premiumHintSequence]);
+
+  const handleFileChange = nextFile => {
+    onFileChange(nextFile);
+    if (!isDemo && nextFile?.type?.startsWith("image/")) {
+      setPremiumHintSequence(sequence => sequence + 1);
+    }
+  };
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -35,7 +49,7 @@ const ProductImageUpload = ({ file, onFileChange, vertical, isDemo }) => {
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      onFileChange(e.dataTransfer.files[0]);
+      handleFileChange(e.dataTransfer.files[0]);
     }
   };
 
@@ -43,9 +57,27 @@ const ProductImageUpload = ({ file, onFileChange, vertical, isDemo }) => {
     fileInputRef.current?.click();
   };
 
+  const premiumHint = (
+    premiumHintSequence > 0 && (
+      <motion.div
+        key={premiumHintSequence}
+        role="status"
+        aria-live="polite"
+        initial={{ opacity: 0, x: "-50%", y: -10, scale: 0.97 }}
+        animate={{ opacity: 1, x: "-50%", y: 0, scale: 1 }}
+        transition={transitions.snappy}
+        className="fixed left-1/2 top-20 z-[70] flex max-w-[calc(100vw-2rem)] items-center gap-2 rounded-xl border border-yellow-300/40 bg-yellow-300 px-3 py-2 text-xs font-semibold text-yellow-950 shadow-lg"
+      >
+        <Sparkle size={15} weight="fill" aria-hidden="true" />
+        <span>For sharper product details, choose Premium quality.</span>
+      </motion.div>
+    )
+  );
+
   /* ── vertical mode: stacked layout for narrow sidebar ── */
   if (vertical) {
     return (
+      <>
       <div className="flex flex-col gap-3 w-full">
         <motion.div
           onClick={handleClick}
@@ -65,7 +97,7 @@ const ProductImageUpload = ({ file, onFileChange, vertical, isDemo }) => {
             type="file"
             accept="image/*"
             className="hidden"
-            onChange={e => onFileChange(e.target.files?.[0] ?? null)}
+            onChange={e => handleFileChange(e.target.files?.[0] ?? null)}
           />
           
           <AnimatePresence mode="wait">
@@ -108,11 +140,14 @@ const ProductImageUpload = ({ file, onFileChange, vertical, isDemo }) => {
           </AnimatePresence>
         </motion.div>
       </div>
+      {premiumHint}
+      </>
     );
   }
 
   /* ── horizontal mode (default): dropzone left, thumbnail right ── */
   return (
+    <>
     <div className="flex flex-col gap-3 w-full">
       <label className="text-sm font-semibold text-ink">Source Material</label>
       
@@ -135,7 +170,7 @@ const ProductImageUpload = ({ file, onFileChange, vertical, isDemo }) => {
             type="file"
             accept="image/*"
             className="hidden"
-            onChange={e => onFileChange(e.target.files?.[0] ?? null)}
+            onChange={e => handleFileChange(e.target.files?.[0] ?? null)}
           />
           
           <div className="w-10 h-10 rounded-full bg-cloud-2 flex items-center justify-center text-ink mb-3 transition-transform group-hover:scale-110">
@@ -176,6 +211,8 @@ const ProductImageUpload = ({ file, onFileChange, vertical, isDemo }) => {
         </div>
       </div>
     </div>
+    {premiumHint}
+    </>
   );
 };
 

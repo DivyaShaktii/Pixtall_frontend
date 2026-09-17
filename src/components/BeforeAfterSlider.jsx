@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
+import { toCssAspectRatio } from "../lib/aspectRatio";
 
 /**
  * Draggable raw-photo / studio-output comparison.
@@ -11,7 +12,10 @@ const BeforeAfterSlider = ({
   beforeLabel = "Raw upload",
   afterLabel = "Pixtall output",
   beforeAlt = "Unedited product photo",
-  afterAlt = "Generated marketplace photo"
+  afterAlt = "Generated marketplace photo",
+  aspectRatio,
+  fit = "cover",
+  className = "",
 }) => {
   const [position, setPosition] = useState(58); // percent revealed of "after"
   const [dragging, setDragging] = useState(false);
@@ -44,7 +48,8 @@ const BeforeAfterSlider = ({
   return (
     <div
       ref={frameRef}
-      className="compare"
+      className={`compare ${fit === "contain" ? "compare-contain" : ""} ${className}`.trim()}
+      style={{ "--compare-aspect-ratio": toCssAspectRatio(aspectRatio || "16:10") }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={stopDragging}

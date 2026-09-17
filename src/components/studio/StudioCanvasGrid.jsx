@@ -79,13 +79,16 @@ export function StudioCanvasGrid({
                       className="w-full h-full rounded-2xl overflow-hidden border border-line shadow-lg relative group will-change-transform"
                     >
                       {isDemo ? (
-                        <img src={imageSrc} className="w-full h-full object-cover" alt={`Result ${i + 1}`} />
+                        <img src={imageSrc} className="w-full h-full object-contain bg-black" alt={`Result ${i + 1}`} />
                       ) : (
                         <BeforeAfterSlider 
                           beforeSrc={productImageUrl || "https://picsum.photos/seed/placeholder/800/800"} 
                           afterSrc={imageSrc} 
                           beforeLabel="Source" 
-                          afterLabel={`Result ${i + 1}`} 
+                          afterLabel={`Result ${i + 1}`}
+                          aspectRatio={activeSize}
+                          fit="contain"
+                          className="h-full mb-0"
                         />
                       )}
                       {!isDemo && (

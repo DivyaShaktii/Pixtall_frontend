@@ -1,6 +1,7 @@
 import React from "react";
 import BeforeAfterSlider from "./BeforeAfterSlider";
 import { DownloadSimple, X } from "@phosphor-icons/react";
+import { toCssAspectRatio } from "../lib/aspectRatio";
 
 const slugify = text => text.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
@@ -14,6 +15,7 @@ const downloadImage = (src, filename) => {
 };
 
 const GalleryModal = ({ session, onClose }) => {
+  const aspectRatio = toCssAspectRatio(session.aspect);
   const handleDownloadAll = () => {
     const base = slugify(session.title) || "pixtall-photo";
     session.photos.forEach((src, index) => {
@@ -58,12 +60,18 @@ const GalleryModal = ({ session, onClose }) => {
         <div className="p-6 overflow-y-auto flex-1 bg-paper/50 flex flex-col gap-8">
           {/* FASHN style Session View: Large BeforeAfterSlider for the hero generation */}
           {session.photos.length > 0 && (
-            <div className="w-full max-w-3xl mx-auto rounded-2xl overflow-hidden border border-line shadow-lg bg-paper aspect-[4/5] md:aspect-video">
+            <div
+              className="w-full max-w-3xl mx-auto rounded-2xl overflow-hidden border border-line shadow-lg bg-paper"
+              style={{ aspectRatio }}
+            >
               <BeforeAfterSlider 
                 beforeSrc={sourceImage}
                 afterSrc={session.photos[0]}
                 beforeLabel="Source Material"
                 afterLabel="Generation"
+                aspectRatio={session.aspect}
+                fit="contain"
+                className="h-full mb-0"
               />
             </div>
           )}
@@ -74,8 +82,12 @@ const GalleryModal = ({ session, onClose }) => {
               <h4 className="text-sm font-semibold text-slate uppercase tracking-wider mb-4 px-2">All Variations</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {session.photos.map((src, index) => (
-                  <div className="aspect-[3/4] rounded-xl overflow-hidden border border-line bg-cloud relative group" key={src + index}>
-                    <img src={src} alt={`${session.title}, photo ${index + 1}`} className="w-full h-full object-cover" />
+                  <div
+                    className="rounded-xl overflow-hidden border border-line bg-cloud relative group"
+                    style={{ aspectRatio }}
+                    key={src + index}
+                  >
+                    <img src={src} alt={`${session.title}, photo ${index + 1}`} className="w-full h-full object-contain" />
                     <button
                       type="button"
                       className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-ink text-paper flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 shadow-lg"
