@@ -24,10 +24,16 @@ const BeforeAfterSlider = ({
     normalizeAspectRatio(aspectRatio || "16:10"),
   );
   const frameRef = useRef(null);
+  const afterImageRef = useRef(null);
 
   useEffect(() => {
-    setResolvedAspectRatio(normalizeAspectRatio(aspectRatio || "16:10"));
-  }, [afterSrc, aspectRatio]);
+    const image = afterImageRef.current;
+    setResolvedAspectRatio(aspectRatioFromDimensions(
+      useAfterImageAspectRatio && image?.complete ? image.naturalWidth : 0,
+      useAfterImageAspectRatio && image?.complete ? image.naturalHeight : 0,
+      aspectRatio || "16:10",
+    ));
+  }, [afterSrc, aspectRatio, useAfterImageAspectRatio]);
 
   const updateFromClientX = useCallback(clientX => {
     const frame = frameRef.current;
@@ -80,7 +86,7 @@ const BeforeAfterSlider = ({
       onKeyDown={handleKeyDown}
     >
       <div className="compare-frame">
-        <img src={afterSrc} alt={afterAlt} draggable="false" onLoad={handleAfterImageLoad} />
+        <img ref={afterImageRef} src={afterSrc} alt={afterAlt} draggable="false" onLoad={handleAfterImageLoad} />
       </div>
 
       <div

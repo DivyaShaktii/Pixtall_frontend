@@ -1487,6 +1487,7 @@ input, select { outline: none; }
    ============================================================ */
 .gallery-header { margin-bottom: 24px; }
 .gallery-header h2 { font-size: 1.4rem; }
+.compare.gallery-comparison { margin-bottom: 0; }
 
 .gallery-empty-state {
   text-align: center;

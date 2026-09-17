@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { CircleNotch, DownloadSimple, Sparkle, TShirt, User } from '@phosphor-icons/react';
 import { Button } from '../ui/Button';
@@ -64,6 +65,13 @@ export function StudioSidebar({
     }
   };
 
+  const selectProductImage = file => {
+    setProductImageFile?.(file);
+    if (!isDemo && file?.type?.startsWith('image/') && file.size <= 10 * 1024 * 1024) {
+      setPremiumHintSequence(sequence => sequence + 1);
+    }
+  };
+
   return (
     <>
     <div className="w-full lg:w-[320px] shrink-0 border-t lg:border-t-0 lg:border-l border-white/5 bg-[#09090b]/80 backdrop-blur-xl flex flex-col h-auto lg:h-full relative z-10 min-h-0 font-sans">
@@ -100,7 +108,7 @@ export function StudioSidebar({
         {/* Source Material Upload */}
         <div className="flex flex-col gap-3">
           <label className="text-white text-[11px] uppercase tracking-wider font-semibold">Source Material</label>
-          <ProductImageUpload file={productImageFile} onFileChange={setProductImageFile} vertical isDemo={isDemo} />
+          <ProductImageUpload file={productImageFile} onFileChange={selectProductImage} vertical isDemo={isDemo} />
         </div>
 
         {/* Model Reference */}
@@ -255,7 +263,7 @@ export function StudioSidebar({
         )}
       </div>
     </div>
-    {premiumHintSequence > 0 && (
+    {premiumHintSequence > 0 && typeof document !== 'undefined' && createPortal(
       <motion.div
         key={premiumHintSequence}
         role="status"
@@ -266,7 +274,8 @@ export function StudioSidebar({
       >
         <Sparkle size={15} weight="fill" aria-hidden="true" />
         <span>For finer product details, choose Premium quality.</span>
-      </motion.div>
+      </motion.div>,
+      document.body
     )}
     </>
   );

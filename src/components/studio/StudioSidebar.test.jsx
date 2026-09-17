@@ -5,6 +5,24 @@ import { StudioSidebar } from "./StudioSidebar";
 
 afterEach(() => vi.useRealTimers());
 
+it("shows the Premium hint for a product upload and restarts its dismissal timer for replacements", () => {
+  vi.useFakeTimers();
+  const setProductImageFile = vi.fn();
+  const { container } = render(<StudioSidebar setProductImageFile={setProductImageFile} />);
+  const input = container.querySelector('input[type="file"]');
+  const file = new File(["image"], "product.png", { type: "image/png" });
+
+  fireEvent.change(input, { target: { files: [file] } });
+  expect(setProductImageFile).toHaveBeenCalledWith(file);
+  expect(screen.getByRole("status")).toHaveTextContent("For finer product details, choose Premium quality.");
+  act(() => vi.advanceTimersByTime(3000));
+  fireEvent.change(input, { target: { files: [file] } });
+  act(() => vi.advanceTimersByTime(3000));
+  expect(screen.getByRole("status")).toBeInTheDocument();
+  act(() => vi.advanceTimersByTime(1000));
+  expect(screen.queryByRole("status")).not.toBeInTheDocument();
+});
+
 it("makes every selected Studio control visually and semantically distinct", () => {
   render(
     <StudioSidebar

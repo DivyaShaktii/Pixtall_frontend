@@ -23,8 +23,7 @@ const GalleryModal = ({ session, onClose }) => {
     });
   };
 
-  // If there's no explicitly saved sourceImage, use a placeholder so the slider works
-  const sourceImage = session.sourceImage || "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800&auto=format&fit=crop";
+  const sourceImage = session.sourceImage;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-paper/90 backdrop-blur-md p-6" role="presentation" onClick={onClose}>
@@ -56,13 +55,13 @@ const GalleryModal = ({ session, onClose }) => {
           </div>
         </div>
 
-        <div className="p-6 overflow-y-auto flex-1 bg-paper/50 flex flex-col gap-8">
-          {/* FASHN style Session View: Large BeforeAfterSlider for the hero generation */}
+        <div className="p-6 min-h-0 overflow-y-auto flex-1 bg-paper/50 flex flex-col gap-8">
+          {/* Compare only when the actual source is available. */}
           {session.photos.length > 0 && (
             <div
-              className="w-full max-w-3xl mx-auto rounded-2xl overflow-hidden border border-line shadow-lg bg-paper"
+              className="w-full max-w-3xl mx-auto shrink-0 rounded-2xl overflow-hidden border border-line shadow-lg bg-paper"
             >
-              <BeforeAfterSlider 
+              {sourceImage ? <BeforeAfterSlider
                 beforeSrc={sourceImage}
                 afterSrc={session.photos[0]}
                 beforeLabel="Source Material"
@@ -70,14 +69,21 @@ const GalleryModal = ({ session, onClose }) => {
                 aspectRatio={session.aspect}
                 fit="contain"
                 useAfterImageAspectRatio
-                className="mb-0"
-              />
+                className="gallery-comparison"
+              /> : (
+                <NaturalAspectFrame
+                  src={session.photos[0]}
+                  alt={`${session.title}, generated image`}
+                  fallbackAspectRatio={session.aspect}
+                  className="w-full"
+                />
+              )}
             </div>
           )}
 
           {/* Grid for additional variations if they exist */}
           {session.photos.length > 1 && (
-            <div>
+            <div className="shrink-0">
               <h4 className="text-sm font-semibold text-slate uppercase tracking-wider mb-4 px-2">All Variations</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 items-start gap-4">
                 {session.photos.map((src, index) => (
