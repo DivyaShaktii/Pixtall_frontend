@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { aspectRatioFromDimensions, normalizeAspectRatio, toCssAspectRatio } from "../lib/aspectRatio";
 
 /**
  * Draggable raw-photo / studio-output comparison.
@@ -11,11 +12,28 @@ const BeforeAfterSlider = ({
   beforeLabel = "Raw upload",
   afterLabel = "Pixtall output",
   beforeAlt = "Unedited product photo",
-  afterAlt = "Generated marketplace photo"
+  afterAlt = "Generated marketplace photo",
+  aspectRatio,
+  fit = "cover",
+  useAfterImageAspectRatio = false,
+  className = "",
 }) => {
   const [position, setPosition] = useState(58); // percent revealed of "after"
   const [dragging, setDragging] = useState(false);
+  const [resolvedAspectRatio, setResolvedAspectRatio] = useState(
+    normalizeAspectRatio(aspectRatio || "16:10"),
+  );
   const frameRef = useRef(null);
+  const afterImageRef = useRef(null);
+
+  useEffect(() => {
+    const image = afterImageRef.current;
+    setResolvedAspectRatio(aspectRatioFromDimensions(
+      useAfterImageAspectRatio && image?.complete ? image.naturalWidth : 0,
+      useAfterImageAspectRatio && image?.complete ? image.naturalHeight : 0,
+      aspectRatio || "16:10",
+    ));
+  }, [afterSrc, aspectRatio, useAfterImageAspectRatio]);
 
   const updateFromClientX = useCallback(clientX => {
     const frame = frameRef.current;
@@ -41,10 +59,20 @@ const BeforeAfterSlider = ({
     if (event.key === "ArrowRight") setPosition(p => Math.min(98, p + 4));
   };
 
+  const handleAfterImageLoad = event => {
+    if (!useAfterImageAspectRatio) return;
+    setResolvedAspectRatio(aspectRatioFromDimensions(
+      event.currentTarget.naturalWidth,
+      event.currentTarget.naturalHeight,
+      aspectRatio || "16:10",
+    ));
+  };
+
   return (
     <div
       ref={frameRef}
-      className="compare"
+      className={`compare ${fit === "contain" ? "compare-contain" : ""} ${className}`.trim()}
+      style={{ "--compare-aspect-ratio": toCssAspectRatio(resolvedAspectRatio) }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={stopDragging}
@@ -58,7 +86,7 @@ const BeforeAfterSlider = ({
       onKeyDown={handleKeyDown}
     >
       <div className="compare-frame">
-        <img src={afterSrc} alt={afterAlt} draggable="false" />
+        <img ref={afterImageRef} src={afterSrc} alt={afterAlt} draggable="false" onLoad={handleAfterImageLoad} />
       </div>
 
       <div

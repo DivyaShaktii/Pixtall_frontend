@@ -1,5 +1,6 @@
 import React from "react";
 import BeforeAfterSlider from "./BeforeAfterSlider";
+import NaturalAspectFrame from "./NaturalAspectFrame";
 import { DownloadSimple, X } from "@phosphor-icons/react";
 
 const slugify = text => text.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -22,8 +23,7 @@ const GalleryModal = ({ session, onClose }) => {
     });
   };
 
-  // If there's no explicitly saved sourceImage, use a placeholder so the slider works
-  const sourceImage = session.sourceImage || "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800&auto=format&fit=crop";
+  const sourceImage = session.sourceImage;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-paper/90 backdrop-blur-md p-6" role="presentation" onClick={onClose}>
@@ -55,27 +55,47 @@ const GalleryModal = ({ session, onClose }) => {
           </div>
         </div>
 
-        <div className="p-6 overflow-y-auto flex-1 bg-paper/50 flex flex-col gap-8">
-          {/* FASHN style Session View: Large BeforeAfterSlider for the hero generation */}
+        <div className="p-6 min-h-0 overflow-y-auto flex-1 bg-paper/50 flex flex-col gap-8">
+          {/* Compare only when the actual source is available. */}
           {session.photos.length > 0 && (
-            <div className="w-full max-w-3xl mx-auto rounded-2xl overflow-hidden border border-line shadow-lg bg-paper aspect-[4/5] md:aspect-video">
-              <BeforeAfterSlider 
+            <div
+              className="w-full max-w-3xl mx-auto shrink-0 rounded-2xl overflow-hidden border border-line shadow-lg bg-paper"
+            >
+              {sourceImage ? <BeforeAfterSlider
                 beforeSrc={sourceImage}
                 afterSrc={session.photos[0]}
                 beforeLabel="Source Material"
                 afterLabel="Generation"
-              />
+                aspectRatio={session.aspect}
+                fit="contain"
+                useAfterImageAspectRatio
+                className="gallery-comparison"
+              /> : (
+                <NaturalAspectFrame
+                  src={session.photos[0]}
+                  alt={`${session.title}, generated image`}
+                  fallbackAspectRatio={session.aspect}
+                  className="w-full"
+                />
+              )}
             </div>
           )}
 
           {/* Grid for additional variations if they exist */}
           {session.photos.length > 1 && (
-            <div>
+            <div className="shrink-0">
               <h4 className="text-sm font-semibold text-slate uppercase tracking-wider mb-4 px-2">All Variations</h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 items-start gap-4">
                 {session.photos.map((src, index) => (
-                  <div className="aspect-[3/4] rounded-xl overflow-hidden border border-line bg-cloud relative group" key={src + index}>
-                    <img src={src} alt={`${session.title}, photo ${index + 1}`} className="w-full h-full object-cover" />
+                  <NaturalAspectFrame
+                    className="rounded-xl overflow-hidden border border-line bg-cloud relative group"
+                    src={src}
+                    alt={`${session.title}, photo ${index + 1}`}
+                    fallbackAspectRatio={session.aspect}
+                    imageClassName="w-full h-full object-contain"
+                    loading="lazy"
+                    key={src + index}
+                  >
                     <button
                       type="button"
                       className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-ink text-paper flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 shadow-lg"
@@ -84,7 +104,7 @@ const GalleryModal = ({ session, onClose }) => {
                     >
                       <DownloadSimple size={14} weight="bold" />
                     </button>
-                  </div>
+                  </NaturalAspectFrame>
                 ))}
               </div>
             </div>

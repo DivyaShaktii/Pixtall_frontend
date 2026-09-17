@@ -763,6 +763,7 @@ def read_gallery(
                 "title": str(job.request_payload.get("product_subcategory") or "Generated images"),
                 "tag": job.quality.value,
                 "date": job.created_at.date().isoformat(),
+                "aspect": str(job.request_payload.get("size") or "1:1"),
                 "photos": photos,
             }
         )
