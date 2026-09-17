@@ -92,7 +92,7 @@ export function StudioCanvasGrid({
                         />
                       )}
                       {!isDemo && (
-                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                        <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                           <Button 
                             variant="primary" 
                             className="shadow-lg gap-2 font-medium text-xs h-8 bg-ink text-paper hover:bg-cloud-2" 
