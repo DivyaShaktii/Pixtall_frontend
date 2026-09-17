@@ -14,7 +14,7 @@ it("shows the Premium hint for a product upload and restarts its dismissal timer
 
   fireEvent.change(input, { target: { files: [file] } });
   expect(setProductImageFile).toHaveBeenCalledWith(file);
-  expect(screen.getByRole("status")).toHaveTextContent("For finer product details, choose Premium quality.");
+  expect(screen.getByRole("status")).toHaveTextContent("For watches, jewellery, and intricate products, choose Premium quality to capture finer details.");
   act(() => vi.advanceTimersByTime(3000));
   fireEvent.change(input, { target: { files: [file] } });
   act(() => vi.advanceTimersByTime(3000));
@@ -92,7 +92,7 @@ it("shows a short Premium hint after a category is selected", () => {
 
   expect(handleCategoryChange).toHaveBeenCalledWith("fashion");
   expect(screen.getByRole("status")).toHaveTextContent(
-    "For finer product details, choose Premium quality.",
+    "For watches, jewellery, and intricate products, choose Premium quality to capture finer details.",
   );
 
   act(() => vi.advanceTimersByTime(4000));

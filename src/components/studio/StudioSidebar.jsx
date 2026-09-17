@@ -273,7 +273,7 @@ export function StudioSidebar({
         className="fixed left-1/2 top-20 z-[70] flex max-w-[calc(100vw-2rem)] items-center gap-2 rounded-xl border border-yellow-300/40 bg-yellow-300 px-3 py-2 text-xs font-semibold text-yellow-950 shadow-lg"
       >
         <Sparkle size={15} weight="fill" aria-hidden="true" />
-        <span>For finer product details, choose Premium quality.</span>
+        <span>For watches, jewellery, and intricate products, choose Premium quality to capture finer details.</span>
       </motion.div>,
       document.body
     )}
