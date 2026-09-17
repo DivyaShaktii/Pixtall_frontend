@@ -1,5 +1,5 @@
-import React, { useCallback, useRef, useState } from "react";
-import { toCssAspectRatio } from "../lib/aspectRatio";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { aspectRatioFromDimensions, normalizeAspectRatio, toCssAspectRatio } from "../lib/aspectRatio";
 
 /**
  * Draggable raw-photo / studio-output comparison.
@@ -15,11 +15,19 @@ const BeforeAfterSlider = ({
   afterAlt = "Generated marketplace photo",
   aspectRatio,
   fit = "cover",
+  useAfterImageAspectRatio = false,
   className = "",
 }) => {
   const [position, setPosition] = useState(58); // percent revealed of "after"
   const [dragging, setDragging] = useState(false);
+  const [resolvedAspectRatio, setResolvedAspectRatio] = useState(
+    normalizeAspectRatio(aspectRatio || "16:10"),
+  );
   const frameRef = useRef(null);
+
+  useEffect(() => {
+    setResolvedAspectRatio(normalizeAspectRatio(aspectRatio || "16:10"));
+  }, [afterSrc, aspectRatio]);
 
   const updateFromClientX = useCallback(clientX => {
     const frame = frameRef.current;
@@ -45,11 +53,20 @@ const BeforeAfterSlider = ({
     if (event.key === "ArrowRight") setPosition(p => Math.min(98, p + 4));
   };
 
+  const handleAfterImageLoad = event => {
+    if (!useAfterImageAspectRatio) return;
+    setResolvedAspectRatio(aspectRatioFromDimensions(
+      event.currentTarget.naturalWidth,
+      event.currentTarget.naturalHeight,
+      aspectRatio || "16:10",
+    ));
+  };
+
   return (
     <div
       ref={frameRef}
       className={`compare ${fit === "contain" ? "compare-contain" : ""} ${className}`.trim()}
-      style={{ "--compare-aspect-ratio": toCssAspectRatio(aspectRatio || "16:10") }}
+      style={{ "--compare-aspect-ratio": toCssAspectRatio(resolvedAspectRatio) }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={stopDragging}
@@ -63,7 +80,7 @@ const BeforeAfterSlider = ({
       onKeyDown={handleKeyDown}
     >
       <div className="compare-frame">
-        <img src={afterSrc} alt={afterAlt} draggable="false" />
+        <img src={afterSrc} alt={afterAlt} draggable="false" onLoad={handleAfterImageLoad} />
       </div>
 
       <div

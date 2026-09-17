@@ -1500,6 +1500,7 @@ input, select { outline: none; }
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  align-items: start;
   gap: 20px;
 }
 
@@ -1511,6 +1512,8 @@ input, select { outline: none; }
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--paper);
+  align-self: start;
+  height: fit-content;
 }
 .gallery-card:hover { border-color: var(--line-2); box-shadow: var(--shadow-sm); }
 

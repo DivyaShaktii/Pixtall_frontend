@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeAspectRatio, toCssAspectRatio } from "./aspectRatio";
+import { aspectRatioFromDimensions, normalizeAspectRatio, toCssAspectRatio } from "./aspectRatio";
 
 describe("aspect ratio helpers", () => {
   it("preserves supported numeric ratios", () => {
@@ -11,5 +11,10 @@ describe("aspect ratio helpers", () => {
     expect(normalizeAspectRatio()).toBe("1:1");
     expect(toCssAspectRatio("wide")).toBe("1 / 1");
     expect(toCssAspectRatio("0:9")).toBe("1 / 1");
+  });
+
+  it("uses the generated image dimensions when they are available", () => {
+    expect(aspectRatioFromDimensions(1920, 1080, "4:5")).toBe("1920:1080");
+    expect(aspectRatioFromDimensions(0, 1080, "4:5")).toBe("4:5");
   });
 });

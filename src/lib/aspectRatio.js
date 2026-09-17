@@ -15,3 +15,14 @@ export const normalizeAspectRatio = value => {
 export const toCssAspectRatio = value => (
   normalizeAspectRatio(value).replace(":", " / ")
 );
+
+export const aspectRatioFromDimensions = (width, height, fallback = DEFAULT_ASPECT_RATIO) => {
+  const numericWidth = Number(width);
+  const numericHeight = Number(height);
+
+  if (!Number.isFinite(numericWidth) || !Number.isFinite(numericHeight) || numericWidth <= 0 || numericHeight <= 0) {
+    return normalizeAspectRatio(fallback);
+  }
+
+  return `${numericWidth}:${numericHeight}`;
+};

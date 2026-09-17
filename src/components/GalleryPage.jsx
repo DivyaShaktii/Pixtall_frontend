@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import GalleryModal from "./GalleryModal";
+import NaturalAspectFrame from "./NaturalAspectFrame";
 import { SYSTEM_API_BASE_URL } from "../utils/apiConfig";
 import { authenticatedFetch } from "../lib/api";
-import { toCssAspectRatio } from "../lib/aspectRatio";
 
 /**
  * Fetches this user's generated-image sessions from the backend
@@ -72,15 +72,17 @@ const GalleryPage = () => {
               key={session.id}
               onClick={() => setOpenSessionId(session.id)}
             >
-              <div
+              <NaturalAspectFrame
                 className="gallery-card-image"
-                style={{ aspectRatio: toCssAspectRatio(session.aspect) }}
+                src={session.photos[0]}
+                alt=""
+                fallbackAspectRatio={session.aspect}
+                loading="lazy"
               >
-                <img src={session.photos[0]} alt="" loading="lazy" decoding="async" />
                 <span className="gallery-card-badge">
                   {session.photos.length} photo{session.photos.length === 1 ? "" : "s"}
                 </span>
-              </div>
+              </NaturalAspectFrame>
               <div className="gallery-card-info">
                 <strong>{session.title}</strong>
                 <span>{[session.tag, session.date].filter(Boolean).join(" · ")}</span>

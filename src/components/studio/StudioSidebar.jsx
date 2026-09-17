@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { CircleNotch, DownloadSimple, Sparkle, TShirt, User } from '@phosphor-icons/react';
 import { Button } from '../ui/Button';
@@ -45,12 +45,27 @@ export function StudioSidebar({
   isDemo = false,
   demoState = "upload" // 'upload' | 'configure' | 'generate'
 }) {
+  const [premiumHintSequence, setPremiumHintSequence] = useState(0);
   const selectedCategorySubcategories = useMemo(
     () => generationConfig.productCategories.find(c => c.value === productCategory)?.subcategories ?? [],
     [productCategory]
   );
 
+  useEffect(() => {
+    if (!premiumHintSequence) return undefined;
+    const timer = window.setTimeout(() => setPremiumHintSequence(0), 4000);
+    return () => window.clearTimeout(timer);
+  }, [premiumHintSequence]);
+
+  const selectCategory = categoryValue => {
+    handleCategoryChange?.(categoryValue);
+    if (!isDemo && categoryValue) {
+      setPremiumHintSequence(sequence => sequence + 1);
+    }
+  };
+
   return (
+    <>
     <div className="w-full lg:w-[320px] shrink-0 border-t lg:border-t-0 lg:border-l border-white/5 bg-[#09090b]/80 backdrop-blur-xl flex flex-col h-auto lg:h-full relative z-10 min-h-0 font-sans">
       
       {/* Tool Switcher */}
@@ -159,7 +174,7 @@ export function StudioSidebar({
           <div className="flex flex-col gap-4">
             {/* Category & Details Group */}
             <div className="flex flex-col gap-3 p-3 bg-white/[0.02] border border-white/5 rounded-xl">
-              <HoverSelect value={productCategory} onChange={handleCategoryChange} options={generationConfig.productCategories} placeholder="Category" />
+              <HoverSelect value={productCategory} onChange={selectCategory} options={generationConfig.productCategories} placeholder="Category" />
               <div className="h-px bg-white/5 w-full" />
               <HoverSelect value={productSubcategory} onChange={setProductSubcategory} options={selectedCategorySubcategories} placeholder="Details" disabled={!productCategory} />
             </div>
@@ -240,5 +255,19 @@ export function StudioSidebar({
         )}
       </div>
     </div>
+    {premiumHintSequence > 0 && (
+      <motion.div
+        key={premiumHintSequence}
+        role="status"
+        aria-live="polite"
+        initial={{ opacity: 0, x: "-50%", y: -10, scale: 0.97 }}
+        animate={{ opacity: 1, x: "-50%", y: 0, scale: 1 }}
+        className="fixed left-1/2 top-20 z-[70] flex max-w-[calc(100vw-2rem)] items-center gap-2 rounded-xl border border-yellow-300/40 bg-yellow-300 px-3 py-2 text-xs font-semibold text-yellow-950 shadow-lg"
+      >
+        <Sparkle size={15} weight="fill" aria-hidden="true" />
+        <span>For finer product details, choose Premium quality.</span>
+      </motion.div>
+    )}
+    </>
   );
 }

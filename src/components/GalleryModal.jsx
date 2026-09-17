@@ -1,7 +1,7 @@
 import React from "react";
 import BeforeAfterSlider from "./BeforeAfterSlider";
+import NaturalAspectFrame from "./NaturalAspectFrame";
 import { DownloadSimple, X } from "@phosphor-icons/react";
-import { toCssAspectRatio } from "../lib/aspectRatio";
 
 const slugify = text => text.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
@@ -15,7 +15,6 @@ const downloadImage = (src, filename) => {
 };
 
 const GalleryModal = ({ session, onClose }) => {
-  const aspectRatio = toCssAspectRatio(session.aspect);
   const handleDownloadAll = () => {
     const base = slugify(session.title) || "pixtall-photo";
     session.photos.forEach((src, index) => {
@@ -62,7 +61,6 @@ const GalleryModal = ({ session, onClose }) => {
           {session.photos.length > 0 && (
             <div
               className="w-full max-w-3xl mx-auto rounded-2xl overflow-hidden border border-line shadow-lg bg-paper"
-              style={{ aspectRatio }}
             >
               <BeforeAfterSlider 
                 beforeSrc={sourceImage}
@@ -71,7 +69,8 @@ const GalleryModal = ({ session, onClose }) => {
                 afterLabel="Generation"
                 aspectRatio={session.aspect}
                 fit="contain"
-                className="h-full mb-0"
+                useAfterImageAspectRatio
+                className="mb-0"
               />
             </div>
           )}
@@ -80,14 +79,17 @@ const GalleryModal = ({ session, onClose }) => {
           {session.photos.length > 1 && (
             <div>
               <h4 className="text-sm font-semibold text-slate uppercase tracking-wider mb-4 px-2">All Variations</h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 items-start gap-4">
                 {session.photos.map((src, index) => (
-                  <div
+                  <NaturalAspectFrame
                     className="rounded-xl overflow-hidden border border-line bg-cloud relative group"
-                    style={{ aspectRatio }}
+                    src={src}
+                    alt={`${session.title}, photo ${index + 1}`}
+                    fallbackAspectRatio={session.aspect}
+                    imageClassName="w-full h-full object-contain"
+                    loading="lazy"
                     key={src + index}
                   >
-                    <img src={src} alt={`${session.title}, photo ${index + 1}`} className="w-full h-full object-contain" />
                     <button
                       type="button"
                       className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-ink text-paper flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 shadow-lg"
@@ -96,7 +98,7 @@ const GalleryModal = ({ session, onClose }) => {
                     >
                       <DownloadSimple size={14} weight="bold" />
                     </button>
-                  </div>
+                  </NaturalAspectFrame>
                 ))}
               </div>
             </div>
