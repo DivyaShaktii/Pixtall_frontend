@@ -1,6 +1,6 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import BeforeAfterSlider from "./BeforeAfterSlider";
 
 it("uses the requested aspect ratio and contain mode without cropping", () => {
@@ -38,4 +38,31 @@ it("switches the frame to the generated image's real dimensions", () => {
 
   expect(screen.getByRole("slider").style.getPropertyValue("--compare-aspect-ratio"))
     .toBe("1600 / 900");
+});
+
+it("tracks a touch pointer immediately throughout the drag", () => {
+  render(<BeforeAfterSlider beforeSrc="/source.png" afterSrc="/result.png" />);
+
+  const comparison = screen.getByRole("slider");
+  vi.spyOn(comparison, "getBoundingClientRect").mockReturnValue({
+    left: 0,
+    width: 200,
+    top: 0,
+    right: 200,
+    bottom: 100,
+    height: 100,
+    x: 0,
+    y: 0,
+    toJSON: () => ({}),
+  });
+  comparison.setPointerCapture = vi.fn();
+
+  fireEvent.pointerDown(comparison, { pointerId: 7, pointerType: "touch", clientX: 40 });
+  fireEvent.pointerMove(comparison, { pointerId: 7, pointerType: "touch", clientX: 150 });
+
+  expect(comparison).toHaveAttribute("aria-valuenow", "75");
+  expect(comparison).toHaveClass("is-dragging");
+
+  fireEvent.pointerUp(comparison, { pointerId: 7, pointerType: "touch", clientX: 150 });
+  expect(comparison).not.toHaveClass("is-dragging");
 });

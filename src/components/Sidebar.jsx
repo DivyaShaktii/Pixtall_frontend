@@ -19,7 +19,7 @@ const Sidebar = ({ active, onNavigate, currentUser, wallet, walletError }) => {
   const workspaceName = currentUser?.workspace || "Personal Workspace";
 
   return (
-    <aside className="w-full lg:w-[220px] bg-cloud border-t lg:border-t-0 lg:border-r border-line flex flex-row lg:flex-col h-[72px] lg:h-full flex-shrink-0 transition-all duration-300 z-20 shadow-[4px_-4px_24px_rgba(0,0,0,0.02)] lg:shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+    <aside className="mobile-app-nav w-full lg:w-[220px] bg-cloud border-t lg:border-t-0 lg:border-r border-line flex flex-row lg:flex-col h-[72px] lg:h-full flex-shrink-0 transition-all duration-300 z-20 shadow-[4px_-4px_24px_rgba(0,0,0,0.02)] lg:shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
       
       {/* Workspace identity */}
       <div className="p-4 shrink-0 hidden lg:block">
@@ -35,7 +35,7 @@ const Sidebar = ({ active, onNavigate, currentUser, wallet, walletError }) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 flex flex-row lg:flex-col px-2 lg:px-3 py-2 space-x-2 lg:space-x-0 lg:space-y-1.5 overflow-x-auto lg:overflow-y-auto items-center justify-around lg:justify-start">
+      <nav className="flex-1 flex flex-row lg:flex-col px-2 lg:px-3 py-2 lg:space-y-1.5 overflow-x-auto lg:overflow-y-auto items-center justify-around lg:justify-start">
         {NAV_ITEMS.map(item => {
           const Icon = item.icon;
           const isActive = active === item.id;
@@ -43,7 +43,7 @@ const Sidebar = ({ active, onNavigate, currentUser, wallet, walletError }) => {
             <button
               type="button"
               key={item.id}
-              className={`flex-1 lg:w-full flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1 lg:gap-3 px-1 lg:px-3 py-2 lg:py-2.5 rounded-lg text-[10px] lg:text-sm font-medium transition-colors duration-200 relative group ${
+              className={`min-w-0 flex-1 lg:w-full flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1 lg:gap-3 px-0.5 lg:px-3 py-2 lg:py-2.5 rounded-lg text-[10px] lg:text-sm font-medium transition-colors duration-200 relative group ${
                 isActive 
                   ? "text-ink font-semibold" 
                   : "text-slate hover:text-ink"

@@ -136,6 +136,23 @@ button {
               box-shadow 140ms var(--ease);
 }
 button:active { transform: translateY(1px); }
+
+.studio-generate-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #09090b;
+}
+.studio-generate-primary:hover {
+  background: #a3e635;
+  border-color: #a3e635;
+}
+
+@media (max-width: 1023px) {
+  .mobile-app-nav {
+    height: calc(72px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
 input, select { outline: none; }
 
 .auth-primary-button {
@@ -475,12 +492,16 @@ input, select { outline: none; }
   box-shadow: var(--shadow-lg);
   cursor: ew-resize;
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
   margin-bottom: 28px;
 }
+.compare.is-dragging { cursor: grabbing; }
 .compare-frame { position: absolute; inset: 0; }
-.compare-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.compare-frame img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; }
 .compare-before { position: absolute; inset: 0; }
-.compare-before img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.compare-before img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; }
 .compare-contain .compare-frame img,
 .compare-contain .compare-before img { object-fit: contain; }
 .compare-tag {
@@ -515,8 +536,8 @@ input, select { outline: none; }
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #fff;
   display: flex;
@@ -524,6 +545,11 @@ input, select { outline: none; }
   justify-content: center;
   gap: 3px;
   box-shadow: var(--shadow);
+}
+
+@media (pointer: coarse) {
+  .compare-handle-grip { width: 48px; height: 48px; }
+  .compare-hint { padding: 7px 12px; }
 }
 .compare-handle-grip::before,
 .compare-handle-grip::after {

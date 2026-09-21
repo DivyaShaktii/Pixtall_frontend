@@ -98,3 +98,11 @@ it("shows a short Premium hint after a category is selected", () => {
   act(() => vi.advanceTimersByTime(4000));
   expect(screen.queryByRole("status")).not.toBeInTheDocument();
 });
+
+it("renders Generate Images as the primary accent action", () => {
+  render(<StudioSidebar handleGenerate={vi.fn()} />);
+
+  const generateButton = screen.getByRole("button", { name: "Generate Images" });
+  expect(generateButton).toHaveClass("studio-generate-primary", "min-h-[52px]");
+  expect(generateButton).not.toHaveClass("bg-white");
+});

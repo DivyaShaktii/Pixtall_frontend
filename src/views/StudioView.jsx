@@ -97,9 +97,14 @@ export default function StudioView({ onWalletChange }) {
   useEffect(() => {
     if (successMessage) {
       setShowToast(true);
-      const timer = setTimeout(() => setShowToast(false), 3000);
+      const timer = window.setTimeout(() => {
+        setShowToast(false);
+        setSuccessMessage("");
+      }, 3000);
       return () => clearTimeout(timer);
     }
+    setShowToast(false);
+    return undefined;
   }, [successMessage]);
 
   const handleModelTypeChange = (value) => {
@@ -426,18 +431,30 @@ export default function StudioView({ onWalletChange }) {
       {/* Floating Toast for Success */}
       <AnimatePresence>
         {showToast && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className="fixed bottom-6 right-6 z-50 p-4 bg-paper text-ink rounded-2xl border border-line shadow-2xl flex items-center gap-3"
-          >
-            <div className="text-success"><CheckCircle size={24} weight="fill" /></div>
-            <span className="font-medium text-sm pr-4">{successMessage}</span>
-            <button onClick={() => setShowToast(false)} className="text-slate hover:text-ink p-1">
-              <X size={16} weight="bold" />
-            </button>
-          </motion.div>
+          <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4" role="presentation">
+            <motion.div
+              role="status"
+              aria-live="polite"
+              initial={{ opacity: 0, y: 18, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.96 }}
+              className="pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-2xl border border-success-line bg-paper px-4 py-3 text-ink shadow-[0_18px_48px_rgba(0,0,0,0.35)]"
+            >
+              <div className="shrink-0 text-success"><CheckCircle size={24} weight="fill" /></div>
+              <span className="min-w-0 flex-1 font-medium text-sm">{successMessage}</span>
+              <button
+                type="button"
+                aria-label="Dismiss success message"
+                onClick={() => {
+                  setShowToast(false);
+                  setSuccessMessage("");
+                }}
+                className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-slate hover:bg-cloud hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              >
+                <X size={17} weight="bold" />
+              </button>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </motion.div>

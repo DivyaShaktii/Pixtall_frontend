@@ -166,7 +166,7 @@ const App = () => {
 
   return withSuspense(
     <div className="flex h-screen w-full bg-cloud font-sans text-ink overflow-hidden selection:bg-accent/20 flex-col">
-      <header className="h-16 flex items-center justify-between px-6 bg-paper border-b border-line shrink-0 z-10">
+      <header className="h-16 flex items-center justify-between gap-3 px-4 sm:px-6 bg-paper border-b border-line shrink-0 z-10">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-accent text-paper flex items-center justify-center font-bold text-sm tracking-tighter">
             PS
@@ -174,7 +174,7 @@ const App = () => {
           <span className="font-semibold text-lg tracking-tight">Pixtall AI</span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm font-medium text-slate">
+          <span className="hidden sm:inline text-sm font-medium text-slate">
             Hi, {currentUser.name?.split(" ")[0] || currentUser.email.split("@")[0] || "User"}
           </span>
           <button

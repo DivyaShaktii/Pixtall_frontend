@@ -25,6 +25,7 @@ const BeforeAfterSlider = ({
   );
   const frameRef = useRef(null);
   const afterImageRef = useRef(null);
+  const activePointerRef = useRef(null);
 
   useEffect(() => {
     const image = afterImageRef.current;
@@ -44,15 +45,20 @@ const BeforeAfterSlider = ({
   }, []);
 
   const handlePointerDown = event => {
+    activePointerRef.current = event.pointerId;
     setDragging(true);
     updateFromClientX(event.clientX);
     event.currentTarget.setPointerCapture?.(event.pointerId);
   };
   const handlePointerMove = event => {
-    if (!dragging) return;
+    if (activePointerRef.current !== event.pointerId) return;
     updateFromClientX(event.clientX);
   };
-  const stopDragging = () => setDragging(false);
+  const stopDragging = event => {
+    if (activePointerRef.current !== event.pointerId) return;
+    activePointerRef.current = null;
+    setDragging(false);
+  };
 
   const handleKeyDown = event => {
     if (event.key === "ArrowLeft") setPosition(p => Math.max(2, p - 4));
@@ -71,12 +77,16 @@ const BeforeAfterSlider = ({
   return (
     <div
       ref={frameRef}
-      className={`compare ${fit === "contain" ? "compare-contain" : ""} ${className}`.trim()}
-      style={{ "--compare-aspect-ratio": toCssAspectRatio(resolvedAspectRatio) }}
+      className={`compare ${dragging ? "is-dragging" : ""} ${fit === "contain" ? "compare-contain" : ""} ${className}`.trim()}
+      style={{
+        "--compare-aspect-ratio": toCssAspectRatio(resolvedAspectRatio),
+        touchAction: "pan-y",
+      }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={stopDragging}
-      onPointerLeave={stopDragging}
+      onPointerCancel={stopDragging}
+      onLostPointerCapture={stopDragging}
       role="slider"
       aria-label="Drag to compare the raw upload with the generated result"
       aria-valuemin={0}

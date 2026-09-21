@@ -252,12 +252,12 @@ export function StudioSidebar({
           <Button 
             type="button"
             variant="primary" 
-            className={`w-full rounded-xl h-12 border-0 font-bold text-[14px] transition-all duration-300 gap-2 ${isDemo ? "pointer-events-none" : "pointer-events-auto"} ${
-              isDemo && demoState === "generate" ? "bg-[#84cc16] text-black shadow-[0_0_20px_rgba(132,204,22,0.3)] ring-2 ring-[#84cc16]" : "bg-white text-black hover:bg-neutral-200"
+            className={`studio-generate-primary w-full min-h-[52px] rounded-xl border font-bold text-[15px] transition-[background-color,border-color,box-shadow,transform] duration-200 gap-2 shadow-[0_8px_24px_rgba(132,204,22,0.18)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${isDemo ? "pointer-events-none" : "pointer-events-auto"} ${
+              isDemo && demoState === "generate" ? "ring-2 ring-accent ring-offset-2 ring-offset-[#09090b]" : ""
             }`}
             onClick={handleGenerate} 
           >
-            <Sparkle size={18} weight="fill" className={isDemo && demoState === "generate" ? "text-black animate-pulse" : (isDemo ? "text-[#84cc16]" : "")} />
+            <Sparkle size={18} weight="fill" className={isDemo && demoState === "generate" ? "animate-pulse" : ""} />
             {isDemo && demoState === "generate" ? "Generating..." : "Generate Images"} 
           </Button>
         )}
