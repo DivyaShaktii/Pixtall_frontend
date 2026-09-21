@@ -15,6 +15,9 @@ describe('SEO metadata', () => {
       'WebPage',
     ]);
     expect(structuredDataForPath('/terms').map(item => item['@type'])).toContain('BreadcrumbList');
+    const organization = structuredDataForPath('/')[0];
+    expect(organization.email).toBe('contact@aivatika.com');
+    expect(organization.contactPoint.email).toBe('support@aivatika.com');
   });
 
   it('prevents indexing of private and unknown routes', () => {

@@ -24,15 +24,12 @@ it("scrolls to landing sections without adding a URL fragment", () => {
   expect(window.location.hash).toBe("");
 });
 
-it("shows an Enterprise coming-soon card and dismisses it with Escape", () => {
+it("directs Enterprise enquiries to the custom-plans contact address", () => {
   render(<Navbar />);
-  const trigger = screen.getByRole("button", { name: "Enterprise" });
-  fireEvent.click(trigger);
-  expect(screen.getByRole("heading", { name: "Enterprise — coming soon" })).toBeVisible();
-  expect(window.location.hash).toBe("");
-  fireEvent.keyDown(document, { key: "Escape" });
-  expect(screen.queryByRole("heading", { name: "Enterprise — coming soon" })).not.toBeInTheDocument();
-  expect(trigger).toHaveFocus();
+  expect(screen.getByRole("link", { name: "Enterprise" })).toHaveAttribute(
+    "href",
+    "https://www.aivatika.com/contact",
+  );
 });
 
 it("closes mobile navigation after selecting a section", () => {
@@ -43,10 +40,14 @@ it("closes mobile navigation after selecting a section", () => {
   expect(window.location.hash).toBe("");
 });
 
-it("also shows the Enterprise notice from the landing footer", () => {
+it("shows separate contact and support routes in the landing footer", () => {
   render(<Footer />);
-  fireEvent.click(screen.getByRole("button", { name: "Enterprise" }));
-  expect(screen.getByRole("status")).toHaveTextContent("Enterprise plans are not available yet");
-  fireEvent.click(screen.getByRole("button", { name: "Dismiss Enterprise message" }));
-  expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Contact AI Vatika" })).toHaveAttribute(
+    "href",
+    "https://www.aivatika.com/contact",
+  );
+  expect(screen.getByRole("link", { name: "support@aivatika.com" })).toHaveAttribute(
+    "href",
+    expect.stringMatching(/^mailto:support@aivatika\.com\?subject=/),
+  );
 });

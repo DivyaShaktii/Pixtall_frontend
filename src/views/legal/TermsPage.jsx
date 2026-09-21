@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Navbar } from '../../components/marketing/Navbar';
 import { Footer } from '../../components/marketing/Footer';
+import { CONTACT_PAGE_URL, SUPPORT_EMAIL, SUPPORT_MAILTO } from '../../config/contact';
 import { 
   ShieldCheck, 
   FileText, 
@@ -516,12 +517,21 @@ const TermsPage = ({ onStart }) => {
                   <Envelope size={32} weight="fill" />
                 </div>
                 <h2 className="text-2xl font-semibold tracking-tight text-white mb-3">Contact Us</h2>
-                <Paragraph>
-                  Have questions about these terms? Our legal and support teams are here to help.
-                </Paragraph>
-                <a href="mailto:contact@aivatika.com" className="inline-block mt-4 text-[#a3e635] font-medium hover:text-white transition-colors text-lg">
-                  contact@aivatika.com
-                </a>
+                <Paragraph>Choose the address that best matches what you need.</Paragraph>
+                <div className="mx-auto mt-6 grid max-w-2xl gap-6 text-left sm:grid-cols-2 sm:divide-x sm:divide-white/10">
+                  <div>
+                    <p className="text-sm leading-6 text-zinc-400">Custom plans, upgrades, or tailored software</p>
+                    <a href={CONTACT_PAGE_URL} className="mt-2 inline-flex min-h-11 items-center font-medium text-[#a3e635] underline decoration-[#a3e635]/40 underline-offset-4 transition-colors hover:text-white">
+                      Open AI Vatika contact page
+                    </a>
+                  </div>
+                  <div className="sm:pl-6">
+                    <p className="text-sm leading-6 text-zinc-400">Product issues, quality concerns, or grievances</p>
+                    <a href={SUPPORT_MAILTO} className="mt-2 inline-flex min-h-11 items-center font-medium text-[#a3e635] underline decoration-[#a3e635]/40 underline-offset-4 transition-colors hover:text-white">
+                      {SUPPORT_EMAIL}
+                    </a>
+                  </div>
+                </div>
               </div>
               
             </div>

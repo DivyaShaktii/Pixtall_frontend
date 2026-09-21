@@ -1,4 +1,5 @@
 import { DEFAULT_SOCIAL_IMAGE, SITE_URL } from '../config/site';
+import { CONTACT_EMAIL, SUPPORT_EMAIL } from '../config/contact';
 
 export { DEFAULT_SOCIAL_IMAGE, SITE_URL };
 
@@ -65,12 +66,12 @@ export const structuredDataForPath = pathname => {
     name: 'Pixtall AI',
     url: SITE_URL,
     logo: `${SITE_URL}/favicon.svg`,
-    email: 'contact@aivatika.com',
+    email: CONTACT_EMAIL,
     description: HOME_SEO.description,
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer support',
-      email: 'contact@aivatika.com',
+      email: SUPPORT_EMAIL,
       availableLanguage: ['English'],
     },
   };

@@ -98,7 +98,7 @@ export function Navbar({ onStart }) {
           <ul className="flex flex-col gap-1">
             {navLinks.map((link) => (
               <li key={link.label}>
-                {link.label === 'Enterprise' ? <EnterpriseButton className="flex min-h-11 w-full items-center rounded-md px-3 py-2.5 text-sm text-neutral-300 hover:text-white" /> : <a
+                {link.label === 'Enterprise' ? <EnterpriseButton onClick={() => setMobileOpen(false)} className="flex min-h-11 w-full items-center rounded-md px-3 py-2.5 text-sm text-neutral-300 hover:text-white" /> : <a
                   href={link.href}
                   onClick={event => { setMobileOpen(false); if (link.section && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); scrollToMarketingSection(link.section); } }}
                   className="flex min-h-11 items-center justify-between rounded-md px-3 py-2.5 text-sm text-neutral-300 hover:bg-white/5 hover:text-white"
